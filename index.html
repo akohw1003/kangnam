@@ -109,8 +109,8 @@
             color: #d32f2f !important;
         }
         .model-cell {
-            white-space: pre; /* 수정됨: 억지로 줄바꿈되는 현상 방지, 엔터 줄바꿈만 허용 */
-            word-break: normal; /* 수정됨: 단어 중간에 찢어지는 현상 방지 */
+            white-space: pre; 
+            word-break: normal; 
             text-align: left;
             padding-left: 15px;
             font-size: 12px;
@@ -381,6 +381,10 @@
         }
         .btn-print-secondary { background-color: #5f6b77; }
         
+        /* 🚨 추가된 제안서 버튼 전용 디자인 */
+        .btn-proposal { background-color: #0056b3; }
+        .btn-proposal:hover { background-color: #004494; }
+        
         .app-meta {
             margin-top: 10px;
             font-size: 12px;
@@ -554,17 +558,16 @@
             color: #111827 !important;
         }
         
-        /* 🚨 수정된 부분: 모델명 글씨만 한 줄에 맞게 자동 조정 */
         #quoteTable .model-cell,
         #quoteTable td.model-cell,
         #quoteTable td.model-cell * {
-            font-size: 13.5px !important; /* 수정됨: 잘림을 방지하기 위해 15 -> 13.5로 자동 축소 */
+            font-size: 13.5px !important; 
             font-weight: 600 !important;
             color: #0f172a !important;
             line-height: 1.55 !important;
-            white-space: pre !important; /* 수정됨: 무조건 한 줄 표시 (강제 줄바꿈 금지) */
-            word-break: normal !important; /* 수정됨: 글자 찢어짐 원천 차단 */
-            letter-spacing: -0.3px !important; /* 수정됨: 자간을 미세하게 당겨 공간 확보 */
+            white-space: pre !important; 
+            word-break: normal !important; 
+            letter-spacing: -0.3px !important; 
         }
 
         .sheet-shell{
@@ -662,7 +665,6 @@
                 display: none !important;
             }
 
-            /* ✅ 하단에 고정되는 푸터를 위해 바디 하단 여백 추가 */
             body { padding: 0; margin: 0; padding-bottom: 40px !important; }
             .container { display: block; max-width: none; margin: 0; }
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 20px; page-break-inside: avoid; }
@@ -693,13 +695,11 @@
             body.print-all .tab-container,
             body.print-all .table-scroll { display: none !important; }
 
-            /* 🚨 [전체 출력 시 페이지 분리 핵심 코드] 견적표와 구독케어 독립 인쇄 */
             body.print-all .right-column {
                 page-break-before: always !important;
                 break-before: page !important;
             }
 
-            /* ✅ [모든 페이지 하단 고정 출력] 푸터를 fixed로 설정 */
             .print-footer {
                 display: block !important;
                 position: fixed !important;
@@ -777,6 +777,7 @@
             <button type="button" class="btn-print" onclick="printEstimate()">견적표 출력</button>
             <button type="button" class="btn-print btn-print-secondary" onclick="printCare()">구독 Care 출력</button>
             <button type="button" class="btn-print btn-print-secondary" onclick="printAllPage()">전체 출력</button>
+            <button type="button" class="btn-print btn-proposal" onclick="window.open('https://akohw1003-tech.github.io/kangnam/gudok.html', '_blank')">구독 특화 제안서</button>
         </div>
         <div class="gap-toolbar">
             <label for="gapBaseSelect"><b>GAP 기준안</b></label>
@@ -925,14 +926,12 @@
 <div class="app-meta" id="appMeta"></div>
 <div class="print-footer" id="printFooter"></div>
 
-<!-- 제휴카드 발급 전용 QR 팝업 -->
 <div class="security-overlay" id="cardQrModalOverlay" style="display:none;" onclick="closeCardQrModal(event)">
     <div class="security-card" style="text-align: center; max-width: 320px;" onclick="event.stopPropagation()">
         <h3 id="cardQrModalTitle" style="margin-bottom: 5px; color: #2c3e50;">카드 발급</h3>
         <p id="cardQrModalPhone" style="font-weight: bold; font-size: 18px; color: #0056b3; margin-top: 0;"></p>
         <img id="cardQrImage" src="" alt="QR Code" style="margin: 15px auto; width: 160px; height: 160px; border: 1px solid #ddd; border-radius: 8px; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" />
         
-        <!-- 카드별 할인 혜택 표시 영역 -->
         <div id="cardQrModalBenefits" style="margin: 15px 0; background: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 14px; color: #333; line-height: 1.6; text-align: left; border: 1px solid #e9edf3; font-weight: bold;"></div>
         
         <p style="font-size: 13px; color: #555; margin-bottom: 5px;">스마트폰 카메라로 스캔하세요.</p>
@@ -1694,22 +1693,17 @@
         el.innerHTML = lines.map(v => `• ${v}`).join('<br>');
     }
 
-    // =========================================================================
-    // 모델명 파싱 로직 수정: 정규식 제거 및 원본 줄바꿈 유지
-    // =========================================================================
     function normalizeModelLine(text) {
         return String(text || '')
-            .replace(/\s+/g, ' ')               // 다중 공백을 하나의 공백으로 축소
-            .replace(/\s*\[구독\]/gi, ' [구독]') // 구독 태그 앞의 공백/줄바꿈을 단일 공백으로 처리하여 붙임
+            .replace(/\s+/g, ' ')               
+            .replace(/\s*\[구독\]/gi, ' [구독]') 
             .trim();
     }
 
     function formatModelCellBlock(text) {
         if (!text) return '-';
-        // 텍스트를 줄바꿈 기준으로 나누어 배열로 만듦
         const lines = String(text).split(/\r?\n/);
         
-        // 각 줄을 정리하고 빈 줄은 제외한 뒤 다시 줄바꿈으로 연결
         const processed = lines.map(normalizeModelLine).filter(Boolean);
         return processed.length > 0 ? processed.join('\n') : '-';
     }
@@ -2198,7 +2192,6 @@
         ],
         airConditioner: [
             { id: 'a1', name: '완전분해 케어 서비스(프리미엄)', period: '36개월 / 2회', price: 610000, desc: '회당 305,000원 x 2회' },
-            // 🚨 새로 추가된 부분 🚨
             { id: 'a1_2', name: '부분분해 케어 서비스(라이트)', period: '36개월 / 2회', price: 80000, desc: '회당 40,000원 x 2회, 타 가전 부분분해세척 비용기준 참고 추정비용' },
             { id: 'a2', name: '공기청정 필터 교체', period: '12개월 / 6회', price: 600000, desc: '뷰 집진필터 100,000원 x 6회' },
             { id: 'a3', name: '성능점검 & 내/외부 토탈클리닝', period: '12개월 / 6회', price: 510000, desc: '회당 85,000원 x 6회' },
@@ -2436,9 +2429,6 @@
         }, 50);
     }
 
-    // ====================================================================
-    // [신규 기능] 제휴카드 모바일 발급 자동 QR 생성 로직
-    // ====================================================================
     const cardData = {
         'shinhan': { 
             title: '[신한] 더구독케어', 
@@ -2492,7 +2482,6 @@
         document.getElementById('cardQrModalPhone').innerText = '발급 ARS: ' + data.phone;
         document.getElementById('cardQrModalBenefits').innerHTML = data.benefits;
         
-        // Open API를 활용하여 별도의 이미지 파일 없이 동적으로 QR코드 생성
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=0&data=${encodeURIComponent(data.url)}`;
         document.getElementById('cardQrImage').src = qrUrl;
         
@@ -2500,12 +2489,11 @@
     }
 
     function closeCardQrModal(event) {
-        // 모달창 바깥(배경)이나 닫기 버튼을 클릭했을 때만 닫히도록 예외 처리
         if (event && event.target !== document.getElementById('cardQrModalOverlay') && event.target.tagName !== 'BUTTON') {
             return;
         }
         document.getElementById('cardQrModalOverlay').style.display = 'none';
-        document.getElementById('cardQrImage').src = ''; // 이미지 잔상 초기화
+        document.getElementById('cardQrImage').src = ''; 
     }
 
     window.onload = function() {
