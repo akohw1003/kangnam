@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LG 가전 복합 제안서 - 패턴 고정 파서</title>
+    <script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=4325"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body { font-family: 'Malgun Gothic', dotum, sans-serif; font-size: 13px; margin: 0; padding: 0; background: #f0f2f5; color: #333; }
+        * { box-sizing: border-box; }
+        #app { display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 32px 20px; }
+        .input-screen { background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 1180px; border-top: 6px solid #1a73e8; }
+        .input-screen h1 { margin-top: 0; color: #1a73e8; font-size: 13px; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
+        .raw-data-section { background: #f8fbfd; padding: 25px; border-radius: 8px; border: 1px dashed #1a73e8; margin-bottom: 30px; }
+        .raw-data-section h3 { margin-top: 0; font-size: 16px; color: #1a73e8; margin-bottom: 15px; }
+        .raw-data-section textarea { width: 100%; height: 210px; padding: 15px; border: 1px solid #ccc; border-radius: 6px; font-family: sans-serif; font-size: 13px; resize: vertical; margin-bottom: 15px; }
+        .raw-data-section textarea:focus { border-color: #1a73e8; outline: none; }
+        .btn-group-sm { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+        .btn-sm { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 14px; }
+        .btn-parse { background: #d93025; color: #fff; box-shadow: 0 2px 5px rgba(26,115,232,0.3); }
+        .btn-clear { background: #5f6368; color: #fff; }
+        .btn-sm:hover { opacity: 0.9; transform: translateY(-1px); }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .form-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .form-section h3 { margin-top: 0; font-size: 16px; color: #1a73e8; margin-bottom: 20px; border-left: 5px solid #1a73e8; padding-left: 10px; font-weight: bold; }
+        .form-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; }
+        .form-row input[type="text"].name-input { flex: 1; padding: 9px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        .form-row input[type="text"].price-input { width: 110px; text-align: right; padding: 9px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; font-weight: bold; }
+        .form-row input:focus { border-color: #1a73e8; outline: none; }
+        .divider { height: 1px; background: #ddd; margin: 20px 0; }
+        .action-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-large { flex: 1; padding: 20px; background: #1a73e8; color: white; border: none; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3); }
+        .btn-large:hover { background: #1557b0; transform: translateY(-2px); }
+        .dashboard-screen { width: 100%; max-width: 1280px; display: flex; flex-direction: column; align-items: center; margin-top: 0; padding-top: 0; }
+        .actions-bar { width: 1180px; display: flex; justify-content: space-between; align-items:center; margin-bottom: 20px; background: #fff; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .btn-outline { padding: 10px 20px; background: #fff; border: 1px solid #1a73e8; color: #1a73e8; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-primary { padding: 10px 20px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .print-area { background: #fff; padding: 24px; width: 1180px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 6px; }
+        .flex-container { display: grid; grid-template-columns: 350px minmax(0, 1fr); align-items: start; gap: 24px; }
+        table { border-collapse: collapse; width: 100%; border: 2px solid #222; }
+        th, td { border: 1px solid #777; padding: 7px 8px; vertical-align: middle; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .left { text-align: left; }
+        .bold { font-weight: bold; }
+        .header-red { background:#d9d9d9; color:#333; font-weight:bold; text-align:center; padding:10px 8px; }
+        .header-yellow { background:#e6e6e6; color:#333; font-weight:bold; text-align:center; padding:10px 8px; }
+        .bg-light { background-color: #f8f9fa; }
+        .empty-cell { background-color: #fff; border: none; }
+        .table-lump { width: 350px; }
+        .table-sub { width: 100%; }
+        .payment-boxes { display: flex; gap: 15px; margin-bottom: 24px; width: 100%; align-items: stretch; }
+        .pay-box { flex: 1; border: 2px solid #d93025; padding: 22px 18px; background: #fff; border-radius: 4px; text-align: center; min-height: 108px; }
+        .pay-box.secondary { border-color: #5f6368; background: #f1f3f4; }
+        .pay-title { font-size: 14px; font-weight: bold; margin-bottom: 15px; color: #333; }
+        .pay-amount { font-size: 36px; font-weight: 900; color: #1a73e8; }
+        .pay-box.secondary .pay-amount { color: #333; }
+        .unit { font-size: 13px; font-weight: normal; margin-left: 4px; }
+        .summary-wrapper { display: flex; justify-content: flex-end; margin-top: 24px; }
+        .table-summary { width: 380px; border: 2px solid #1a73e8; border-collapse: collapse; }
+        .table-summary td { padding: 12px; font-size: 14px; font-weight: bold; border: 1px solid #1a73e8; }
+        .table-summary tr:nth-child(1) td { background-color: #e8f0fe; color: #333; }
+        .table-summary tr:nth-child(2) td { background-color: #f8f9fa; color: #333; }
+        .table-summary tr:nth-child(3) td { background-color: #d9ead3; color: #137333; font-size: 16px; }
+        .dashboard-screen table tbody tr.compact-hide { display:none; }
+        .table-lump td, .table-lump th { padding: 9px 10px; }
+        .table-sub td, .table-sub th { padding: 10px 10px; }
+        .table-sub .left { line-height: 1.35; }
+        .help-box { font-size:12px; color:#666; margin-top:10px; line-height:1.6; background:#eef5ff; border-radius:8px; padding:12px; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            #app { padding: 0; }
+            .no-print { display: none !important; }
+            .print-area { box-shadow: none; width: 100%; padding: 0; margin: auto; }
+            @page { margin: 8mm; size: landscape; }
+        }
+        .print-preview-card { background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.08); padding:20px; margin-top:18px; }
+        .preview-actions { margin-bottom:12px; }
+        .print-wrap { background:#fff; border:1px solid #d9e0ea; border-radius:12px; overflow:hidden; }
+        .print-head { background:linear-gradient(135deg,#1a73e8,#6ea8fe); color:#fff; padding:18px 20px; }
+        .print-head h2 { margin:0; font-size:24px; }
+        .print-head .subt { margin-top:6px; font-size:13px; opacity:0.92; }
+        .print-body { padding:18px; }
+        .print-grid { display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; }
+        .box { border:1px solid #d9e0ea; border-radius:10px; overflow:hidden; background:#fff; }
+        .box h3 { margin:0; padding:12px 14px; background:#eef4ff; font-size:16px; }
+        .box .inner { padding:12px 14px; }
+        .list-table { width:100%; border-collapse:collapse; }
+        .list-table th,.list-table td { border:1px solid #e1e7f0; padding:8px 10px; font-size:13px; }
+        .list-table th { background:#f7faff; }
+        .kpi { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .kpi .item { border:1px solid #e1e7f0; border-radius:8px; padding:10px 12px; background:#fafcff; }
+        .kpi .lab { font-size:12px; color:#666; margin-bottom:4px; }
+        .kpi .val { font-size:18px; font-weight:bold; color:#1a73e8; }
+        .print-note { margin-top:14px; border:1px dashed #bfd3f7; background:#f8fbff; border-radius:10px; padding:12px 14px; font-size:12px; line-height:1.6; color:#556; }
+        @media print {
+            body { background:#fff; padding:0; }
+            .wrap > .card, .wrap > .grid2, .wrap > .sub, .wrap > h1, .preview-actions, #inputArea { display:none !important; }
+            .print-preview-card { box-shadow:none; padding:0; margin:0; }
+            .print-wrap { border:none; border-radius:0; }
+        }
+        .classic-print-wrap { background:#efefef; border:1px solid #d9d9d9; border-radius:10px; padding:18px; }
+        .classic-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; background:#fff; border-radius:12px; padding:16px 20px; box-shadow:0 4px 14px rgba(0,0,0,0.08); margin-bottom:18px; }
+        .classic-toolbar .title { font-size:18px; font-weight:700; color:#1a73e8; }
+        .classic-btn { background:#1a73e8; color:#fff; border:none; border-radius:8px; padding:10px 18px; font-size:14px; cursor:pointer; }
+        .classic-btn.secondary { background:#fff; color:#1a73e8; border:2px solid #7aa7f8; }
+        .classic-sheet { background:#fff; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,0.08); padding:18px; }
+        .classic-hidden { display:none; }
+        .classic-main { display:grid; grid-template-columns: 310px 1fr; gap:18px; }
+        .classic-box { border:2px solid #333; background:#fff; }
+        .classic-box .head-red { background:#e32d1f; color:#fff; font-size:20px; font-weight:700; text-align:center; padding:12px 10px; }
+        .classic-box .head-yellow { background:#f7ae00; color:#fff; font-size:20px; font-weight:700; text-align:center; padding:12px 10px; }
+        .classic-box table { width:100%; border-collapse:collapse; }
+        .classic-box th, .classic-box td { border:1px solid #7d7d7d; padding:8px 10px; font-size:14px; }
+        .classic-box th { background:#fff; font-weight:700; text-align:center; }
+        .classic-box td.num { text-align:right; }
+        .classic-box td.center { text-align:center; }
+        .classic-box td.blue { color:#1268ff; font-weight:700; }
+        .classic-box td.red { color:#ff3b1e; font-weight:700; }
+        .classic-box td.label-red { color:#ff3b1e; }
+        .classic-mini-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
+        .classic-kpi { border:2px solid #444; min-height:116px; background:#fff; display:flex; flex-direction:column; justify-content:flex-start; }
+        .classic-kpi.blue { border-color:#2e77ff; }
+        .classic-kpi .lab { text-align:center; font-size:14px; font-weight:700; padding:18px 10px 10px; color:#222; }
+        .classic-kpi .val { text-align:center; font-size:40px; font-weight:800; color:#2e77ff; padding-top:8px; }
+        .classic-kpi.gray .val { color:#222; }
+        .classic-kpi .won { font-size:18px; margin-left:4px; }
+        .classic-desc { color:#999; font-size:12px; text-align:center; padding:14px 10px; }
+        .classic-note-area { background:#f8f1da; }
+        .classic-total-row td { font-weight:800; }
+        .classic-summary-row td:last-child { color:#1268ff; font-weight:800; }
+        @media print {
+            .classic-toolbar { box-shadow:none; }
+            .classic-sheet { box-shadow:none; padding:0; }
+            .classic-print-wrap { border:none; padding:0; background:#fff; }
+        }
+        .grid-2x2 { display:grid; grid-template-columns: 1fr 1fr; gap:18px; margin-top:18px; }
+        .sheet-shell { border:1px solid #cfd8e3; border-radius:10px; overflow:hidden; background:#fff; }
+        .sheet-toolbar { display:flex; align-items:center; gap:10px; padding:10px 12px; background:#f5f7fb; border-bottom:1px solid #d9e2ef; font-size:12px; color:#5f6368; }
+        .sheet-badge { background:#e8f0fe; color:#1a73e8; border:1px solid #c7dafc; padding:4px 8px; border-radius:999px; font-weight:700; }
+        .sheet-wrap { overflow:auto; max-height:360px; }
+        .sheet-table { width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px; }
+        .sheet-table th, .sheet-table td { border:1px solid #d9e2ef; padding:0; }
+        .sheet-table thead th { position:sticky; top:0; background:#eef3f9; z-index:2; height:32px; color:#5f6368; font-weight:700; }
+        .sheet-table .row-head { position:sticky; left:0; background:#eef3f9; z-index:1; width:46px; text-align:center; color:#5f6368; font-weight:700; }
+        .sheet-table thead .row-head { z-index:3; background:#e7edf6; }
+        .sheet-cell-input { width:100%; box-sizing:border-box; border:0; outline:none; padding:7px 8px; min-height:32px; font-size:12px; background:#fff; }
+        .sheet-cell-input:focus { background:#f8fbff; box-shadow: inset 0 0 0 2px #1a73e8; }
+        .sheet-shell { border:1px solid #7aa7f8; border-radius:8px; background:#fff; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
+        .sheet-toolbar { display:flex; align-items:center; gap:10px; padding:10px 12px; background:#f5f7fb; border-bottom:1px solid #d9e2ef; font-size:12px; color:#5f6368; }
+        .sheet-badge { color:#1a73e8; font-weight:700; }
+        .sheet-wrap { overflow:auto; max-height:165px; background:#fff; }
+        .sheet-table { width:max-content; min-width:100%; border-collapse:collapse; table-layout:fixed; font-size:12px; }
+        .sheet-table th, .sheet-table td { border:1px solid #cfd8e3; padding:0; }
+        .sheet-table thead th { position:sticky; top:0; background:#eef3f9; z-index:3; height:30px; color:#1f3b64; font-weight:700; text-align:center; }
+        .sheet-table .row-head { position:sticky; left:0; z-index:2; width:56px; min-width:56px; background:#eef3f9; text-align:center; color:#1f3b64; font-weight:700; }
+        .sheet-table thead .row-head { z-index:4; background:#e7edf6; }
+        .sheet-col-head { width:136px; min-width:136px; }
+        .sheet-cell-input { width:136px; min-width:136px; height:38px; box-sizing:border-box; border:0; outline:none; padding:7px 8px; font-size:12px; background:#fff; }
+        .sheet-cell-input:focus { background:#f8fbff; box-shadow: inset 0 0 0 2px #2e77ff; }
+        .sheet-hint { margin-top:8px; font-size:12px; color:#777; }
+        .plan-selector { display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fff; border:1px solid #d9e2ef; border-radius:8px; margin-bottom:12px; }
+        .plan-selector label { font-weight:700; color:#1a73e8; }
+        .plan-selector select { padding:8px 12px; border:1px solid #1a73e8; border-radius:6px; font-weight:700; color:#1a73e8; background:#fff; }
+        .plan-selector .hint { margin-left:auto; color:#666; font-size:12px; }
+
+        /* V39: 항목별 합계 라벨/금액 빨간색 고정 */
+        .section-sum-row, .section-sum-row .sum-label, .section-sum-row .sum-amount { color: #d93025 !important; }
+        .section-sum-row .sum-label { font-weight: 900 !important; }
+        .section-sum-row .sum-amount { color: #d93025 !important; font-size: 13px !important; font-weight: 900 !important; }
+
+        /* V45: 프린트/PDF 저장 시 한 장 맞춤 */
+        @page { size: A4 landscape; margin: 6mm; }
+        @media print {
+            html, body { width: 297mm; height: 210mm; margin: 0 !important; padding: 0 !important; background: #fff !important; overflow: hidden !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            #app { padding: 0 !important; margin: 0 !important; min-height: auto !important; display: block !important; }
+            .no-print, .actions-bar, .input-screen { display: none !important; }
+            .dashboard-screen { display: block !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+            .print-area { width: 1180px !important; max-width: 1180px !important; padding: 10px !important; margin: 0 auto !important; box-shadow: none !important; border-radius: 0 !important; transform: scale(0.82); transform-origin: top center; page-break-inside: avoid !important; break-inside: avoid !important; }
+            .payment-boxes { margin-bottom: 8px !important; gap: 8px !important; }
+            .pay-box { padding: 10px 12px !important; min-height: 70px !important; }
+            .pay-title { font-size: 11px !important; margin-bottom: 6px !important; }
+            .pay-amount { font-size: 24px !important; }
+            .flex-container { gap: 12px !important; grid-template-columns: 310px minmax(0, 1fr) !important; }
+            .table-lump { width: 310px !important; }
+            th, td { padding: 3px 4px !important; font-size: 10px !important; line-height: 1.15 !important; }
+            .header-red, .header-yellow { padding: 5px 4px !important; font-size: 11px !important; }
+            .summary-wrapper { margin-top: 8px !important; }
+            .table-summary td { padding: 5px 6px !important; font-size: 11px !important; }
+            tr, table, tbody, thead { page-break-inside: avoid !important; break-inside: avoid !important; }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div v-if="!showDashboard" class="input-screen no-print">
+        <h1>📊 강남담당 전산 Raw Data 입력기</h1>
+        <div class="raw-data-section">
+            <h3>📝 전산 Raw Data 붙여넣기</h3>
+            <div class="plan-selector">
+                <label>제안안 선택</label>
+                <select v-model.number="selectedPlan" @change="parseRawData">
+                    <option v-for="n in planOptions" :key="'plan-'+n" :value="n">{{ n }}안</option>
+                </select>
+                <span class="hint"></span>
+            </div>
+            <div class="sheet-shell">
+                <div class="sheet-toolbar">
+                    <span class="sheet-badge">📥 Data 붙여넣기 (Ctrl+V)</span>
+                    <span style="margin-left:auto;">행/열 형태</span>
+                </div>
+                <div class="sheet-toolbar" style="border-top:1px solid #eef2f7; background:#fafcff;">
+                    <span>엑셀형 입력 영역</span>
+                    <span style="margin-left:auto;">A열에는 1안, B열에는 2안, C열에는 3안처럼 각 열에 제안서를 붙여넣어주세요.</span>
+                </div>
+                <div class="sheet-wrap">
+                    <table class="sheet-table">
+                        <thead>
+                            <tr>
+                                <th class="row-head"></th>
+                                <th v-for="col in gridCols" :key="'head-'+col" class="sheet-col-head">{{ planColumnLabel(col - 1) }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="row in gridRows" :key="'row-'+row">
+                                <th class="row-head">{{ row }}</th>
+                                <td v-for="col in gridCols" :key="'cell-'+row+'-'+col">
+                                    <input class="sheet-cell-input" type="text" :value="gridData[row-1][col-1]" @focus="selectGridCell(row-1, col-1)" @click="selectGridCell(row-1, col-1)" @input="updateGridCell(row-1, col-1, $event.target.value); rebuildRawDataFromSelectedPlan()" @paste.prevent="handleGridPaste($event, row-1, col-1)">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="sheet-hint">현재 선택 셀: {{ gridCellLabel(selectedRow, selectedCol) }} · 현재 파싱 대상: {{ selectedPlan }}안 / {{ planColumnLabel(selectedPlan - 1) }}. 선택한 열만 독립적으로 제안서를 생성합니다.</div>
+            <div class="btn-group-sm">
+                <button class="btn-sm btn-clear" @click="clearAllValues">🗑️ 전체 초기화</button>
+                <button class="btn-sm btn-parse" @click="parseRawData">✨ 자동 적용</button>
+            </div>
+        </div>
+        <div class="grid-2x2">
+            <div class="form-section">
+                <h3>1. 일시불 상세 항목</h3>
+                <div class="form-row" v-for="row in visibleLumpRows" :key="'lump'+row.index">
+                    <input type="text" class="name-input" v-model="row.item.name" placeholder="일시불 모델명">
+                    <input type="text" class="price-input" :value="formatNum(row.item.price)" @input="e => row.item.price = parseNumber(e.target.value)">
+                </div>
+                <div class="form-row section-sum-row">
+                    <span class="sum-label" style="color:#d93025 !important;">일시불 합계</span>
+                    <span class="sum-amount" style="color:#d93025 !important;">{{ formatNum(lumpItemsSum) }}원</span>
+                </div>
+                <div class="divider"></div>
+                <div class="form-row" style="color:#333; font-weight:bold;">
+                    <span style="flex:1;">{{ (cardRows.find(v => /신한제휴 베플/i.test(v.name || ''))?.name || '신한제휴 베플 혜택') + ' (일시불 차감)' }}</span>
+                    <input type="text" class="price-input" :value="formatNum(lumpDiscount)" @input="e => lumpDiscount = parseNumber(e.target.value)">
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>2. 구독 월요금</h3>
+                <div class="form-row" v-for="row in visibleSubRows" :key="'sub'+row.index">
+                    <input type="text" class="name-input" v-model="row.item.name" placeholder="구독 모델명">
+                    <input type="text" class="price-input" :value="formatNum(row.item.price)" @input="e => row.item.price = parseNumber(e.target.value)">
+                </div>
+                <div class="form-row section-sum-row">
+                    <span class="sum-label" style="color:#d93025 !important;">구독 월요금 합계</span>
+                    <span class="sum-amount" style="color:#d93025 !important;">{{ formatNum(subItemsSum) }}원</span>
+                </div>
+                <div class="form-row" v-if="upfrontPrepayAmount > 0" style="background:#f1f8ff; padding:10px 12px; border-radius:8px; border:1px solid #cfe4ff; font-weight:bold;">
+                    <span style="flex:1; color:#1a73e8;">선납금액 (구독합계 플러스)</span>
+                    <span style="min-width:140px; text-align:right; color:#1a73e8;">+ {{ formatNum(upfrontPrepayAmount) }}원</span>
+                </div>
+                <div class="divider"></div>
+            </div>
+            <div class="form-section">
+                <h3>3. 제휴카드 혜택</h3>
+                <div class="form-row" v-if="eduCardName" style="color:#5f6368; font-weight:bold; background:#f8fbff; border-radius:8px; padding:8px;">
+                    <input type="text" class="name-input" v-model="eduCardName" placeholder="구독 교원 카드명">
+                    <div style="display:flex; align-items:center; gap:6px; flex:1;">
+                        <span style="font-size:12px; color:#666; white-space:nowrap;">월</span>
+                        <input type="text" class="price-input" :value="formatNum(eduMonthlyDiscount)" @input="e => eduMonthlyDiscount = parseNumber(e.target.value)" placeholder="17,000">
+                        <span style="font-size:12px; color:#666; white-space:nowrap;">원</span>
+                    </div>
+                </div>
+                <div class="form-row" v-if="eduCardName" style="color:#5f6368; font-weight:bold; background:#f8fbff; border-radius:8px; padding:8px;">
+                    <input type="text" class="name-input" :value="eduCardName ? eduCardName + ' 월 캐시백' : ''" readonly placeholder="구독 교원 월 캐시백">
+                    <div style="display:flex; align-items:center; gap:6px; flex:1;">
+                        <span style="font-size:12px; color:#666; white-space:nowrap;">월</span>
+                        <input type="text" class="price-input" :value="formatNum(eduMonthlyCashback)" @input="e => eduMonthlyCashback = parseNumber(e.target.value)" placeholder="20,000">
+                        <span style="font-size:12px; color:#666; white-space:nowrap;">원</span>
+                    </div>
+                </div>
+                <div class="form-row" v-for="row in visibleCardRows" :key="'card'+row.index" style="color:#1a73e8; font-weight:bold;">
+                    <input type="text" class="name-input" v-model="row.item.name" placeholder="카드 명칭">
+                    <div style="display:flex; align-items:center; gap:6px; flex:1;">
+                        <span style="font-size:12px; color:#666; white-space:nowrap;">{{ cardAmountPrefix(row.item) }}</span>
+                        <input type="text" class="price-input" :value="formatNum(row.item.price)" @input="e => row.item.price = parseNumber(e.target.value)" placeholder="0">
+                        <span style="font-size:12px; color:#666; white-space:nowrap;">원</span>
+                    </div>
+                </div>
+                <div class="form-row section-sum-row">
+                    <span class="sum-label" style="color:#d93025 !important;">제휴카드 합계</span>
+                    <span class="sum-amount" style="color:#d93025 !important;">{{ formatNum(cardBenefitsSum) }}원</span>
+                </div>
+            </div>
+            <div class="form-section">
+                <h3>4. 판촉혜택 & 기준금액</h3>
+                <div class="form-row" v-for="(item, index) in prepayBenefitRows" :key="'prepay'+index" v-if="item && item.category && (item.price || 0) !== 0">
+                    <input type="text" class="name-input" v-model="item.category" readonly placeholder="선납 결제 혜택 명칭">
+                    <input type="text" class="price-input" :value="formatNum(item.price)" @input="e => item.price = parseNumber(e.target.value)">
+                </div>
+                <div class="form-row" v-for="(item, index) in benefits" :key="'ben'+index">
+                    <input type="text" class="name-input" v-model="item.category" placeholder="혜택 명칭">
+                    <input type="text" class="price-input" :value="formatNum(item.price)" @input="e => item.price = parseNumber(e.target.value)">
+                </div>
+                <div class="form-row section-sum-row">
+                    <span class="sum-label" style="color:#d93025 !important;">판촉혜택 합계</span>
+                    <span class="sum-amount" style="color:#d93025 !important;">{{ formatNum(promoBenefitsSum) }}원</span>
+                </div>
+                <div class="divider"></div>
+                <div class="form-row" style="background:#f8fbff; padding:14px 16px; border-radius:12px; margin-top:14px; font-weight:bold; border:2px solid #d6e4ff;">
+                    <span style="color:#1a73e8; flex:1; font-size:14px;">기준금액</span>
+                    <input type="text" class="price-input" style="border:2px solid #1a73e8; color: #1a73e8;" :value="formatNum(manualTotal)" @input="e => setManualTotal(e.target.value)">
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:10px; margin-bottom:10px; text-align:center; color:#666; font-size:13px;">붙여넣기 후 아래 <b>📊 대시보드 생성 보기</b> 버튼을 누르면 입력 화면은 숨겨지고 월별 금액 혜택 제안서만 표시됩니다.</div>
+        <div style="margin-top:12px; text-align:center; color:#777; font-size:12px;">대시보드 생성 후에는 결과 화면만 표시되며, 상단의 돌아가기 버튼으로 다시 수정할 수 있습니다.</div>
+        <div class="action-buttons">
+            <button class="btn-large" @click="generateDashboard">📊 대시보드 생성 보기</button>
+        </div>
+    </div>
+    <div v-if="showDashboard" class="dashboard-screen">
+        <div class="actions-bar no-print">
+            <button class="btn-outline" @click="showDashboard = false">← 데이터 수정 창으로 돌아가기</button>
+            <div style="font-size: 16px; font-weight: bold; color: #1a73e8;">{{ selectedPlan }}안 월별 금액 혜택 제안서</div>
+            <button class="btn-primary" @click="printDocument">🖨️ 한 장 맞춤 PDF / 프린트</button>
+        </div>
+        <div class="print-area">
+            <div class="payment-boxes">
+                <div class="pay-box">
+                    <div class="pay-title">1~5년차 실질 월 납입금</div>
+                    <div class="pay-amount">{{ formatNum(subMonthly1to5) }}<span class="unit">원</span></div>
+                </div>
+                <div class="pay-box secondary">
+                    <div class="pay-title">{{ hasKbEndingCard ? "6년차 실질 월 납입금 (KB 10,000원 적용)" : "6년차 실질 월 납입금" }}</div>
+                    <div class="pay-amount">{{ formatNum(subMonthly6) }}<span class="unit">원</span></div>
+                </div>
+            </div>
+            <div class="flex-container">
+                <div class="table-lump">
+                    <table>
+                        <thead>
+                        <tr><th colspan="2" class="header-red">일시불</th></tr>
+                        <tr><th class="center" style="width: 60%;">모델명</th><th class="center">금액</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in lumpItems.filter(v => v && v.name && (v.price || 0) !== 0)">
+                            <td class="left">{{ item.name }}</td>
+                            <td class="right">{{ formatNum(item.price) }}</td>
+                        </tr>
+                        <tr class="bg-light">
+                            <td class="left bold" style="color:#333;">신한제휴 베플(월간) 혜택</td>
+                            <td class="right bold" style="color:#333;">- {{ formatNum(lumpDiscount) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="left bold" style="font-size: 14px;">일시불 합계 (ⓐ)</td>
+                            <td class="right bold" style="font-size: 14px; color:#1a73e8;">{{ formatNum(lumpFinal) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-sub">
+                    <table>
+                        <thead>
+                        <tr><th colspan="7" class="header-yellow">구독</th></tr>
+                        <tr>
+                            <th class="center" style="width: 25%;">모델명</th>
+                            <th class="center" style="width: 12%;">1년차</th><th class="center" style="width: 12%;">2년차</th>
+                            <th class="center" style="width: 12%;">3년차</th><th class="center" style="width: 12%;">4년차</th>
+                            <th class="center" style="width: 12%;">5년차</th><th class="center" style="width: 15%;">6년차</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="item in subItems.filter(v => v && v.name && (v.price || 0) !== 0)">
+                            <td class="left">{{ item.name }}</td>
+                            <td class="right" v-for="n in 6">{{ formatNum(item.price) }}</td>
+                        </tr>
+                        <tr v-if="upfrontPrepayAmount > 0">
+                            <td class="left bold" style="font-size:11px; background:#fef7e0;">선납금액</td>
+                            <td class="right bold" style="color:#1a73e8; background:#fef7e0;">+ {{ formatNum(upfrontPrepayAmount) }}</td>
+                            <td colspan="5" class="empty-cell" style="background:#fef7e0;"></td>
+                        </tr>
+                        <tr v-for="(ben, idx) in orderedBenefitRows" v-if="orderedBenefitRows.length > 0">
+                            <td class="left" style="font-size:11px; background:#fef7e0;">{{ ben.category }}</td>
+                            <td class="right bold" style="color:#d93025; background:#fef7e0;">- {{ formatNum(ben.price) }}</td>
+                            <td v-if="idx===0" colspan="5" :rowspan="orderedBenefitRows.length" class="empty-cell center" style="color:#999; font-size: 12px; background:#fef7e0;">
+                                (일회성 혜택은 구독 총납입금 계산 시 합산되어 차감됩니다)
+                            </td>
+                        </tr>
+                        <tr v-if="eduCardName && eduMonthlyDiscount > 0" class="bg-light">
+                            <td class="right bold">{{ eduCardName || '구독 교원 월 차감' }}</td>
+                            <td class="right bold" style="color:#1a73e8;" v-for="n in 6">- {{ formatNum(eduMonthlyDiscount) }}</td>
+                        </tr>
+                        <tr v-if="eduCardName && eduMonthlyCashback > 0" class="bg-light">
+                            <td class="right bold">{{ (eduCardName || '구독 교원') + ' 월 캐시백' }}</td>
+                            <td class="right bold" style="color:#1a73e8;" v-for="n in 6">- {{ formatNum(eduMonthlyCashback) }}</td>
+                        </tr>
+                        <tr v-for="card in activeMonthlyCardRows" class="bg-light">
+                            <td class="right bold">{{ card.name }}</td>
+                            <template v-if="isKbEndingCardRow(card)">
+                                <td class="right bold" style="color:#1a73e8;" v-for="n in 5">- {{ formatNum(card.price || 0) }}</td>
+                                <td class="right bold" style="color:#1a73e8;">- {{ formatNum(kbSixthYearDiscount) }}</td>
+                            </template>
+                            <template v-else>
+                                <td class="right bold" style="color:#1a73e8;" v-for="n in 6">- {{ formatNum(card.price || 0) }}</td>
+                            </template>
+                        </tr>
+                        <tr style="border-top: 2px solid #222;">
+                            <td class="center bold" style="font-size: 14px;">최종 月 납입금</td>
+                            <td class="right bold" style="font-size: 13px;" v-for="n in 5">{{ formatNum(subMonthly1to5) }}</td>
+                            <td class="right bold" style="font-size: 13px;">{{ formatNum(subMonthly6) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="empty-cell"></td>
+                            <td colspan="2" class="center bold" style="border-left: 2px solid #222; background:#e8f0fe;">구독 합계 (ⓑ)</td>
+                            <td class="right bold" style="color:#1a73e8; background:#e8f0fe; font-size:14px;">{{ formatNum(subTotalFinal) }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="summary-wrapper">
+                <table class="table-summary">
+                    <tbody>
+                    <tr><td class="left">최종 총 납입금 합계 (ⓐ + ⓑ)</td><td class="right">{{ formatNum(totalCombined) }} 원</td></tr>
+                    <tr><td class="left">일시불 전체 (기준금액 연동)</td><td class="right">{{ formatNum(manualTotal) }} 원</td></tr>
+                    <tr><td class="left">비교 차액 (GAP)</td><td class="right">{{ formatNum(gap) }} 원</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<script>
+const { createApp, ref, computed } = Vue;
+
+createApp({
+    setup() {
+        const showDashboard = ref(false);
+        const rawDataText = ref('');
+        const planOptions = [1, 2, 3, 4, 5];
+        const selectedPlan = ref(1);
+        const initialGridRows = 12;
+        const gridRows = ref(initialGridRows);
+        const gridCols = 10;
+        const makeGridData = (rows = initialGridRows, cols = gridCols) => Array.from({ length: rows }, () => Array.from({ length: cols }, () => ''));
+        const gridData = ref(makeGridData(initialGridRows, gridCols));
+        const selectedRow = ref(0);
+        const selectedCol = ref(0);
+        const eduCardName = ref('');
+        const eduMonthlyDiscount = ref(0);
+        const eduMonthlyCashback = ref(0);
+        const prepay300Name = ref('');
+        const prepay300Benefit = ref(0);
+        const prepay200Name = ref('');
+        const prepay200Benefit = ref(0);
+        const prepayBenefitRows = ref([]);
+        const upfrontPrepayAmount = ref(0);
+
+        const minRows = 5;
+        const minBenefitRows = 4;
+        const fixedCardRows = 8;
+        const sourceDiagnostics = ref([]);
+        const sourceProductsText = ref([]);
+        const sourceProductsBuffer = ref([]);
+        const prioritySubscriptionMap = {
+            'WA2525EGZF.AKOR': 44500,
+            'DEE6BGE.AKOR': 20400
+        };
+
+        const makeRows = (count, key='name') => Array.from({length: count}, () => ({ [key]: '', price: 0 }));
+
+        const ensureCardRows = (arr, min = fixedCardRows) => {
+            const cloned = Array.isArray(arr) ? arr.map(v => ({ name: v?.name || '', price: v?.price || 0 })) : [];
+            while (cloned.length < min) cloned.push({ name: '', price: 0 });
+            return cloned.slice(0, Math.max(min, cloned.length));
+        };
+
+        const lumpItems = ref(makeRows(minRows));
+        const lumpDiscount = ref(0);
+        const subItems = ref(makeRows(minRows));
+        const wooriDiscount = ref(0);
+        const kbDiscount = ref(0);
+        const cardRows = ref(ensureCardRows([]));
+        const benefits = ref(makeRows(minBenefitRows, 'category'));
+        const manualTotal = ref(0);
+        const manualTotalManuallyEdited = ref(false);
+
+        /* ✅ 핵심 수정 영역: 마이너스(-) 기호 유지 파서 */
+        const parseNumber = (s) => {
+            const str = String(s || '').trim();
+            const isNegative = str.startsWith('-');
+            const numStr = str.replace(/[^\d]/g, '');
+            if (!numStr) return 0;
+            const num = parseInt(numStr, 10);
+            return isNegative ? -num : num;
+        };
+
+        const formatNum = (n) => new Intl.NumberFormat('ko-KR').format(n || 0);
+
+        const setManualTotal = (value) => {
+            manualTotal.value = parseNumber(value);
+            manualTotalManuallyEdited.value = true;
+        };
+
+        const compactText = (value) => String(value || '').replace(/\s+/g, '').toLowerCase();
+
+        const isPrepayCardRow = (item) => {
+            const key = compactText(item?.name || '');
+            return key.includes('선납') && key.includes('결제');
+        };
+
+        const cardAmountPrefix = (item) => isPrepayCardRow(item) ? '혜택금액' : '월';
+
+        const visibleNamedRows = (rows) =>
+            (rows || [])
+                .map((item, index) => ({ item, index }))
+                .filter(row => row.item?._manual || String(row.item?.name || '').trim() !== '');
+
+        const visibleLumpRows = computed(() => visibleNamedRows(lumpItems.value));
+        const visibleSubRows = computed(() => visibleNamedRows(subItems.value));
+        const visibleCardRows = computed(() => visibleNamedRows(cardRows.value));
+
+        const addLumpRow = () => lumpItems.value.push({ name: '', price: 0, _manual: true });
+        const addSubRow = () => subItems.value.push({ name: '', price: 0, _manual: true });
+        const addCardRow = () => cardRows.value.push({ name: '', price: 0, _manual: true });
+
+        const displayCardLabel = (item) => {
+            const name = String(item?.name || '').trim();
+            const price = item?.price || 0;
+            if (!name) return '';
+            if (!price) return name;
+
+            if (isPrepayCardRow(item)) {
+                if (/혜택금액\s*\d/.test(name)) return name;
+                return `${name} 혜택금액 ${formatNum(price)}원`;
+            }
+
+            if (/월\s*\d{1,3}(?:,\d{3})*\s*원?/.test(name)) return name;
+            return `${name} 월 ${formatNum(price)}원`;
+        };
+
+        const updateCardNameFromLabel = (item, value) => {
+            const s = String(value || '').replace(/\s+/g, ' ').trim();
+            const priceMatch = s.match(/^(.*?)\s+(?:월|혜택금액)\s*([0-9]{1,3}(?:,[0-9]{3})*|[0-9]+)\s*원?$/);
+            if (priceMatch) {
+                item.name = priceMatch[1].trim();
+                item.price = parseNumber(priceMatch[2]);
+            } else {
+                item.name = s;
+            }
+        };
+
+        const ensureRows = (arr, min = 5, key = 'name') => {
+            const cloned = Array.isArray(arr) ? [...arr] : [];
+            while (cloned.length < min) cloned.push({ [key]: '', price: 0 });
+            return cloned.slice(0, Math.max(min, cloned.length));
+        };
+
+        const columnLabel = (idx) => {
+            let n = idx + 1;
+            let out = '';
+            while (n > 0) {
+                const rem = (n - 1) % 26;
+                out = String.fromCharCode(65 + rem) + out;
+                n = Math.floor((n - 1) / 26);
+            }
+            return out;
+        };
+
+        const planColumnLabel = (idx) => {
+            if (idx >= 0 && idx < 5) return `${idx + 1}안`;
+            return columnLabel(idx);
+        };
+
+        const gridCellLabel = (row, col) => `${columnLabel(col)}${row + 1}`;
+
+        const selectGridCell = (row, col) => {
+            selectedRow.value = row;
+            selectedCol.value = col;
+        };
+
+        const updateGridCell = (row, col, value) => {
+            ensureGridRows(row + 1);
+            gridData.value[row][col] = value;
+            maybeGrowGridAfterEdit(row, value);
+        };
+
+        const ensureGridRows = (requiredRows) => {
+            const need = Math.max(requiredRows, 1);
+            while (gridData.value.length < need) {
+                gridData.value.push(Array.from({ length: gridCols }, () => ''));
+            }
+            if (gridRows.value < need) gridRows.value = need;
+        };
+
+        const maybeGrowGridAfterEdit = (row, value) => {
+            const trimmed = String(value || '').trim();
+            if (!trimmed) return;
+            if (row >= gridRows.value - 1) {
+                ensureGridRows(gridRows.value + 8);
+            }
+        };
+
+        const rebuildRawDataFromGrid = () => {
+            const rows = gridData.value
+                .map(row => {
+                    let lastNonEmpty = -1;
+                    row.forEach((cell, idx) => {
+                        if (String(cell || '').trim() !== '') lastNonEmpty = idx;
+                    });
+                    if (lastNonEmpty === -1) return '';
+                    return row.slice(0, lastNonEmpty + 1).map(v => String(v || '')).join('\t');
+                })
+                .filter(row => row.trim() !== '');
+            rawDataText.value = rows.join('\n');
+        };
+
+        const getSelectedPlanColIndex = () => {
+            const idx = (selectedPlan.value || 1) - 1;
+            return Math.max(0, Math.min(idx, gridCols - 1));
+        };
+
+        const rebuildRawDataFromSelectedPlan = () => {
+            const colIdx = getSelectedPlanColIndex();
+            const rows = gridData.value
+                .map(row => String(row?.[colIdx] || '').trim())
+                .filter(row => row !== '');
+            rawDataText.value = rows.join('\n');
+        };
+
+        const handleGridPaste = (event, startRow, startCol) => {
+            const text = event.clipboardData?.getData('text/plain') || '';
+            if (!text) return;
+
+            const LF = String.fromCharCode(10);
+            const CR = String.fromCharCode(13);
+            const TAB = String.fromCharCode(9);
+            const normalizedText = text.split(CR + LF).join(LF).split(CR).join(LF);
+            const rows = normalizedText.split(LF);
+            const effectiveRows = rows.filter((line, idx) => !(line === '' && idx === rows.length - 1));
+            ensureGridRows(startRow + effectiveRows.length + 8);
+
+            if (startCol >= 0 && startCol < planOptions.length) {
+                selectedPlan.value = startCol + 1;
+            }
+
+            effectiveRows.forEach((line, rIdx) => {
+                const cols = String(line || '').split(TAB);
+                cols.forEach((cell, cIdx) => {
+                    const r = startRow + rIdx;
+                    const c = startCol + cIdx;
+                    if (c < gridCols) {
+                        ensureGridRows(r + 1);
+                        gridData.value[r][c] = cell;
+                    }
+                });
+            });
+
+            selectGridCell(startRow, startCol);
+            rebuildRawDataFromSelectedPlan();
+        };
+
+        const clearAllValues = () => {
+            rawDataText.value = '';
+            gridRows.value = initialGridRows;
+            gridData.value = makeGridData(initialGridRows, gridCols);
+            selectedRow.value = 0;
+            selectedCol.value = 0;
+            eduCardName.value = '';
+            eduMonthlyDiscount.value = 0;
+            eduMonthlyCashback.value = 0;
+            prepay300Name.value = '';
+            prepay300Benefit.value = 0;
+            prepay200Name.value = '';
+            prepay200Benefit.value = 0;
+            prepayBenefitRows.value = [];
+            upfrontPrepayAmount.value = 0;
+            lumpItems.value = makeRows(minRows);
+            lumpDiscount.value = 0;
+            subItems.value = makeRows(minRows);
+            wooriDiscount.value = 0;
+            kbDiscount.value = 0;
+            cardRows.value = ensureCardRows([]);
+            benefits.value = makeRows(minBenefitRows, 'category');
+            manualTotal.value = 0;
+            manualTotalManuallyEdited.value = false;
+        };
+
+        const normalizeLine = (line) => String(line || '')
+            .replace(/\u00A0/g, ' ')
+            .replace(/\t/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        const compact = (line) => normalizeLine(line).replace(/\s/g, '');
+
+        /* 모델코드 보조 파싱 엔진 블록 */
+        /* 주석 처리 안전하게 치환 완료 */
+        const parseModelCodeEngine = (code) => {
+            const raw = String(code || '').trim();
+            if (!raw) return null;
+
+            const compactRaw = raw.replace(/\s+/g, ' ').trim();
+            const cleaned = compactRaw.toUpperCase().replace(/\s+/g, '');
+
+            if (/^LM-[A-Z0-9]+$/i.test(compactRaw)) return { category: 'LG_phone', raw: compactRaw, code: compactRaw.toUpperCase() };
+            if (/^SM-[A-Z0-9]+$/i.test(compactRaw)) return { category: 'Samsung_phone', raw: compactRaw, code: compactRaw.toUpperCase() };
+            if (/^A\d{4}$/i.test(compactRaw)) return { category: 'Apple_device', raw: compactRaw, code: compactRaw.toUpperCase() };
+            if (/^(iPhone.*|iPad.*|Watch.*)$/i.test(compactRaw)) return { category: 'Apple_named', raw: compactRaw, code: compactRaw };
+            if (/^(HW-[A-Z0-9]+|MI-[A-Z0-9]+|Pixel-[A-Z0-9]+)$/i.test(compactRaw)) return { category: 'Other_mobile', raw: compactRaw, code: compactRaw.toUpperCase() };
+
+            if (!cleaned.includes('.')) return { category: 'Unknown', raw: compactRaw, code: compactRaw.toUpperCase() };
+
+            const rx = /^(?:(\d{1,3})([A-Z][A-Z0-9]*)|([A-Z][A-Z0-9]*|[0-9]+[A-Z][A-Z0-9]*))(?:-([A-Z0-9]+))?(?:\.([A-Z0-9]+))?\.([A-Z0-9]+)$/;
+            const m = cleaned.match(rx);
+            if (!m) return { category: 'Unknown', raw: compactRaw, code: compactRaw.toUpperCase() };
+
+            const size = m[1] || '';
+            const series = m[2] || m[3] || '';
+            const model = m[4] || '';
+            const option = m[5] || '';
+            const suffix = m[6] || '';
+
+            if (!series || !suffix) return { category: 'Unknown', raw: compactRaw, code: compactRaw.toUpperCase() };
+            return { category: 'Base_model', size, series, model, option, suffix, code: cleaned, raw: compactRaw };
+        };
+
+        const isValidModelCodeByEngine = (code) => {
+            const parsed = parseModelCodeEngine(code);
+            return !!parsed && parsed.category !== 'Unknown';
+        };
+
+        const pickModelCodeCandidate = (matches, mode = 'last') => {
+            const cleaned = (matches || [])
+                .map(v => String(v || '').trim())
+                .filter(Boolean);
+
+            if (!cleaned.length) return '';
+
+            const valid = cleaned.filter(isValidModelCodeByEngine);
+            const pool = valid.length ? valid : cleaned;
+            const picked = mode === 'first' ? pool[0] : pool[pool.length - 1];
+            const parsed = parseModelCodeEngine(picked);
+            return parsed?.code || String(picked || '').toUpperCase();
+        };
+
+        const modelCodePattern = /(LM-[A-Za-z0-9]+|SM-[A-Za-z0-9]+|A\d{4}\b|iPhone[^\t\n\r,]{0,40}|iPad[^\t\n\r,]{0,40}|Watch[^\t\n\r,]{0,40}|HW-[A-Za-z0-9]+|MI-[A-Za-z0-9]+|Pixel-[A-Za-z0-9]+|[A-Za-z0-9]{2,}[A-Za-z0-9_-]*\.[A-Za-z0-9]{3,}|[A-Za-z]+[0-9]+[A-Za-z0-9_-]{3,}|[0-9]{1,3}[A-Za-z]+[A-Za-z0-9_-]*\.[A-Za-z0-9]{3,})/g;
+
+        const extractModelCode = (text) => {
+            const raw = normalizeLine(text);
+            const matches = [...raw.matchAll(modelCodePattern)].map(m => m[1]).filter(Boolean);
+            return pickModelCodeCandidate(matches, 'last');
+        };
+
+        const extractAmounts = (line) => {
+            const matches = normalizeLine(line).match(/\d{1,3}(?:,\d{3})+/g) || [];
+            return matches.map(v => parseInt(v.replace(/[^\d]/g, ''), 10)).filter(v => v > 0);
+        };
+
+        const isStandaloneIgnore = (line) => {
+            const s = compact(line);
+            if (!s) return true;
+            const exact = ['구독', '고객맞춤플래너', '선택모델', '고객유형', '일반구매혜택', '정상가', '행사가', '특별할인', '추가혜택', '혜택금액'];
+            if (exact.includes(s)) return true;
+            if (/^\d안$/.test(s) || /^\d안삭제$/.test(s)) return true;
+            if (s.includes('삭제')) return true;
+            return false;
+        };
+
+        const isPriceOnlyLine = (line) => {
+            const n = normalizeLine(line);
+            if (!extractAmounts(n).length) return false;
+            const stripped = n.replace(/\d{1,3}(?:,\d{3})+/g, '')
+                              .replace(/[월원개월,\s.-]/g, '')
+                              .trim();
+            return stripped === '';
+        };
+
+        const sliceSections = (lines) => {
+            const startMarker = '초기화제안추가비교저장/출력조회판촉추가계산하기상담종료';
+            const endMarker = '1특별할인내역입니다';
+            const cardMarker = '6제휴카드';
+
+            const c = lines.map(v => compact(v));
+            const startIdx = c.findIndex(v => v.includes(startMarker));
+            const endIdx = c.findIndex(v => v.includes(endMarker));
+            const cardIdx = c.findIndex(v => v.includes(cardMarker));
+
+            const productLines = lines.filter((_, idx) => idx > startIdx && (endIdx === -1 || idx < endIdx));
+            const benefitLines = endIdx === -1
+                ? []
+                : lines.filter((_, idx) => idx >= endIdx && (cardIdx === -1 || idx < cardIdx));
+            const cardLines = cardIdx === -1
+                ? []
+                : lines.filter((_, idx) => idx >= cardIdx);
+
+            return { productLines, benefitLines, cardLines };
+        };
+
+        const extractLumpPriceFromSentence = (sentence, code) => {
+            const s = normalizeLine(sentence);
+            if (!s || !code) return 0;
+
+            const idx = s.indexOf(code);
+            let after = idx >= 0 ? s.slice(idx + code.length) : s;
+
+            let commaAmounts = after.match(/\d{1,3}(?:,\d{3})+/g) || [];
+            if (!commaAmounts.length) {
+                commaAmounts = s.match(/\d{1,3}(?:,\d{3})+/g) || [];
+            }
+            if (commaAmounts.length) {
+                const lastCommaAmount = commaAmounts[commaAmounts.length - 1];
+                return parseInt(lastCommaAmount.replace(/[^\d]/g, ''), 10) || 0;
+            }
+
+            let digitRuns = after.match(/\d[\d,]*/g) || [];
+            if (!digitRuns.length) {
+                digitRuns = s.match(/\d[\d,]*/g) || [];
+            }
+            if (!digitRuns.length) return 0;
+
+            const rawDigits = digitRuns
+                .map(v => v.replace(/[^\d]/g, ''))
+                .filter(Boolean)
+                .sort((a, b) => b.length - a.length)[0] || '';
+
+            if (!rawDigits) return 0;
+            const halfLen = Math.floor(rawDigits.length / 2);
+            if (halfLen <= 0) return parseInt(rawDigits, 10) || 0;
+
+            return parseInt(rawDigits.slice(-halfLen), 10) || 0;
+        };
+
+        const extractModelImageBlockPrice = (sentence) => {
+            const s = normalizeLine(sentence);
+            if (!s) return 0;
+
+            const commaAmounts = s.match(/\d{1,3}(?:,\d{3})+/g) || [];
+            if (commaAmounts.length) {
+                const lastCommaAmount = commaAmounts[commaAmounts.length - 1];
+                return parseInt(lastCommaAmount.replace(/[^\d]/g, ''), 10) || 0;
+            }
+
+            return 0;
+        };
+
+        const finalizeProductSentence = (sentence, result, forceLump = false) => {
+            const s = normalizeLine(sentence);
+            if (!s || isStandaloneIgnore(s)) return;
+
+            const code = extractModelCode(s);
+            if (!code) return;
+
+            const isSub = forceLump ? false : compact(s).includes('72개월');
+            let price = 0;
+
+            if (isSub) {
+                const amounts = extractAmounts(s);
+                price = amounts.length ? amounts[amounts.length - 1] : 0;
+            } else {
+                if (forceLump) {
+                    price = extractModelImageBlockPrice(s);
+                }
+                if (!price) {
+                    price = extractLumpPriceFromSentence(s, code);
+                }
+            }
+
+            if (price <= 0) return;
+
+            if (isSub) result.sub.push({ name: code, price });
+            else result.lump.push({ name: code, price });
+        };
+
+        const parseProductLines = (lines) => {
+            const result = { lump: [], sub: [] };
+            let currentSentence = '';
+            let currentForceLump = false;
+            let pendingForceLumpBlock = false;
+            let pendingPreamble = '';
+
+            const flush = () => {
+                if (currentSentence) finalizeProductSentence(currentSentence, result, currentForceLump);
+                currentSentence = '';
+                currentForceLump = false;
+            };
+
+            for (const raw of lines) {
+                const line = normalizeLine(raw);
+                const c = compact(line);
+                if (!line) continue;
+
+                if (c.includes('모델이미지')) {
+                    flush();
+                    pendingForceLumpBlock = true;
+                    pendingPreamble = '';
+                    continue;
+                }
+
+                if (isStandaloneIgnore(line)) continue;
+
+                if (isPriceOnlyLine(line)) {
+                    if (currentSentence) {
+                        currentSentence += ` ${line}`;
+                    }
+                    continue;
+                }
+
+                const hasCode = !!extractModelCode(line);
+                const has72 = c.includes('72개월');
+
+                if (pendingForceLumpBlock && !hasCode) {
+                    pendingPreamble = pendingPreamble ? `${pendingPreamble} ${line}` : line;
+                    continue;
+                }
+
+                if (hasCode) {
+                    if (currentSentence) flush();
+
+                    if (pendingForceLumpBlock) {
+                        currentSentence = pendingPreamble ? `${pendingPreamble} ${line}` : line;
+                        currentForceLump = true;
+                        pendingForceLumpBlock = false;
+                        pendingPreamble = '';
+                    } else {
+                        currentSentence = line;
+                        currentForceLump = false;
+                    }
+
+                    if (has72 && !currentForceLump) {
+                        flush();
+                    }
+                } else {
+                    if (!currentSentence) {
+                        currentSentence = line;
+                        currentForceLump = false;
+                    } else {
+                        currentSentence += ' ' + line;
+                    }
+
+                    if (has72 && !currentForceLump) {
+                        flush();
+                    }
+                }
+            }
+
+            flush();
+            return result;
+        };
+
+        const extractSourceProductRows = (raw) => {
+            const text = String(raw || '');
+            const out = [];
+
+            const itemBlockRegex = /<li[^>]*id=['"]itemList_[^>]*>[\s\S]*?<\/li>/gi;
+            const itemBlocks = text.match(itemBlockRegex) || [];
+
+            const pickText = (chunk, rxList) => {
+                for (const rx of rxList) {
+                    const m = chunk.match(rx);
+                    if (m && m[1]) return m[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+                }
+                return '';
+            };
+
+            const parseMoney = (s) => {
+                const digits = String(s || '').replace(/[^\d]/g, '');
+                return digits ? parseInt(digits, 10) : 0;
+            };
+
+            itemBlocks.forEach((chunk) => {
+                const name = pickText(chunk, [
+                    /class=['"][^'"]*model-name[^'"]*['"][^>]*>[\s\S]*?<\/em>\s*([^<]+)/i,
+                    /class=['"][^'"]*model-name[^'"]*['"][^>]*>([^<]+)/i
+                ]);
+                const code = pickText(chunk, [
+                    /class=['"][^'"]*model-code[^'"]*['"][^>]*>[\s\S]*?<\/em>\s*([^<]+)/i,
+                    /class=['"][^'"]*model-code[^'"]*['"][^>]*>([^<]+)/i
+                ]).toUpperCase();
+
+                const tagPriceText = pickText(chunk, [
+                    /name=['"]tagPrice['"][^>]*>([^<]+)/i
+                ]);
+                const payPriceText = pickText(chunk, [
+                    /name=['"]payPrice['"][^>]*>([^<]+)/i
+                ]);
+
+                const isSub = /72개월|구독/.test(chunk);
+                if (code) {
+                    out.push({
+                        raw: chunk,
+                        name,
+                        code,
+                        tagPriceText,
+                        payPriceText,
+                        tagPrice: parseMoney(tagPriceText),
+                        payPrice: parseMoney(payPriceText),
+                        isSub
+                    });
+                }
+            });
+
+            if (!out.length) {
+                const hasTemplate = /model-name/i.test(text) && /model-code/i.test(text) && /tagPrice/i.test(text) && /payPrice/i.test(text);
+                if (hasTemplate) {
+                    out.push({
+                        raw: 'template',
+                        name: 'item.CS_ITEM_NM',
+                        code: 'ITEM_CD',
+                        tagPriceText: 'item.BS_TAG_PRICE 등',
+                        payPriceText: 'input_pay_price 또는 item.BS_LOCK_PRICE 등',
+                        tagPrice: 0,
+                        payPrice: 0,
+                        isSub: false,
+                        isTemplate: true
+                    });
+                }
+            }
+
+            return out;
+        };
+
+        const placeSourceProductsIntoFormRows = (sourceProducts, productResult) => {
+            if (!Array.isArray(sourceProducts) || !sourceProducts.length) return productResult;
+
+            sourceProducts.forEach((p) => {
+                const code = (p.code || p.name || '').toUpperCase().trim();
+                if (!code) return;
+
+                const mappedPrice = prioritySubscriptionMap[code] || 0;
+                const price = mappedPrice || p.payPrice || p.tagPrice || 0;
+                const row = { name: code, price };
+
+                if (prioritySubscriptionMap[code]) {
+                    productResult.sub.push(row);
+                    return;
+                }
+
+                if (p.isSub) productResult.sub.push(row);
+                else productResult.lump.push(row);
+            });
+
+            return productResult;
+        };
+
+        const extractSourceMappings = (raw) => {
+            const text = String(raw || '');
+            const out = [];
+
+            const add = (label, selector, value) => {
+                out.push({ label, selector, value: value || '-' });
+            };
+
+            const findFirst = (regex) => {
+                const m = text.match(regex);
+                return m ? (m[1] || m[0]) : '';
+            };
+
+            const findAll = (regex) => {
+                return [...text.matchAll(regex)].map(m => m[1] || m[0]).filter(Boolean);
+            };
+
+            const looksLikeHtmlSource =
+                /<!DOCTYPE html>/i.test(text) ||
+                /<html[\s>]/i.test(text) ||
+                /model-name/i.test(text) ||
+                /model-code/i.test(text) ||
+                /totalTagAmt/i.test(text);
+
+            if (!looksLikeHtmlSource) return out;
+
+            const modelNameExpr =
+                findFirst(/model-name[^\\n\\r]*?\+\s*([^;"']+)\s*["']/i) ||
+                findFirst(/model-name[\s\S]{0,120}?item\.([A-Z0-9_]+)/i);
+            const modelCodeExpr =
+                findFirst(/model-code[^\\n\\r]*?\+\s*([^;"']+)\s*["']/i) ||
+                findFirst(/model-code[\s\S]{0,120}?item\.([A-Z0-9_]+)/i);
+
+            const tagPriceExprs = findAll(/name=['"]tagPrice['"][\s\S]{0,120}?comma\(([^)]+)\)/gi);
+            const payPriceExprs = findAll(/name=['"]payPrice['"][\s\S]{0,120}?comma\(([^)]+)\)/gi);
+
+            add('제품명', '.model-name', modelNameExpr || 'item.CS_ITEM_NM');
+            add('모델코드', '.model-code', modelCodeExpr || 'item.ITEM_CD');
+            add('태그가', "span[name='tagPrice']", tagPriceExprs.join(' / ') || 'item.BS_TAG_PRICE 등');
+            add('혜택가', "span[name='payPrice']", payPriceExprs.join(' / ') || 'input_pay_price 또는 item.BS_LOCK_PRICE 등');
+
+            const summaryMap = [
+                ['정상가', '#totalTagAmt', /id=['"]totalTagAmt['"][^>]*>([^<]*)</i],
+                ['행사가', '#normalMAmt', /id=['"]normalMAmt['"][^>]*>([^<]*)</i],
+                ['특별할인', '#specialDiscntAmt', /id=['"]specialDiscntAmt['"][^>]*>([^<]*)</i],
+                ['특별할인 적용 결제금액', '#specialDiscntApplyAmt', /id=['"]specialDiscntApplyAmt['"][^>]*>([^<]*)</i],
+                ['추가혜택', '#_sumBenefitAmt', /id=['"]_sumBenefitAmt['"][^>]*>([^<]*)</i],
+                ['캐시백', '#_cashbackBeneSum', /id=['"]_cashbackBeneSum['"][^>]*>([^<]*)</i],
+                ['멤버십', '#_membershipBeneSum', /id=['"]_membershipBeneSum['"][^>]*>([^<]*)</i],
+                ['특별혜택', '#_specialBeneSum', /id=['"]_specialBeneSum['"][^>]*>([^<]*)</i],
+                ['상품권', '#_giftCardBeneSum', /id=['"]_giftCardBeneSum['"][^>]*>([^<]*)</i],
+                ['제휴카드', '#_cardBeneSum', /id=['"]_cardBeneSum['"][^>]*>([^<]*)</i],
+                ['최종 혜택금액', '#_totalBenefitAmt', /id=['"]_totalBenefitAmt['"][^>]*>([^<]*)</i],
+            ];
+
+            summaryMap.forEach(([label, selector, rx]) => {
+                const val = findFirst(rx) || '0원 또는 runtime 값';
+                add(label, selector, val.trim());
+            });
+
+            return out;
+        };
+
+        const stripHtmlSourceToVisibleText = (raw) => {
+            let text = String(raw || '');
+            if (!text) return '';
+
+            const looksLikeHtmlSource =
+                /<!DOCTYPE html>/i.test(text) ||
+                /<html[\s>]/i.test(text) ||
+                /<script[\s>]/i.test(text) ||
+                /<body[\s>]/i.test(text) ||
+                /<form[\s>]/i.test(text) ||
+                /class=['"]model-code['"]/i.test(text) ||
+                /class=['"]model-name['"]/i.test(text) ||
+                /id=['"]specialDiscntAmt['"]/i.test(text) ||
+                /ITEM_CD/i.test(text);
+
+            if (!looksLikeHtmlSource) return text;
+
+            text = text.replace(/<script[\s\S]*?<\/script>/gi, '\n');
+            text = text.replace(/<style[\s\S]*?<\/style>/gi, '\n');
+            text = text.replace(/<noscript[\s\S]*?<\/noscript>/gi, '\n');
+
+            text = text.replace(/<\/?(div|section|header|nav|ul|li|dl|dt|dd|span|a|h1|h2|h3|h4|h5|p|br|tr|td|th|form|input|button)[^>]*>/gi, '\n');
+
+            text = text.replace(/\balt=['"]([^'"]+)['"]/gi, '\n$1\n');
+            text = text.replace(/\btitle=['"]([^'"]+)['"]/gi, '\n$1\n');
+            text = text.replace(/\bvalue=['"]([^'"]+)['"]/gi, '\n$1\n');
+
+            const keyPhrases = [
+                '고객맞춤플래너','물동조회','당월 종합판촉안','구독요금조회','초기화','제안추가','비교','저장/출력','조회','판촉추가','계산하기','상담종료',
+                '모델 이미지','고객유형','일반구매 혜택','정상가','행사가','특별할인','특별할인 적용 결제금액입니다.','추가혜택','캐시백','멤버십','특별혜택','상품권','제휴카드',
+                '가전구독 혜택','정상 구독료','프로모션할인','결합할인','선납할인','회차 지정할인','총 혜택','최종 체감 구독료(월)입니다.',
+                '1특별할인내역입니다.','2캐시백 혜택내역입니다.','3멤버십포인트 혜택내역입니다.','4특별 혜택내역입니다.','5상품권 혜택내역입니다.','6제휴카드 혜택내역입니다.',
+                '멤버십 혜택','LG전자 BEST SHOP 멤버십 가입시 포인트 및 다양한 혜택 제공'
+            ];
+            for (const phrase of keyPhrases) {
+                const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                text = text.replace(new RegExp(escaped, 'g'), '\n' + phrase + '\n');
+            }
+
+            text = text.replace(/model-name[^>]*>\s*<em[^>]*>[^<]*<\/em>\s*([^<]+)/gi, '\n$1\n');
+            text = text.replace(/model-code[^>]*>\s*<em[^>]*>[^<]*<\/em>\s*([^<]+)/gi, '\n$1\n');
+            text = text.replace(/name=['"]tagPrice['"][^>]*>\s*([^<]+)/gi, '\n$1\n');
+            text = text.replace(/name=['"]payPrice['"][^>]*>\s*([^<]+)/gi, '\n$1\n');
+
+            text = text.replace(/<[^>]+>/g, ' ');
+
+            const entityMap = {'&nbsp;':' ','&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#39;':"'"};
+            for (const [k,v] of Object.entries(entityMap)) {
+                text = text.split(k).join(v);
+            }
+
+            text = text.replace(/([A-Za-z0-9]{2,}[A-Za-z0-9_-]*\.[A-Za-z0-9]{3,})/g, '\n$1\n');
+            text = text.replace(/(\d{1,3}(?:,\d{3})+)/g, '\n$1\n');
+            text = text.replace(/(72개월)/g, '\n$1\n');
+
+            const noiseLines = [
+                /^var\s+/, /^function\s+/, /^return\s+/, /^if\s*\(/, /^else\b/, /^for\s*\(/, /^while\s*\(/, /^console\./,
+                /^\/\/+/, /^\*+/, /^\/service\//, /^\/hsca\//, /^https?:\/\//,
+                /^[{}[\];,]+$/, /^class=/, /^id=/, /^onclick=/, /^type=/, /^name=/, /^src=/, /^href=/, /^jQuery/, /^\$\(/,
+                /^comAjax/, /^window\./, /^document\./
+            ];
+
+            let lines = text.split('\n').map(v => normalizeLine(v)).filter(Boolean);
+            lines = lines.filter(v => !noiseLines.some(rx => rx.test(v)));
+
+            lines = lines.filter(v => v.length <= 120);
+
+            return lines.join('\n');
+        };
+
+        const extractModelCodeSimple = (text) => {
+            const s = normalizeLine(text);
+            const rx = /(LM-[A-Za-z0-9]+|SM-[A-Za-z0-9]+|A\d{4}\b|iPhone[^\t\n\r,]{0,40}|iPad[^\t\n\r,]{0,40}|Watch[^\t\n\r,]{0,40}|HW-[A-Za-z0-9]+|MI-[A-Za-z0-9]+|Pixel-[A-Za-z0-9]+|\b[A-Za-z0-9][A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\b)/g;
+            const matches = [...s.matchAll(rx)].map(m => (m[1] || '').toUpperCase()).filter(Boolean);
+            return pickModelCodeCandidate(matches, 'first');
+        };
+
+        const extractMonthlyNumbersSimple = (text) => {
+            const out = [];
+            const rx = /월\s*([0-9]{1,3}(?:,[0-9]{3})+)/g;
+            for (const m of normalizeLine(text).matchAll(rx)) {
+                const n = parseInt((m[1] || '').replace(/[^\d]/g, ''), 10);
+                if (!isNaN(n)) out.push(n);
+            }
+            return out;
+        };
+
+        const extractCommaNumbersSimple = (text) => {
+            return (normalizeLine(text).match(/\d{1,3}(?:,\d{3})+/g) || [])
+                .map(v => parseInt(v.replace(/[^\d]/g, ''), 10))
+                .filter(v => !isNaN(v));
+        };
+
+        const parseScreenCopyProductsSimple = (lines) => {
+            const result = { lump: [], sub: [] };
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            let type = '';
+            let block = [];
+
+            const flush = () => {
+                if (!block.length) return;
+                const text = block.join(' ');
+                const code = extractModelCodeSimple(text);
+                if (!code) {
+                    block = [];
+                    type = '';
+                    return;
+                }
+                if (type === 'lump') {
+                    const nums = extractCommaNumbersSimple(text);
+                    const price = nums.length >= 2 ? nums[1] : (nums[0] || 0);
+                    if (price) result.lump.push({ name: code, price });
+                } else if (type === 'sub') {
+                    const nums = extractMonthlyNumbersSimple(text);
+                    const price = nums.length >= 2 ? nums[1] : (nums[0] || 0);
+                    if (price) result.sub.push({ name: code, price });
+                }
+                block = [];
+                type = '';
+            };
+
+            for (let i = 0; i < norm.length; i++) {
+                const c = comp[i];
+                const line = norm[i];
+                const next3 = (comp[i] || '') + (comp[i+1] || '') + (comp[i+2] || '');
+
+                if (c.includes('구독모델이미지')) {
+                    flush();
+                    type = 'sub';
+                    block = [line];
+                    continue;
+                }
+                if (c.includes('모델이미지')) {
+                    flush();
+                    type = 'lump';
+                    block = [line];
+                    continue;
+                }
+                if (!type) continue;
+
+                if (next3.includes('1특별할인내역입니다')) {
+                    flush();
+                    continue;
+                }
+
+                block.push(line);
+                const text = block.join(' ');
+                const code = extractModelCodeSimple(text);
+                if (type === 'lump') {
+                    const nums = extractCommaNumbersSimple(text);
+                    if (code && nums.length >= 2) flush();
+                } else {
+                    const nums = extractMonthlyNumbersSimple(text);
+                    if (code && nums.length >= 2) flush();
+                }
+            }
+            flush();
+            return { lump: dedupe(result.lump, 'name'), sub: dedupe(result.sub, 'name') };
+        };
+
+        const parsePromoBenefitsSimple = (lines) => {
+            const out = [];
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const sections = [
+                { start: '2캐시백혜택내역입니다', end: '3멤버십포인트혜택내역입니다' },
+                { start: '3멤버십포인트혜택내역입니다', end: '4특별혜택내역입니다' },
+                { start: '4특별혜택내역입니다', end: '5상품권혜택내역입니다' },
+                { start: '5상품권혜택내역입니다', end: '6제휴카드혜택내역입니다' }
+            ];
+
+            const findJoinedIndex = (title) => {
+                for (let i = 0; i < comp.length; i++) {
+                    const a = comp[i] || '';
+                    const b = (comp[i] || '') + (comp[i+1] || '');
+                    const c = (comp[i] || '') + (comp[i+1] || '') + (comp[i+2] || '');
+                    if (a.includes(title) || b.includes(title) || c.includes(title)) return i;
+                }
+                return -1;
+            };
+
+            const isNoise = (c) => {
+                return /^[123456]$/.test(c)
+                    || c === '캐시백혜택'
+                    || c === '멤버십포인트혜택'
+                    || c === '특별혜택'
+                    || c === '상품권혜택'
+                    || c === '내역입니다'
+                    || c.includes('혜택내역입니다');
+            };
+
+            for (const sec of sections) {
+                const sIdx = findJoinedIndex(sec.start);
+                if (sIdx === -1) continue;
+                let eIdx = findJoinedIndex(sec.end);
+                if (eIdx === -1 || eIdx <= sIdx) eIdx = norm.length;
+
+                const sectionLines = norm.slice(sIdx, eIdx);
+                const sectionComp = sectionLines.map(v => compact(v));
+                if (sectionComp.some(v => v.includes('혜택이없습니다'))) continue;
+
+                for (let i = 0; i < sectionLines.length; i++) {
+                    const nameLine = sectionLines[i];
+                    const c = compact(nameLine);
+                    if (!nameLine || isNoise(c) || c.includes('혜택이없습니다')) continue;
+
+                    const numsHere = extractCommaNumbersSimple(nameLine);
+                    const stripped = normalizeLine(nameLine).replace(/\d{1,3}(?:,\d{3})+/g, '').replace(/\s+/g, '');
+                    const amountOnly = numsHere.length > 0 && stripped.length === 0;
+                    if (amountOnly) continue;
+
+                    let price = 0;
+                    for (let j = i + 1; j < sectionLines.length; j++) {
+                        const next = sectionLines[j];
+                        const nextC = compact(next);
+                        if (!next || isNoise(nextC)) continue;
+                        const nums = extractCommaNumbersSimple(next);
+                        const nextStripped = normalizeLine(next).replace(/\d{1,3}(?:,\d{3})+/g, '').replace(/\s+/g, '');
+                        const nextAmountOnly = nums.length > 0 && nextStripped.length === 0;
+                        if (nextAmountOnly) {
+                            price = nums[nums.length - 1];
+                            break;
+                        }
+                        if (nextStripped.length > 0 && nums.length === 0) break;
+                    }
+
+                    if (price) out.push({ category: normalizeLine(nameLine), price });
+                }
+            }
+            return dedupe(out, 'category');
+        };
+
+        const parseBenefitLines = (lines) => {
+            const out = [];
+
+            const titleMarkers = [
+                '1특별할인내역입니다',
+                '2캐시백혜택내역입니다',
+                '3멤버십포인트혜택내역입니다',
+                '4특별혜택내역입니다',
+                '5상품권혜택내역입니다',
+                '6제휴카드혜택내역입니다'
+            ];
+
+            const compactLines = lines.map(v => compact(v));
+
+            const titleIdxs = [];
+            for (let i = 0; i < compactLines.length; i++) {
+                if (titleMarkers.some(marker => compactLines[i].includes(marker))) {
+                    titleIdxs.push(i);
+                }
+            }
+
+            for (let t = 0; t < titleIdxs.length; t++) {
+                const startIdx = titleIdxs[t];
+                const endIdx = (t + 1 < titleIdxs.length) ? titleIdxs[t + 1] : lines.length;
+
+                const sectionLines = lines.slice(startIdx + 1, endIdx).map(v => normalizeLine(v)).filter(Boolean);
+                const compactSection = sectionLines.map(v => compact(v));
+
+                if (compactSection.some(v => v.includes('혜택이없습니다'))) {
+                    continue;
+                }
+
+                for (let i = 0; i < sectionLines.length; i++) {
+                    const line = sectionLines[i];
+                    const c = compact(line);
+
+                    if (!line) continue;
+                    if (titleMarkers.some(marker => c.includes(marker))) continue;
+                    if (c.includes('혜택이없습니다')) continue;
+                    if (c.includes('6제휴카드혜택내역입니다')) continue;
+
+                    let amounts = extractAmounts(line);
+                    let price = amounts.length ? amounts[amounts.length - 1] : 0;
+
+                    let name = normalizeLine(line)
+                        .replace(/\d{1,3}(?:,\d{3})+/g, '')
+                        .replace(/[()]/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    if (!price && i + 1 < sectionLines.length) {
+                        const nextLine = sectionLines[i + 1];
+                        const nextCompact = compact(nextLine);
+                        const nextAmounts = extractAmounts(nextLine);
+
+                        if (nextAmounts.length && !titleMarkers.some(marker => nextCompact.includes(marker))) {
+                            price = nextAmounts[nextAmounts.length - 1];
+                        }
+                    }
+
+                    if (!name || !price) continue;
+
+                    out.push({ category: name, price });
+                }
+            }
+
+            return out;
+        };
+
+        const parseCardName = (line) => {
+            const cleaned = normalizeLine(line)
+                .replace(/\d{1,3}(?:,\d{3})+/g, '')
+                .replace(/혜택내역입니다\.?/g, '')
+                .replace(/내역입니다\.?/g, '')
+                .replace(/입니다\.?/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            if (!cleaned.includes('카드')) return '';
+            return cleaned;
+        };
+
+        const parseEducationSubscriptionCardSimple = (lines) => {
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const findCardSectionStartIndex = () => {
+                const titles = [
+                    '6제휴카드혜택내역입니다',
+                    '제휴카드혜택내역입니다'
+                ];
+
+                for (let i = 0; i < comp.length; i++) {
+                    const a = comp[i] || '';
+                    const b = (comp[i] || '') + (comp[i + 1] || '');
+                    const c = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '');
+                    const d = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '') + (comp[i + 3] || '');
+
+                    if (titles.some(title => a.includes(title) || b.includes(title) || c.includes(title) || d.includes(title))) {
+                        return i;
+                    }
+
+                    if (
+                        (a.includes('제휴카드혜택') || b.includes('제휴카드혜택') || c.includes('제휴카드혜택')) &&
+                        (a.includes('내역입니다') || b.includes('내역입니다') || c.includes('내역입니다') || d.includes('내역입니다'))
+                    ) {
+                        return i;
+                    }
+                }
+                return -1;
+            };
+
+            const sIdx = findCardSectionStartIndex();
+            if (sIdx === -1) return { name: '', monthlyDiscount: 0, monthlyCashback: 0 };
+
+            let eIdx = norm.length;
+            for (let i = sIdx + 1; i < comp.length; i++) {
+                const c = comp[i] || '';
+                if (
+                    c.includes('더많은혜택을받아보실려면')
+                    || c.includes('멤버십혜택')
+                    || c.includes('결제카드가없습니다')
+                    || c.includes('매니저안내사항')
+                    || c.includes('고객유형사전체크')
+                    || c.includes('고객찾기')
+                    || c.includes('상담정보관리')
+                ) {
+                    eIdx = i;
+                    break;
+                }
+            }
+
+            const section = norm.slice(sIdx, eIdx);
+            const sectionComp = section.map(v => compact(v));
+
+            let eduIdx = -1;
+            for (let i = 0; i < section.length; i++) {
+                const c = sectionComp[i] || '';
+                if (c.includes('구독교원') && (c.includes('구좌') || c.includes('72'))) {
+                    eduIdx = i;
+                    break;
+                }
+            }
+
+            if (eduIdx === -1) {
+                return { name: '', monthlyDiscount: 0, monthlyCashback: 0 };
+            }
+
+            const name = section[eduIdx];
+            let monthlyDiscount = 0;
+            let monthlyCashback = 0;
+
+            const isNextCardTitle = (text) => {
+                const c = compact(text);
+                if (!c || c.includes('구독교원')) return false;
+                if (c.includes('선납') && c.includes('결제')) return true;
+                const keywords = ['카드','신한','우리','kb','국민','하나','nh','농협','롯데','삼성','현대','광주','전북','올원','best','lg전자','구독케어','베스트케어'];
+                return keywords.some(k => c.includes(String(k).toLowerCase()) || c.includes(k));
+            };
+
+            for (let i = eduIdx + 1; i < section.length; i++) {
+                const line = normalizeLine(section[i]);
+                const c = compact(line);
+                if (!line) continue;
+
+                if (isNextCardTitle(line)) break;
+
+                if (c.includes('청구할인월')) {
+                    const nums = extractAmounts(line);
+                    if (nums.length) monthlyDiscount = nums[nums.length - 1];
+                }
+                if (c.includes('캐시백월')) {
+                    const nums = extractAmounts(line);
+                    if (nums.length) monthlyCashback = nums[nums.length - 1];
+                }
+            }
+
+            return { name, monthlyDiscount, monthlyCashback };
+        };
+
+        const parsePrepayOneTimeBenefitsSimple = (lines) => {
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const startTitle = '6제휴카드혜택내역입니다';
+            const findJoinedIndex = (title) => {
+                for (let i = 0; i < comp.length; i++) {
+                    const a = comp[i] || '';
+                    const b = (comp[i] || '') + (comp[i + 1] || '');
+                    const c = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '');
+                    if (a.includes(title) || b.includes(title) || c.includes(title)) return i;
+                }
+                return -1;
+            };
+
+            const sIdx = findJoinedIndex(startTitle);
+            const empty = { prepay300Name: '', prepay300Benefit: 0, prepay200Name: '', prepay200Benefit: 0, prepayItems: [] };
+            if (sIdx === -1) return empty;
+
+            const items = [];
+
+            for (let i = sIdx; i < norm.length; i++) {
+                const line = norm[i];
+                const c = comp[i] || '';
+
+                if (c.includes('멤버십혜택') || c.includes('더많은혜택을받아보실려면') || c.includes('매니저안내사항')) break;
+
+                const match = c.match(/(\d+)만원이상선납결제/);
+                if (!match) continue;
+
+                const amountBand = parseInt(match[1], 10) || 0;
+                const name = line || `${amountBand}만원 이상 선납 결제`;
+
+                let benefit = 0;
+                const directNums = extractAmounts(line);
+                if (c.includes('혜택금액') && directNums.length) {
+                    benefit = directNums[directNums.length - 1];
+                }
+
+                if (!benefit) {
+                    for (let j = i + 1; j < Math.min(norm.length, i + 4); j++) {
+                        const next = norm[j] || '';
+                        const nextC = compact(next);
+                        if (!nextC) continue;
+
+                        if (j > i + 1 && nextC.match(/(\d+)만원이상선납결제/)) break;
+                        if (nextC.includes('더많은혜택을받아보실려면') || nextC.includes('멤버십혜택')) break;
+
+                        const nums = extractAmounts(next);
+                        if (nextC.includes('혜택금액') && nums.length) {
+                            benefit = nums[nums.length - 1];
+                            break;
+                        }
+
+                        if ((comp[j - 1] || '').includes('혜택금액') && nums.length) {
+                            benefit = nums[nums.length - 1];
+                            break;
+                        }
+                    }
+                }
+
+                if (benefit > 0) {
+                    items.push({ category: name, price: benefit, amountBand });
+                }
+            }
+
+            let prepay300Name = '';
+            let prepay300Benefit = 0;
+            let prepay200Name = '';
+            let prepay200Benefit = 0;
+
+            for (const item of items) {
+                if (item.amountBand === 300 && !prepay300Benefit) {
+                    prepay300Name = item.category;
+                    prepay300Benefit = item.price;
+                }
+                if (item.amountBand === 200 && !prepay200Benefit) {
+                    prepay200Name = item.category;
+                    prepay200Benefit = item.price;
+                }
+            }
+
+            return { prepay300Name, prepay300Benefit, prepay200Name, prepay200Benefit, prepayItems: items };
+        };
+
+        const parseNhBestCardSimple = (lines) => {
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const startTitle = '6제휴카드혜택내역입니다';
+
+            const findJoinedIndex = (title) => {
+                for (let i = 0; i < comp.length; i++) {
+                    const a = comp[i] || '';
+                    const b = (comp[i] || '') + (comp[i+1] || '');
+                    const c = (comp[i] || '') + (comp[i+1] || '') + (comp[i+2] || '');
+                    if (a.includes(title) || b.includes(title) || c.includes(title)) return i;
+                }
+                return -1;
+            };
+
+            const sIdx = findJoinedIndex(startTitle);
+            if (sIdx === -1) return [];
+
+            let eIdx = norm.length;
+            for (let i = sIdx + 1; i < comp.length; i++) {
+                const c = comp[i] || '';
+                if (c.includes('매니저안내사항') || c.includes('고객유형사전체크') || c.includes('고객찾기') || c.includes('상담정보관리')) {
+                    eIdx = i;
+                    break;
+                }
+            }
+
+            const out = [];
+            const section = norm.slice(sIdx, eIdx);
+
+            const isNhBestName = (text) => {
+                const c = compact(text);
+                return (c.includes('nh') || c.includes('농협'))
+                    && (c.includes('올원') || c.includes('best'))
+                    && (c.includes('카드') || c.includes('lg전자'));
+            };
+
+            for (let i = 0; i < section.length; i++) {
+                const line = normalizeLine(section[i]);
+                if (!line || !isNhBestName(line)) continue;
+
+                let price = 0;
+                for (let j = i + 1; j < section.length; j++) {
+                    const next = normalizeLine(section[j]);
+                    const nextC = compact(next);
+                    if (!next) continue;
+
+                    if (j > i + 1 && (
+                        (nextC.includes('카드') || nextC.includes('제휴') || nextC.includes('베플') || nextC.includes('우리') || nextC.includes('신한') || nextC.includes('kb') || nextC.includes('농협') || nextC.includes('nh'))
+                        && !nextC.includes('청구할인월') && !nextC.includes('혜택금액') && !nextC.includes('캐시백월')
+                    )) break;
+
+                    const nums = (next.match(/\d{1,3}(?:,\d{3})+/g) || []).map(v => parseInt(v.replace(/[^\d]/g, ''), 10)).filter(Boolean);
+                    if (nextC.includes('청구할인월') || nextC.includes('혜택금액') || (nums.length && next.replace(/\d{1,3}(?:,\d{3})+/g, '').replace(/\s+/g, '').length === 0)) {
+                        if (nums.length) price = nums[nums.length - 1];
+                    }
+                }
+
+                if (price > 0) out.push({ name: line, price });
+            }
+
+            const seen = new Set();
+            return out.filter(row => {
+                const k = compact(row.name || '');
+                if (!k || seen.has(k)) return false;
+                seen.add(k);
+                return true;
+            });
+        };
+
+        const parseUpfrontPrepayAmountSimple = (lines) => {
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const startMarker = '고객님께서선택하신제품입니다';
+            const endMarker = '최종체감구독료(월)입니다';
+
+            const findMarkerIndex = (marker) => {
+                for (let i = 0; i < comp.length; i++) {
+                    const one = comp[i] || '';
+                    const two = (comp[i] || '') + (comp[i + 1] || '');
+                    const three = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '');
+                    const four = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '') + (comp[i + 3] || '');
+                    if (one.includes(marker) || two.includes(marker) || three.includes(marker) || four.includes(marker)) return i;
+                }
+                return -1;
+            };
+
+            const startIdx = findMarkerIndex(startMarker);
+            if (startIdx === -1) return 0;
+
+            let endIdx = comp.length;
+            const foundEnd = findMarkerIndex(endMarker);
+            if (foundEnd !== -1 && foundEnd > startIdx) endIdx = foundEnd + 4;
+
+            let amount = 0;
+
+            for (let i = startIdx; i < endIdx; i++) {
+                const line = norm[i];
+                const c = comp[i] || '';
+
+                const isTarget =
+                    (c === '선납금액' || c.startsWith('선납금액')) &&
+                    !c.includes('혜택') &&
+                    !c.includes('할인') &&
+                    !c.includes('결제') &&
+                    !c.includes('카드');
+
+                if (!isTarget) continue;
+
+                const direct = extractAmounts(line);
+                if (direct.length) {
+                    amount = direct[direct.length - 1];
+                    continue;
+                }
+
+                for (let j = i + 1; j < Math.min(endIdx, i + 5); j++) {
+                    const nextC = comp[j] || '';
+
+                    if (
+                        nextC.includes('선납시카드혜택') ||
+                        nextC.includes('최종체감구독료') ||
+                        nextC.includes('정상구독료') ||
+                        nextC.includes('추가혜택') ||
+                        nextC.includes('총혜택')
+                    ) {
+                        break;
+                    }
+
+                    const nums = extractAmounts(norm[j]);
+                    if (nums.length) {
+                        amount = nums[nums.length - 1];
+                        break;
+                    }
+                }
+            }
+
+            return amount || 0;
+        };
+
+        const parseKbSubscriptionCardSimple = (lines) => {
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const startTitle = '6제휴카드혜택내역입니다';
+            const findJoinedIndex = (title) => {
+                for (let i = 0; i < comp.length; i++) {
+                    const a = comp[i] || '';
+                    const b = (comp[i] || '') + (comp[i + 1] || '');
+                    const c = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '');
+                    if (a.includes(title) || b.includes(title) || c.includes(title)) return i;
+                }
+                return -1;
+            };
+
+            const isSectionEnd = (text) => {
+                const c = compact(text);
+                return c.includes('더많은혜택을받아보실려면')
+                    || c.includes('멤버십혜택')
+                    || c.includes('결제카드가없습니다')
+                    || c.includes('매니저안내사항')
+                    || c.includes('고객유형사전체크')
+                    || c.includes('고객찾기')
+                    || c.includes('상담정보관리');
+            };
+
+            const isKbCardTitle = (text) => {
+                const c = compact(text).toLowerCase();
+                return (
+                    (c.includes('kb') || c.includes('국민')) &&
+                    (c.includes('카드') || c.includes('card') || c.includes('lg전자'))
+                );
+            };
+
+            const normalizeKbCardName = (text, price) => {
+                let name = normalizeLine(text).replace(/\.$/, '').trim();
+                if (!name) name = 'LG전자 KB카드';
+                const c = compact(name);
+                if (!c.includes('80만원') && !c.includes('30만원')) {
+                    if (price === 22000) name += ' (월 80만원 이상)';
+                    else if (price === 17000) name += ' (월 30만원 이상)';
+                }
+                return name;
+            };
+
+            const sIdx = findJoinedIndex(startTitle);
+            if (sIdx === -1) return { name: '', price: 0 };
+
+            let eIdx = norm.length;
+            for (let i = sIdx + 1; i < norm.length; i++) {
+                if (isSectionEnd(norm[i])) {
+                    eIdx = i;
+                    break;
+                }
+            }
+
+            const section = norm.slice(sIdx, eIdx);
+            const candidates = [];
+
+            for (let i = 0; i < section.length; i++) {
+                const line = section[i];
+                if (!isKbCardTitle(line)) continue;
+
+                const windowLines = section.slice(i, Math.min(section.length, i + 10));
+                const joined = compact(windowLines.join(' '));
+
+                let price = 0;
+
+                if (joined.includes('80만원')) price = 22000;
+                else if (joined.includes('30만원')) price = 17000;
+
+                if (!price && /22,?000/.test(joined)) price = 22000;
+                if (!price && /17,?000/.test(joined)) price = 17000;
+
+                if (!price) price = 17000;
+
+                candidates.push({
+                    name: normalizeKbCardName(line, price),
+                    price
+                });
+            }
+
+            if (!candidates.length) return { name: '', price: 0 };
+            return candidates.sort((a, b) => (b.price || 0) - (a.price || 0))[0];
+        };
+
+        const parseShinhanBestpleLumpDiscountSimple = (lines) => {
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const isExactShinhanBestpleTitle = (text) => {
+                const c = compact(text);
+                return c.includes('신한제휴베플') && c.includes('혜택');
+            };
+
+            const isStopLine = (text) => {
+                const c = compact(text);
+                if (!c) return false;
+                return c.includes('구독교원')
+                    || c.includes('월30만원이상')
+                    || c.includes('월40만원이상')
+                    || c.includes('청구할인월')
+                    || c.includes('캐시백월')
+                    || c.includes('혜택금액')
+                    || c.includes('선납결제')
+                    || c.includes('더많은혜택을받아보실려면')
+                    || c.includes('멤버십혜택')
+                    || c.includes('매니저안내사항')
+                    || c.includes('신한payfan')
+                    || c.includes('the구독케어신한카드')
+                    || c.includes('마이신한포인트')
+                    || c.includes('신한카드베라')
+                    || c.includes('베플카드를발급');
+            };
+
+            const numberFromLine = (text) => {
+                const nums = extractAmounts(text);
+                return nums.length ? nums[nums.length - 1] : 0;
+            };
+
+            const candidates = [];
+
+            for (let i = 0; i < norm.length; i++) {
+                const line = norm[i];
+                if (!isExactShinhanBestpleTitle(line)) continue;
+
+                const direct = numberFromLine(line);
+                if (direct > 0) {
+                    candidates.push({ name: line.replace(/\d{1,3}(?:,\d{3})+/g, '').trim() || '신한제휴 베플(월간) 혜택', price: direct });
+                    continue;
+                }
+
+                let parsed = 0;
+                for (let j = i + 1; j < Math.min(norm.length, i + 8); j++) {
+                    const next = norm[j];
+                    const nextC = compact(next);
+                    if (!next) continue;
+
+                    if (j > i + 1 && isExactShinhanBestpleTitle(next)) break;
+                    if (isStopLine(next)) break;
+
+                    if (nextC === '금액' || nextC.includes('금액')) {
+                        const sameLineNum = numberFromLine(next);
+                        if (sameLineNum > 0) {
+                            parsed = sameLineNum;
+                            break;
+                        }
+                        for (let k = j + 1; k < Math.min(norm.length, j + 4); k++) {
+                            if (isStopLine(norm[k])) break;
+                            const n = numberFromLine(norm[k]);
+                            if (n > 0) {
+                                parsed = n;
+                                break;
+                            }
+                        }
+                        if (parsed > 0) break;
+                    }
+
+                    const loose = numberFromLine(next);
+                    if (loose > 0) {
+                        parsed = loose;
+                        break;
+                    }
+                }
+
+                if (parsed > 0) {
+                    candidates.push({ name: line, price: parsed });
+                }
+            }
+
+            if (!candidates.length) return { name: '', price: 0 };
+            return candidates.sort((a, b) => (b.price || 0) - (a.price || 0))[0];
+        };
+
+        const parseCardBenefitsSimple = (lines) => {
+            const out = [];
+            const norm = lines.map(v => normalizeLine(v)).filter(v => v !== '');
+            const comp = norm.map(v => compact(v));
+
+            const startTitle = '6제휴카드혜택내역입니다';
+
+            const findJoinedIndex = (title) => {
+                for (let i = 0; i < comp.length; i++) {
+                    const a = comp[i] || '';
+                    const b = (comp[i] || '') + (comp[i + 1] || '');
+                    const c = (comp[i] || '') + (comp[i + 1] || '') + (comp[i + 2] || '');
+                    if (a.includes(title) || b.includes(title) || c.includes(title)) return i;
+                }
+                return -1;
+            };
+
+            const extractLastNumber = (text) => {
+                const nums = (normalizeLine(text).match(/\d{1,3}(?:,\d{3})+/g) || [])
+                    .map(v => parseInt(v.replace(/[^\d]/g, ''), 10))
+                    .filter(Boolean);
+                return nums.length ? nums[nums.length - 1] : 0;
+            };
+
+            const looksLikePureAmountLine = (text) => {
+                const n = normalizeLine(text);
+                const nums = (n.match(/\d{1,3}(?:,\d{3})+/g) || []);
+                if (!nums.length) return false;
+                const stripped = n.replace(/\d{1,3}(?:,\d{3})+/g, '').replace(/\s+/g, '');
+                return stripped.length === 0;
+            };
+
+            const isTitleNoise = (c) => {
+                return /^[123456]$/.test(c)
+                    || c === '제휴카드혜택'
+                    || c === '내역입니다'
+                    || c.includes('혜택내역입니다');
+            };
+
+            const isSectionEnd = (c) => {
+                return c.includes('더많은혜택을받아보실려면')
+                    || c.includes('멤버십혜택')
+                    || c.includes('결제카드가없습니다')
+                    || c.includes('매니저안내사항')
+                    || c.includes('고객유형사전체크')
+                    || c.includes('고객찾기')
+                    || c.includes('상담정보관리')
+                    || c.includes('현재상담고객')
+                    || c.includes('상담모델1')
+                    || c.includes('적용');
+            };
+
+            const isForbiddenStarter = (text) => {
+                const c = compact(text);
+                return !c
+                    || c === '내역입니다'
+                    || c.startsWith('혜택금액')
+                    || c.startsWith('청구할인월')
+                    || c.startsWith('캐시백월')
+                    || c.startsWith('약정금액')
+                    || c.startsWith('결제금액')
+                    || c.startsWith('축하p')
+                    || c.startsWith('상환p')
+                    || c.startsWith('조건부금액대별')
+                    || looksLikePureAmountLine(text);
+            };
+
+            const isGeneralCardStarter = (text) => {
+                const c = compact(text);
+                if (isForbiddenStarter(text)) return false;
+                if (c.includes('구독교원')) return false;
+
+                const cardKeywords = [
+                    '신한','kb','국민','우리','하나','nh','농협','삼성','현대','롯데',
+                    'bc','비씨','광주','전북','제주','수협','씨티','카카오뱅크','토스',
+                    '카드','제휴','베플','베라','lg전자','올원','best','bestnh','nh카드','lg전자best',
+                    '선납결제','선납','구독케어'
+                ];
+
+                const matched = cardKeywords.some(keyword => c.includes(String(keyword).toLowerCase()) || c.includes(keyword));
+                const nhBestCombo = (c.includes('올원') || c.includes('best')) && (c.includes('nh') || c.includes('농협')) && (c.includes('카드') || c.includes('lg전자'));
+                const prepayCombo = c.includes('선납') && c.includes('결제');
+                const careCombo = c.includes('구독케어') && (c.includes('신한') || c.includes('카드'));
+                return matched || nhBestCombo || prepayCombo || careCombo;
+            };
+
+            const sIdx = findJoinedIndex(startTitle);
+            if (sIdx === -1) return out;
+
+            let eIdx = norm.length;
+            for (let i = sIdx + 1; i < comp.length; i++) {
+                if (isSectionEnd(comp[i] || '')) {
+                    eIdx = i;
+                    break;
+                }
+            }
+
+            const sectionLines = norm.slice(sIdx, eIdx);
+
+            for (let i = 0; i < sectionLines.length; i++) {
+                const line = sectionLines[i];
+                const c = compact(line);
+                if (!line || isTitleNoise(c) || c.includes('혜택이없습니다')) continue;
+                if (!isGeneralCardStarter(line)) continue;
+
+                const name = normalizeLine(line).replace(/\.$/, '').trim();
+                let strongPrice = 0;
+                let weakPrice = 0;
+
+                for (let j = i + 1; j < sectionLines.length; j++) {
+                    const next = sectionLines[j];
+                    const nextC = compact(next);
+                    if (!next || isTitleNoise(nextC)) continue;
+                    if (isSectionEnd(nextC)) break;
+
+                    if (j > i && isGeneralCardStarter(next)) break;
+
+                    const num = extractLastNumber(next);
+                    if (!num) continue;
+
+                    if (nextC.includes('결제금액')) continue;
+
+                    if (
+                        nextC.includes('혜택금액')
+                        || nextC.includes('청구할인월')
+                        || nextC.includes('캐시백월')
+                        || nextC.includes('약정금액')
+                    ) {
+                        strongPrice = num;
+                        continue;
+                    }
+
+                    if (
+                        nextC.includes('축하p')
+                        || nextC.includes('상환p')
+                        || nextC.includes('조건부금액대별')
+                        || looksLikePureAmountLine(next)
+                    ) {
+                        weakPrice = num;
+                    }
+                }
+
+                const finalPrice = strongPrice || weakPrice || 0;
+                out.push({ name, price: finalPrice });
+            }
+
+            const bucket = new Map();
+            for (const row of out) {
+                const key = compact(row.name || '');
+                if (!key) continue;
+                if (!bucket.has(key)) {
+                    bucket.set(key, { name: row.name, price: row.price || 0 });
+                    continue;
+                }
+                const prev = bucket.get(key);
+                if ((prev.price || 0) === 0 && (row.price || 0) !== 0) {
+                    bucket.set(key, { name: row.name, price: row.price || 0 });
+                }
+            }
+            return [...bucket.values()];
+        };
+
+        const parseCardLines = (lines) => {
+            let tLumpD = 0, tWoori = 0, tKb = 0, tMan = 0;
+            let wooriName = '';
+            let kbName = '';
+            const cardNameList = [];
+
+            const startMarker = '6제휴카드혜택내역입니다';
+            const endMarker1 = '멤버십혜택';
+            const endMarker2 = 'LG전자BESTSHOP멤버십가입시포인트및다양한혜택제공';
+
+            const compactLines = lines.map(v => compact(v));
+            const startIdx = compactLines.findIndex(v => v.includes(startMarker));
+            let endIdx = compactLines.findIndex((v, idx) => idx > startIdx && (v.includes(endMarker1) || v.includes(endMarker2)));
+
+            const scopedLines = lines.filter((_, idx) => idx > startIdx && (endIdx === -1 || idx < endIdx));
+
+            for (let i = 0; i < scopedLines.length; i++) {
+                const line = normalizeLine(scopedLines[i]);
+                const c = compact(line);
+                const amounts = extractAmounts(line);
+                if (!line) continue;
+
+                const parsedName = parseCardName(line);
+                if (parsedName && !cardNameList.includes(parsedName)) {
+                    cardNameList.push(parsedName);
+                }
+
+                if ((c.includes('일시불') && c.includes('금액')) || c.includes('일시불금액')) {
+                    let parsed = extractHalfTailAmount(line);
+                    if (!parsed && i + 1 < scopedLines.length) parsed = extractHalfTailAmount(scopedLines[i + 1]);
+                    if (!parsed && i + 2 < scopedLines.length) parsed = extractHalfTailAmount(scopedLines[i + 2]);
+                    if (parsed > 0) {
+                        tLumpD = parsed;
+                        continue;
+                    }
+                }
+
+                if (c.includes('신한제휴베플') && c.includes('혜택')) {
+                    let parsed = 0;
+                    if (amounts.length) parsed = amounts[amounts.length - 1];
+                    if (!parsed && i + 1 < scopedLines.length && compact(scopedLines[i + 1]).includes('금액')) {
+                        const nextAmounts = extractAmounts(scopedLines[i + 2] || '');
+                        if (nextAmounts.length) parsed = nextAmounts[nextAmounts.length - 1];
+                    }
+                    if (parsed > 0) {
+                        tLumpD = parsed;
+                    }
+                }
+
+                if ((c.includes('우리카드') || c.includes('청구할인')) && amounts.length) {
+                    if (parsedName) wooriName = parsedName;
+                    if (!tWoori) tWoori = amounts[amounts.length - 1];
+                    else if (!tKb) tKb = amounts[amounts.length - 1];
+                    continue;
+                }
+
+                if ((c.includes('KB카드') || c.includes('60개월')) && amounts.length) {
+                    if (parsedName) kbName = parsedName;
+                    tKb = amounts[amounts.length - 1];
+                    continue;
+                }
+
+                if (c.includes('일시불전체') || c.includes('기준금액') || c.includes('수기입력') || c.includes('총납입금')) {
+                    if (amounts.length) tMan = amounts[amounts.length - 1];
+                    else if (i + 1 < scopedLines.length) {
+                        const nextAmounts = extractAmounts(scopedLines[i + 1]);
+                        if (nextAmounts.length) tMan = nextAmounts[nextAmounts.length - 1];
+                    }
+                }
+            }
+
+            if (cardNameList.length) {
+                const foundWoori = cardNameList.find(v => v.includes('우리카드'));
+                const foundKb = cardNameList.find(v => v.includes('KB카드'));
+                if (foundWoori) wooriName = foundWoori;
+                if (foundKb) kbName = foundKb;
+            }
+
+            return { tLumpD, tWoori, tKb, tMan, wooriName, kbName, cardNameList };
+        };
+
+        const shouldExcludeFromCardRows = (row) => {
+            const key = compact(row?.name || '');
+            if (!key) return true;
+            if (key.includes('구독교원')) return true;
+
+            if (key.includes('선납') && key.includes('결제')) return true;
+
+            if (key.includes('더많은혜택을받아보실려면')) return true;
+            if (key.includes('멤버십혜택')) return true;
+            if (key.includes('결제카드가없습니다')) return true;
+            if (key.includes('선납시카드혜택')) return true;
+            if (key.includes('the구독케어신한카드')) return true;
+            if (key.includes('마이신한포인트')) return true;
+            if (key.includes('특별혜택')) return true;
+            if (key.includes('상품권혜택')) return true;
+            if (key.includes('신한카드베라') || key.includes('베플카드')) return true;
+            if (key.includes('제휴카드혜택신한카드')) return true;
+            if (key.includes('lg전자bestshop멤버십')) return true;
+
+            return false;
+        };
+
+        const dedupeByNameKeepZero = (arr) => {
+            const bucket = new Map();
+            for (const item of (arr || [])) {
+                const key = compact(item?.name || '');
+                if (!key) continue;
+                if (!bucket.has(key)) {
+                    bucket.set(key, { name: item.name || '', price: item.price || 0 });
+                    continue;
+                }
+                const prev = bucket.get(key);
+                if ((prev.price || 0) === 0 && (item.price || 0) !== 0) {
+                    bucket.set(key, { name: item.name || '', price: item.price || 0 });
+                }
+            }
+            return [...bucket.values()];
+        };
+
+        const dedupe = (arr, keyName) => {
+            const seen = new Set();
+            return arr.filter(item => {
+                const key = `${item[keyName]}__${item.price}`;
+                if (!item[keyName] || item.price === 0 || seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
+        };
+
+        const resetParsedFields = () => {
+            eduCardName.value = '';
+            eduMonthlyDiscount.value = 0;
+            eduMonthlyCashback.value = 0;
+            prepay300Name.value = '';
+            prepay300Benefit.value = 0;
+            prepay200Name.value = '';
+            prepay200Benefit.value = 0;
+            prepayBenefitRows.value = [];
+            upfrontPrepayAmount.value = 0;
+            lumpItems.value = makeRows(minRows);
+            lumpDiscount.value = 0;
+            subItems.value = makeRows(minRows);
+            wooriDiscount.value = 0;
+            kbDiscount.value = 0;
+            cardRows.value = ensureCardRows([]);
+            benefits.value = makeRows(minBenefitRows, 'category');
+            if (!manualTotalManuallyEdited.value) manualTotal.value = 0;
+        };
+
+        const parseRawData = () => {
+            rebuildRawDataFromSelectedPlan();
+            if (!rawDataText.value) { resetParsedFields(); return; }
+
+            const allLines = rawDataText.value.split('\n').map(normalizeLine).filter(Boolean);
+            const productResult = parseScreenCopyProductsSimple(allLines);
+            const benefitResult = parsePromoBenefitsSimple(allLines);
+            const eduCardParsed = parseEducationSubscriptionCardSimple(allLines);
+            const prepayParsed = parsePrepayOneTimeBenefitsSimple(allLines);
+            const upfrontPrepayParsed = parseUpfrontPrepayAmountSimple(allLines);
+            const shinhanBestpleParsed = parseShinhanBestpleLumpDiscountSimple(allLines);
+            const kbSubscriptionParsed = parseKbSubscriptionCardSimple(allLines);
+            const parsedCardRows = parseCardBenefitsSimple(allLines).filter(row => !shouldExcludeFromCardRows(row) && (row.price || 0) !== 0);
+            const cardResult = parseCardLines(allLines);
+
+            lumpItems.value = ensureRows(dedupe(productResult.lump, 'name'), minRows, 'name');
+            subItems.value = ensureRows(dedupe(productResult.sub, 'name'), minRows, 'name');
+            benefits.value = ensureRows(dedupe(benefitResult, 'category'), minBenefitRows, 'category');
+
+            eduCardName.value = eduCardParsed.name || '';
+            eduMonthlyDiscount.value = eduCardParsed.monthlyDiscount || 0;
+            eduMonthlyCashback.value = eduCardParsed.monthlyCashback || 0;
+            prepay300Name.value = prepayParsed.prepay300Name || '';
+            prepay300Benefit.value = prepayParsed.prepay300Benefit || 0;
+            prepay200Name.value = prepayParsed.prepay200Name || '';
+            prepay200Benefit.value = prepayParsed.prepay200Benefit || 0;
+            prepayBenefitRows.value = Array.isArray(prepayParsed.prepayItems) ? prepayParsed.prepayItems.map(v => ({ category: v.category || '', price: v.price || 0 })) : [];
+            upfrontPrepayAmount.value = upfrontPrepayParsed || 0;
+
+            lumpDiscount.value = shinhanBestpleParsed.price || cardResult.tLumpD;
+            wooriDiscount.value = cardResult.tWoori;
+            kbDiscount.value = cardResult.tKb;
+
+            let subscriptionOnlyCardRows = parsedCardRows.filter(row => !/신한제휴베플|신한제휴베플\(월간\)혜택|신한제휴베플\(월간\)/i.test(compact(row.name || '')));
+
+            if (kbSubscriptionParsed && (kbSubscriptionParsed.price || 0) !== 0) {
+                subscriptionOnlyCardRows = subscriptionOnlyCardRows
+                    .filter(row => {
+                        const key = compact(row.name || '').toLowerCase();
+                        return !(key.includes('kb') || key.includes('국민'));
+                    });
+                subscriptionOnlyCardRows.push(kbSubscriptionParsed);
+            }
+
+            if (subscriptionOnlyCardRows.length) {
+                cardRows.value = ensureCardRows(dedupeByNameKeepZero(subscriptionOnlyCardRows));
+            } else {
+                cardRows.value = [];
+                if (cardResult.wooriName && (cardResult.tWoori || 0) !== 0) {
+                    cardRows.value.push({ name: cardResult.wooriName, price: cardResult.tWoori || 0 });
+                }
+                if (kbSubscriptionParsed && (kbSubscriptionParsed.price || 0) !== 0) {
+                    cardRows.value.push(kbSubscriptionParsed);
+                } else if (cardResult.kbName && (cardResult.tKb || 0) !== 0) {
+                    cardRows.value.push({ name: cardResult.kbName, price: cardResult.tKb || 0 });
+                }
+                cardRows.value = ensureCardRows(dedupeByNameKeepZero(cardRows.value.filter(v => (v.price || 0) !== 0)));
+            }
+
+            if (!manualTotalManuallyEdited.value) manualTotal.value = cardResult.tMan;
+        };
+
+        const sumRows = (rows, nameKey = 'name') =>
+            (rows || [])
+                .filter(row => row && String(row[nameKey] || '').trim() !== '' && (row.price || 0) !== 0)
+                .reduce((sum, row) => sum + (row.price || 0), 0);
+
+        const lumpItemsSum = computed(() => sumRows(lumpItems.value, 'name'));
+        const subItemsSum = computed(() => sumRows(subItems.value, 'name'));
+        
+        const lumpFinal = computed(() =>
+            lumpItems.value.reduce((a, c) => a + (c.price || 0), 0) - lumpDiscount.value
+        );
+        
+        const subBaseMonthly = computed(() =>
+            subItems.value.reduce((a, c) => a + (c.price || 0), 0)
+        );
+        
+        const eduDiscountActive = computed(() => eduCardName.value ? (eduMonthlyDiscount.value || 0) : 0);
+        const eduCashbackActive = computed(() => eduCardName.value ? (eduMonthlyCashback.value || 0) : 0);
+
+        const activeMonthlyCardRows = computed(() =>
+            (cardRows.value || []).filter(v => v && v.name && (v.price || 0) !== 0)
+        );
+
+        const cardBenefitsSum = computed(() => {
+            const cardSum = activeMonthlyCardRows.value.reduce((sum, row) => sum + (row.price || 0), 0);
+            const eduSum = (eduCardName.value ? ((eduMonthlyDiscount.value || 0) + (eduMonthlyCashback.value || 0)) : 0);
+            return cardSum + eduSum;
+        });
+
+        const isKbEndingCardRow = (card) => {
+            const key = compact(card?.name || '').toLowerCase();
+            if (!key) return false;
+            return key.includes('kb')
+                || key.includes('국민')
+                || key.includes('60개월')
+                || key.includes('60개월적용')
+                || key.includes('5년')
+                || key.includes('5년차');
+        };
+
+        const selectedMonthlyCardRows = computed(() =>
+            activeMonthlyCardRows.value.slice(0, 2)
+        );
+
+        const kbSixthYearDiscount = 10000;
+
+        const hasKbEndingCard = computed(() =>
+            selectedMonthlyCardRows.value.some(card => isKbEndingCardRow(card))
+        );
+
+        const cardDiscount1to5 = computed(() =>
+            selectedMonthlyCardRows.value.reduce((sum, card) => sum + (card.price || 0), 0)
+        );
+
+        const cardDiscount6 = computed(() =>
+            selectedMonthlyCardRows.value.reduce((sum, card) => {
+                if (isKbEndingCardRow(card)) return sum + kbSixthYearDiscount;
+                return sum + (card.price || 0);
+            }, 0)
+        );
+
+        const subMonthly1to5 = computed(() =>
+            subBaseMonthly.value - cardDiscount1to5.value - eduDiscountActive.value - eduCashbackActive.value
+        );
+        const subMonthly6 = computed(() =>
+            subBaseMonthly.value - cardDiscount6.value - eduDiscountActive.value - eduCashbackActive.value
+        );
+        const subTotalFinal = computed(() =>
+            (subMonthly1to5.value * 60)
+            + (subMonthly6.value * 12)
+            + (upfrontPrepayAmount.value || 0)
+            - orderedBenefitRows.value.reduce((a, c) => a + (c.price || 0), 0)
+        );
+        
+        const totalCombined = computed(() => lumpFinal.value + subTotalFinal.value);
+        const gap = computed(() => totalCombined.value - manualTotal.value);
+        
+        const orderedBenefitRows = computed(() => {
+            const rows = [];
+            for (const item of prepayBenefitRows.value) {
+                if (item && item.category && (item.price || 0) !== 0) {
+                    rows.push({ category: item.category, price: item.price || 0 });
+                }
+            }
+            for (const item of benefits.value) {
+                if (item && item.category && (item.price || 0) !== 0) {
+                    rows.push({ category: item.category, price: item.price || 0 });
+                }
+            }
+            return rows;
+        });
+        
+        const promoBenefitsSum = computed(() =>
+            orderedBenefitRows.value.reduce((sum, row) => sum + (row.price || 0), 0)
+        );
+
+        const sourceTextSummary = computed(() => {
+            if (!sourceProductsText.value.length) return '';
+            return sourceProductsText.value.join('\n\n');
+        });
+
+        return {
+            showDashboard, rawDataText, planOptions, selectedPlan, gridData, gridRows, gridCols, selectedRow, selectedCol, columnLabel, planColumnLabel, gridCellLabel, selectGridCell, updateGridCell, handleGridPaste, rebuildRawDataFromGrid, rebuildRawDataFromSelectedPlan, eduCardName, eduMonthlyDiscount, eduMonthlyCashback, prepay300Name, prepay300Benefit, prepay200Name, prepay200Benefit, prepayBenefitRows, upfrontPrepayAmount,
+            lumpItems, visibleLumpRows, addLumpRow, lumpItemsSum, lumpDiscount, lumpFinal,
+            subItems, visibleSubRows, addSubRow, subItemsSum, wooriDiscount, kbDiscount, cardRows, visibleCardRows, addCardRow, cardBenefitsSum,
+            benefits, manualTotal, totalCombined, gap, orderedBenefitRows, promoBenefitsSum,
+            subMonthly1to5, subMonthly6, subTotalFinal, activeMonthlyCardRows, hasKbEndingCard, isKbEndingCardRow, kbSixthYearDiscount,
+            parseRawData, clearAllValues, formatNum, parseNumber, setManualTotal, parseModelCodeEngine, isValidModelCodeByEngine, displayCardLabel, updateCardNameFromLabel, cardAmountPrefix,
+            generateDashboard: () => { parseRawData(); window.scrollTo(0,0); showDashboard.value = true; },
+            printDocument: () => window.print()
+        };
+    }
+}).mount('#app');
+</script>
+</body>
+</html>
