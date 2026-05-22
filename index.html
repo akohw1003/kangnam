@@ -381,7 +381,6 @@
         }
         .btn-print-secondary { background-color: #5f6b77; }
         
-        /* 🚨 추가된 제안서 버튼 전용 디자인 */
         .btn-proposal { background-color: #0056b3; }
         .btn-proposal:hover { background-color: #004494; }
         
@@ -654,6 +653,9 @@
         .hidden-raw{
             display:none !important;
         }
+        
+        /* 평소에는 숨김 */
+        .print-subscription-notice { display: none; }
 
         /* =========================================================
            🖨️ [인쇄 전용 스타일] - 화면 형태 완전 동일 출력 + 전체 출력 시 분리
@@ -715,6 +717,37 @@
                 text-align: right;
                 background: #fff;
                 z-index: 9999;
+            }
+
+            /* 🚨 인쇄 시에만 나타나는 구독 유의사항 스타일 */
+            .print-subscription-notice {
+                display: block !important;
+                margin-top: 20px;
+                margin-bottom: 15px;
+                padding: 12px 15px;
+                border: 1px solid #999;
+                border-radius: 6px;
+                background-color: #f8f9fa !important;
+                page-break-inside: avoid;
+            }
+            .print-subscription-notice h4 {
+                margin: 0 0 6px 0;
+                font-size: 12px;
+                color: #2c3e50 !important;
+                font-weight: bold;
+            }
+            .print-subscription-notice ul {
+                margin: 0;
+                padding-left: 18px;
+            }
+            .print-subscription-notice li {
+                font-size: 11px;
+                color: #444 !important;
+                line-height: 1.4;
+                margin-bottom: 4px;
+            }
+            .print-subscription-notice li:last-child {
+                margin-bottom: 0;
             }
         }
     
@@ -928,6 +961,14 @@
     </div>
 </div>
 
+<div class="print-subscription-notice" id="printSubscriptionNotice">
+    <h4>★구독 유의사항★</h4>
+    <ul>
+        <li>제휴카드 개별 발급 신청 시 발급 후 콜센터(1544-7777)로 연락해야 제휴카드 할인 혜택을 받으실 수 있습니다.</li>
+        <li>구독 계약은 상품 인도/설치 후 성립되며, 계약 성립 후 고객의 임의 해지 시 해약금이 부과됩니다.</li>
+        <li>결합상품 할인은 두 제품 이상 사용 시 적용되며, 제품의 일부해지 (명의변경, 만기 등 포함) 등으로 한 제품만 남을 경우 결합할인이 적용되지 않은 정상요금이 차월부터 청구됩니다.</li>
+    </ul>
+</div>
 <div class="app-meta" id="appMeta"></div>
 <div class="print-footer" id="printFooter"></div>
 
