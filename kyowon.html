@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LG BESTSHOP 스마트 구독 플래너</title>
+    <style>
+        :root {
+            --lg-red: #A50034;
+            --lg-gray: #6b6b6b;
+            --bg-color: #f4f4f4;
+            --benefit-bg: #fff0f3;
+        }
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* 뒤로가기 버튼 스타일 */
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: none;
+            border: none;
+            color: var(--lg-gray);
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            z-index: 10;
+            display: none;
+        }
+        .back-btn:hover {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .header-logo {
+            color: var(--lg-red);
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: -1px;
+            margin-top: 10px;
+        }
+        .step { display: none; animation: fadeIn 0.5s; }
+        .step.active { display: block; }
+        .benefit-step { display: none; animation: fadeInBenefit 0.5s; }
+        .benefit-step.active { display: block; }
+        
+        .question {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+            word-break: keep-all;
+        }
+        .sub-text {
+            font-size: 15px;
+            color: var(--lg-gray);
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .highlight-text {
+            color: var(--lg-red);
+            font-weight: bold;
+        }
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        .btn-row { display: flex; gap: 12px; }
+        .btn-row .btn { flex: 1; }
+        
+        .btn {
+            background-color: white;
+            border: 2px solid #ddd;
+            color: #333;
+            padding: 16px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            border-color: var(--lg-red);
+            background-color: #fffafb;
+            color: var(--lg-red);
+        }
+        .btn-primary {
+            background-color: var(--lg-red);
+            color: white;
+            border: none;
+        }
+        .btn-primary:hover { background-color: #8a002b; color: white; }
+        
+        .benefit-box {
+            background-color: var(--benefit-bg);
+            border: 2px solid var(--lg-red);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .benefit-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--lg-red);
+            margin-bottom: 15px;
+        }
+        .benefit-amount {
+            font-size: 38px;
+            font-weight: 900;
+            color: #111;
+            margin-bottom: 20px;
+        }
+        .benefit-amount .detail-text {
+            font-size: 18px;
+            color: #555;
+            font-weight: 600;
+            display: block;
+            margin-top: 8px;
+        }
+        .benefit-desc {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.6;
+            text-align: left;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .card-recs {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid var(--lg-red);
+        }
+        .card-recs p {
+            margin: 5px 0;
+            font-size: 14.5px;
+        }
+        .contrast-box {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .reset-btn {
+            margin-top: 30px;
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInBenefit { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="back-btn" id="backBtn" onclick="goBack()">← 뒤로가기</button>
+
+    <div class="header-logo">LG BESTSHOP 스마트 플래너</div>
+
+    <div id="step00" class="step active">
+        <div class="question">가전 구매 할인을 위해<br>신규 제휴 카드 발급이 가능하신가요?</div>
+        <div class="sub-text">신규 제휴카드를 만드시면 최고의 혜택을 드립니다.</div>
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="saveData({card: true}); nextStep('0')">네, 가능합니다 (YES)</button>
+            <button class="btn" onclick="saveData({card: false}); nextStep('res_no_card')">아니요 (NO)</button>
+        </div>
+    </div>
+
+    <div id="step0" class="step">
+        <div class="question">가전제품, 어떻게 장만하실 계획이신가요?</div>
+        <div class="sub-text">고객님께 가장 유리한 구매 방식을 설계해 드립니다.</div>
+        <div class="btn-group">
+            <button class="btn" onclick="saveData({purchaseType: 'lumpsum'}); nextStep('1_1')">목돈으로 한 번에 결제 (일시불)</button>
+            <button class="btn btn-primary" onclick="saveData({purchaseType: 'sub'}); nextStep(2)">가전 관리와 6년 무상 A/S, 가전 구독 (추천!)</button>
+        </div>
+    </div>
+
+    <div id="step1_1" class="step">
+        <div class="question">일시불 예상 결제 금액은 얼마인가요?</div>
+        <div class="sub-text">결제 금액대별 할인 혜택을 확인합니다.</div>
+        <div class="btn-group" style="display: grid; grid-template-columns: 1fr 1fr;">
+            <button class="btn" onclick="saveData({lumpSum: 300, lumpSumDiscount: 18}); nextStep('h1')">300만 원대</button>
+            <button class="btn" onclick="saveData({lumpSum: 600, lumpSumDiscount: 27}); nextStep('h1')">600만 원대</button>
+            <button class="btn" onclick="saveData({lumpSum: 900, lumpSumDiscount: 36}); nextStep('h1')">900만 원대</button>
+            <button class="btn" onclick="saveData({lumpSum: 1200, lumpSumDiscount: 45}); nextStep('h1')">1,200만 원대</button>
+            <button class="btn" onclick="saveData({lumpSum: 1500, lumpSumDiscount: 54}); nextStep('h1')">1,500만 원대</button>
+            <button class="btn" onclick="saveData({lumpSum: 2000, lumpSumDiscount: 69}); nextStep('h1')">2,000만 원 이상</button>
+        </div>
+    </div>
+
+    <div id="h1" class="benefit-step">
+        <div class="question">혜택 확인: 일시불 카드 혜택</div>
+        <div class="benefit-box">
+            <div class="benefit-title">제휴카드 금액대별 할인 조건</div>
+            <div id="lumpSumAmountView" class="benefit-amount">총 약 0만원</div>
+            <div class="benefit-desc">
+                <strong>■ 금액대별 할인 혜택 조건</strong><br>
+                <span style="color: #d9534f; font-weight: bold;">[필수 조건] 익월 말까지 해당 카드로 100만 원 추가 사용 시 적용</span><br>
+                - <span id="lumpSumDesc">0만원 지원</span><br><br>
+                <span style="color:#A50034; font-weight:bold;">💡 매니저의 추천 플랜</span><br>
+                고객님, 일회성 할인을 위해 단기간에 100만 원 실적을 채우시는 것보다, <strong>어차피 매달 쓰시는 생활비/고정비로 실적을 채워 6년 내내 가전 구독료를 할인받으시는 것</strong>이 총 혜택 금액에서 훨씬 유리합니다!
+            </div>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="nextStep(2)">가전 구독 혜택 비교해보기 (추천)</button>
+            <button class="btn" onclick="nextStep('res_lumpsum')">그냥 일시불로 진행할게요</button>
+        </div>
+    </div>
+
+    <div id="step2" class="step">
+        <div class="question">매월 카드는<br>얼마나 사용하실 수 있나요?</div>
+        <div class="sub-text">
+            아파트 관리비, 보험료, 생활비 등이 <strong>포함된 월 예상 카드 사용 금액</strong>입니다.
+        </div>
+        <div class="btn-group">
+            <button class="btn" onclick="saveData({cardUsage: '30만'}); nextStep('h2')">월 30만원 실적 채우기 가능</button>
+            <button class="btn" onclick="saveData({cardUsage: '40만'}); nextStep('h2')">월 40만원 실적 채우기 가능</button>
+            <button class="btn" onclick="saveData({cardUsage: '70만'}); nextStep('h2')">월 70만원 실적 채우기 가능</button>
+            <button class="btn" onclick="saveData({cardUsage: '100만'}); nextStep('h2')">월 100만원 이상 실적 채우기 가능</button>
+        </div>
+    </div>
+
+    <div id="h2" class="benefit-step">
+        <div class="question">혜택 확인: 가전 구독료 할인</div>
+        <div class="benefit-box">
+            <div class="benefit-title">6년간 매월 가전 구독료 캐시백</div>
+            <div id="cardDiscountAmount" class="benefit-amount">최대 252만원</div>
+            <div class="benefit-desc">
+                <strong>■ 제휴카드 실적 달성 시 구독료 혜택</strong><br>
+                - 어차피 나가는 생활비/고정비로 실적 달성!<br>
+                - <span id="cardUsageDesc">월 0원 실적 기준</span> 구독료 할인<br>
+                
+                <div id="cardRecs" class="card-recs"></div>
+                <br>※ 매월 가전 구독료 부담이 뚝 떨어집니다.
+            </div>
+        </div>
+        <button class="btn btn-primary" style="width: 100%;" onclick="nextStep(3)">구독료를 더 낮추는 방법 보기</button>
+    </div>
+
+    <div id="step3" class="step">
+        <div class="question">소비가 아닌 '저축'만으로<br>할인을 받는다면 어떨까요?</div>
+        
+        <div class="contrast-box">
+            <div style="font-size: 15px; color: #444; line-height: 1.6; margin-bottom: 15px;">
+                고객님, 앞서 확인하신 카드 할인 <strong class="highlight-text" id="step3CardDiscount">0만원</strong>을 받으시려면,<br>
+                결과적으로 72개월간 <strong style="color: #d9534f; font-size: 18px;">총 <span id="step3CardTotalSpend">0만원</span>을 소비</strong>하셔야 합니다.
+            </div>
+            
+            <hr style="border: 0; border-top: 1px dashed #ccc; margin: 15px 0;">
+            
+            <div style="font-size: 16px; font-weight: bold; color: var(--lg-red); line-height: 1.5; margin-top: 15px;">
+                만약 이 금액을 '소비(지출)'하지 않고<br>
+                만기 시 100% 돌려받는 '저축'을 하면서<br>
+                동일하게 구독료 할인을 받는다면 어떠신가요?
+            </div>
+        </div>
+
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="saveData({kyowon: true}); nextStep(4)">네, 100% 환급 저축 확인하기</button>
+            <button class="btn" onclick="saveData({kyowon: false}); nextStep('res_sub_card_only')">아니요, 카드할인만 받을게요</button>
+        </div>
+    </div>
+
+    <div id="step4" class="step">
+        <div class="question">저축(납입) 시 월 부담 없는 금액대는?</div>
+        <div class="btn-group">
+            <button class="btn" onclick="saveData({kyowonTier: '4구좌'}); nextStep('h3')">30만 원 이상</button>
+            <button class="btn" onclick="saveData({kyowonTier: '3구좌'}); nextStep('h3')">20만 ~ 30만 원</button>
+            <button class="btn" onclick="saveData({kyowonTier: '2구좌'}); nextStep('h3')">10만 ~ 20만 원</button>
+            <button class="btn" onclick="saveData({kyowonTier: '1구좌'}); nextStep('h3')">0 ~ 10만 원</button>
+        </div>
+    </div>
+
+    <div id="h3" class="benefit-step">
+        <div class="question">혜택 확인: 구독교원(72) 결합</div>
+        <div class="benefit-box">
+            <div class="benefit-title">저축하고 가전 구독료 추가 지원받기</div>
+            <div id="kyowonDiscountAmount" class="benefit-amount">최대 0만원</div>
+            <div class="benefit-desc">
+                <strong>■ LG구독교원(72) 결합 혜택</strong><br>
+                - 만기 시 납입금액 100% 전액 환급!<br>
+                - <span id="kyowonTierDesc">0구좌 가입 시</span> 구독료 추가 혜택
+                
+                <div id="kyowonPaymentInfo"></div>
+                
+                <div id="kyowonSpecialAlert"></div>
+            </div>
+        </div>
+        <button class="btn btn-primary" style="width: 100%; padding: 20px;" onclick="nextStep(5)">다음: 최종 혜택 선택하기</button>
+    </div>
+
+    <div id="step5" class="step">
+        <div class="question">최종적으로 어떤 방식으로<br>할인을 받으시겠습니까?</div>
+        <div class="sub-text">카드 실적과 저축을 결합하면 혜택이 가장 커집니다.</div>
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="saveData({combineBenefits: true}); nextStep('h4')">월 카드 사용 + 저축 동시 진행 (최대 혜택)</button>
+            <button class="btn" onclick="saveData({combineBenefits: false}); nextStep('h4')">저축(교원)만 진행할게요</button>
+        </div>
+    </div>
+
+    <div id="h4" class="benefit-step">
+        <div class="question">고객님을 위한 스마트 가전 구독 플랜</div>
+        <div class="benefit-box" style="border-style: solid;">
+            <div class="benefit-title">가전 구독 총 할인 혜택</div>
+            <div id="finalTotalAmount" class="benefit-amount" style="color: var(--lg-red);">계산 중...</div>
+            
+            <div id="finalDesc" class="benefit-desc" style="background-color: #fff9fa; border: none; padding: 0;">
+            </div>
+        </div>
+        <button class="reset-btn" onclick="location.reload()">처음부터 다시 상담하기</button>
+    </div>
+    
+    <div id="res_no_card" class="step">
+        <div class="question">플래닝 결과</div>
+        <div class="benefit-box">
+            <div class="benefit-title">기본 혜택 적용</div>
+            <div class="benefit-amount" style="font-size: 32px; color: #333;">매장 기본 프로모션</div>
+            <div class="benefit-desc">
+                제휴 카드를 신규 발급하지 않으실 경우, 매장 내 기본 프로모션 혜택만 적용됩니다.<br><br>
+                ※ 제휴카드와 구독교원 결합을 활용하시면 수백만 원의 추가 혜택을 받으실 수 있습니다!
+            </div>
+        </div>
+        <button class="reset-btn" onclick="location.reload()">처음부터 다시 상담하기</button>
+    </div>
+
+    <div id="res_lumpsum" class="step">
+        <div class="question">일시불 결제 플래닝 결과</div>
+        <div class="benefit-box">
+            <div class="benefit-title">일시불 지원금 혜택</div>
+            <div id="finalLumpSum" class="benefit-amount">약 0만원</div>
+            <div class="benefit-desc">
+                ※ 해당 할인은 <strong>익월 말까지 카드 100만 원 추가 사용 시</strong>에만 적용됩니다.<br><br>
+                단기 실적 채우기가 부담스러우시거나, 장기적인 가전 구독 혜택이 궁금하시다면 언제든 다시 플래닝 해보세요!
+            </div>
+        </div>
+        <button class="reset-btn" onclick="location.reload()">처음부터 다시 상담하기</button>
+    </div>
+
+    <div id="res_sub_card_only" class="step">
+        <div class="question">가전 구독 플래닝 결과</div>
+        <div class="benefit-box">
+            <div class="benefit-title">제휴카드 구독료 할인</div>
+            <div id="finalSubCardOnly" class="benefit-amount">최대 216만원</div>
+            <div class="benefit-desc">
+                고객님이 생활비/고정비로 채우시는 실적을 통해 가전 구독료를 매달 크게 할인받으실 수 있습니다.<br><br>
+                ※ '구독교원'을 결합하시면 할인 금액이 2배 이상 늘어납니다!
+            </div>
+        </div>
+        <button class="reset-btn" onclick="location.reload()">처음부터 다시 상담하기</button>
+    </div>
+
+</div>
+
+<script>
+    let stepHistory = [];
+
+    let customerData = {
+        card: false,
+        purchaseType: '',
+        lumpSum: 0,
+        lumpSumDiscount: 0,
+        cardUsage: '',
+        cardDiscount: 0,
+        monthlyCardDiscount: 0,
+        kyowon: false,
+        kyowonTier: '',
+        kyowonDiscount: 0,
+        combineBenefits: true,
+        
+        kyowonPaymentInfoHtml: '',
+        kyowonSpecialAlertHtml: ''
+    };
+
+    function nextStep(stepNumber) {
+        const currentActive = document.querySelector('.step.active, .benefit-step.active');
+        if (currentActive) {
+            stepHistory.push(currentActive.id);
+        }
+
+        document.querySelectorAll('.step, .benefit-step').forEach(el => el.classList.remove('active'));
+        
+        try {
+            updateUI();
+        } catch (e) {
+            console.error("오류 발생:", e);
+        }
+        
+        let targetId = 'step' + stepNumber;
+        let targetEl = document.getElementById(targetId) || document.getElementById(stepNumber);
+        
+        if(targetEl) {
+            targetEl.classList.add('active');
+        }
+        
+        updateBackButton();
+    }
+
+    function goBack() {
+        if (stepHistory.length === 0) return;
+        const prevStepId = stepHistory.pop();
+        document.querySelectorAll('.step, .benefit-step').forEach(el => el.classList.remove('active'));
+        document.getElementById(prevStepId).classList.add('active');
+        updateBackButton();
+    }
+
+    function updateBackButton() {
+        const backBtn = document.getElementById('backBtn');
+        if (stepHistory.length > 0) {
+            backBtn.style.display = 'block';
+        } else {
+            backBtn.style.display = 'none';
+        }
+    }
+
+    function saveData(data) {
+        customerData = { ...customerData, ...data };
+    }
+
+    function updateUI() {
+        // H1 일시불 계산
+        if (customerData.lumpSum > 0) {
+            let totalLumpSumDiscount = customerData.lumpSumDiscount;
+            document.getElementById('lumpSumAmountView').innerText = `총 약 ${totalLumpSumDiscount}만원`;
+            document.getElementById('lumpSumDesc').innerText = `${customerData.lumpSum}만 원대 결제 시 ${customerData.lumpSumDiscount}만원 지원`;
+            document.getElementById('finalLumpSum').innerText = `약 ${totalLumpSumDiscount}만원`;
+        }
+
+        // H2 구독 카드 매핑 및 산식 업데이트
+        if (customerData.cardUsage) {
+            document.getElementById('cardUsageDesc').innerText = `월 ${customerData.cardUsage} 실적 기준`;
+            
+            let cardDiscount = 0;
+            let monthlyCardDiscount = 0;
+            let cardRecsHtml = '';
+            
+            let monthlySpendAmount = parseInt(customerData.cardUsage.match(/\d+/)[0]);
+            let totalSpendOver72Months = monthlySpendAmount * 72; 
+
+            if (customerData.cardUsage === '30만') {
+                cardDiscount = 129.6; 
+                monthlyCardDiscount = 1.8;
+                cardRecsHtml = `
+                    <strong>[매니저 추천 카드 3종]</strong>
+                    <p>① <strong>우리 LG전자:</strong> 월 1.8만 혜택 (최대 129.6만)</p>
+                    <p>② <strong>신한 더구독케어:</strong> 월 1.7만 혜택 (최대 122.4만)</p>
+                    <p style="margin-bottom: 2px;">③ <strong>KB국민카드:</strong> 월 1.7만 혜택 (최대 114만)</p>
+                    <p style="margin-top: 0; font-size: 13.5px; color: #d9534f; padding-left: 18px; letter-spacing: -0.5px;">※ KB국민: 아파트 관리비 실적 인정 (관리비 30만 가량 시 추가 소비 불필요)</p>
+                `;
+            } else if (customerData.cardUsage === '40만') {
+                cardDiscount = 144;
+                monthlyCardDiscount = 2.0;
+                cardRecsHtml = `
+                    <strong>[매니저 추천 카드]</strong>
+                    <p>① <strong>롯데 구독엔로카:</strong> 월 2.0만 혜택 (최대 144만)</p>
+                `;
+            } else if (customerData.cardUsage === '70만') {
+                cardDiscount = 158.4;
+                monthlyCardDiscount = 2.2;
+                cardRecsHtml = `
+                    <strong>[매니저 추천 카드]</strong>
+                    <p>① <strong>우리 LG전자:</strong> 월 2.2만 혜택 (최대 158.4만)</p>
+                `;
+            } else if (customerData.cardUsage === '100만') {
+                cardDiscount = 252;
+                monthlyCardDiscount = 3.5;
+                cardRecsHtml = `
+                    <strong>[매니저 추천 카드]</strong>
+                    <p>① <strong>우리 LG전자 Platinum:</strong> 월 3.5만 혜택 (최대 252만)</p>
+                `;
+            }
+
+            customerData.cardDiscount = cardDiscount;
+            customerData.monthlyCardDiscount = monthlyCardDiscount;
+            
+            let detailMathText = `<span class="detail-text">(월 ${monthlyCardDiscount}만 x 72개월간 할인)</span>`;
+            
+            document.getElementById('cardDiscountAmount').innerHTML = `최대 약 ${cardDiscount}만원 ${detailMathText}`;
+            document.getElementById('cardRecs').innerHTML = cardRecsHtml;
+            document.getElementById('finalSubCardOnly').innerHTML = `최대 약 ${cardDiscount}만원 ${detailMathText}`;
+            
+            let step3DiscountEl = document.getElementById('step3CardDiscount');
+            let step3SpendEl = document.getElementById('step3CardTotalSpend');
+            if(step3DiscountEl && step3SpendEl) {
+                step3DiscountEl.innerText = `${cardDiscount}만원 (월 ${monthlyCardDiscount}만 x 72개월간 할인)`;
+                step3SpendEl.innerText = `${totalSpendOver72Months.toLocaleString()}만원`;
+            }
+        }
+
+        // H3 구독 교원 할인 및 전환 서비스 로직 업데이트
+        if (customerData.kyowonTier) {
+            let displayTier = "";
+            if (customerData.kyowonTier === '1구좌') displayTier = "약 8.4만원 (1구좌)";
+            if (customerData.kyowonTier === '2구좌') displayTier = "약 16.8만원 (2구좌)";
+            if (customerData.kyowonTier === '3구좌') displayTier = "약 25.2만원 (3구좌)";
+            if (customerData.kyowonTier === '4구좌') displayTier = "약 33.6만원 (4구좌)";
+            
+            document.getElementById('kyowonTierDesc').innerText = `${displayTier} 가입 시`;
+            
+            let pureKyowonDiscount = 0; 
+            let visualKyowonTotal = 0;  
+            let visualKyowonMonthlyText = '';
+            
+            let monthlyPay = '';
+            let lastPay = '';
+            let refundAmount = '';
+            
+            let specialAlertHtml = '';
+
+            if (customerData.kyowonTier === '1구좌') {
+                pureKyowonDiscount = 72; visualKyowonTotal = 72;
+                visualKyowonMonthlyText = '(월 1.0만 x 72개월간 할인)';
+                monthlyPay = '84,000'; lastPay = '26,000'; refundAmount = '599';
+            } else if (customerData.kyowonTier === '2구좌') {
+                pureKyowonDiscount = 144; visualKyowonTotal = 144;
+                visualKyowonMonthlyText = '(월 2.0만 x 72개월간 할인)';
+                monthlyPay = '168,000'; lastPay = '52,000'; refundAmount = '1,198';
+            } else if (customerData.kyowonTier === '3구좌') {
+                pureKyowonDiscount = 216; visualKyowonTotal = 216;
+                visualKyowonMonthlyText = '(월 3.0만 x 72개월간 할인)';
+                monthlyPay = '252,000'; lastPay = '78,000'; refundAmount = '1,797';
+            } else if (customerData.kyowonTier === '4구좌') {
+                pureKyowonDiscount = 288; visualKyowonTotal = 410.4;  
+                visualKyowonMonthlyText = '(교원 4만 + 카드 1.7만 = 월 5.7만 x 72개월)';
+                monthlyPay = '336,000'; lastPay = '104,000'; refundAmount = '2,396';
+                
+                specialAlertHtml = `
+                    <div style="background-color: #fff; border: 2px solid #A50034; border-radius: 8px; padding: 15px; margin-top: 15px; text-align: left;">
+                        <strong style="color: #A50034;">🔥 매니저 강력 추천 (4구좌 특별 혜택)</strong><br>
+                        <span style="font-size: 14.5px; color: #333; display: inline-block; margin-top: 5px;">
+                            월 33.6만원 저축 시, 교원 자체 혜택(4만원)에 <strong>제휴카드 실적(30만원)이 자동으로 충족</strong>됩니다!<br>
+                            따로 카드를 쓰지 않아도 <strong style="color:#d9534f;">월 1.7만원의 청구할인</strong>이 결합되어 <strong>총 월 5.7만원</strong>이 자동 할인되는 최고의 플랜입니다.
+                        </span>
+                    </div>
+                `;
+            }
+            
+            // 라이프케어 전환 서비스 안내 문구 삽입
+            let paymentInfoHtml = `
+                <div style="background-color: #f8f9fa; border: 1px dashed #ccc; border-radius: 8px; padding: 15px; margin-top: 15px; font-size: 14px; color: #444;">
+                    <strong style="color: #333; font-size: 15px;">💡 납입 및 환급 상세 플랜</strong><br>
+                    <div style="margin-top: 5px; padding-left: 10px; border-left: 3px solid var(--lg-red); margin-bottom: 12px;">
+                        - 납입: 월 ${monthlyPay}원 x 71개월 (72회차 ${lastPay}원 납입)<br>
+                        - 환급: <strong style="color: var(--lg-red);">72개월 납입 완료 후, 28개월 뒤 ${refundAmount}만원 (100% 전액 환급)</strong>
+                    </div>
+                    <div style="padding-top: 10px; border-top: 1px dashed #ddd; font-size: 13px; color: #555; line-height: 1.45; text-align: left;">
+                        <span style="font-weight: bold; color: #333;">✨ 라이프케어 전환 서비스 안내</span><br>
+                        만기 환급금 수령 대신 상조, 웨딩, 크루즈 여행 등 원하는 맞춤형 서비스로 즉시 전환하여 사용할 수 있습니다. 전환 시 잔여금을 한 번에 납부하면 매달 납입할 필요가 없으며, <strong style="color: var(--lg-red);">가전 구독료 할인 혜택은 만기까지 그대로 유지</strong>됩니다.<br>
+                        <a href="https://www.kyowonlife.co.kr/Service/LifeServiceList" target="_blank" style="color: var(--lg-red); font-weight: bold; text-decoration: underline; display: inline-block; margin-top: 4px;">[교원 라이프케어 전환 서비스 자세히 보기]</a>
+                    </div>
+                </div>
+            `;
+            
+            customerData.kyowonDiscount = pureKyowonDiscount;
+            customerData.kyowonPaymentInfoHtml = paymentInfoHtml;
+            customerData.kyowonSpecialAlertHtml = specialAlertHtml;
+            
+            document.getElementById('kyowonDiscountAmount').innerHTML = `최대 약 ${visualKyowonTotal}만원 <span class="detail-text">${visualKyowonMonthlyText}</span>`;
+            document.getElementById('kyowonPaymentInfo').innerHTML = paymentInfoHtml;
+            document.getElementById('kyowonSpecialAlert').innerHTML = specialAlertHtml;
+        }
+
+        // H4 최종 결과 업데이트 (합산 혜택이 온전하게 유지됨)
+        if (customerData.purchaseType === 'sub' && customerData.kyowon) {
+            let finalTotalAmount = 0;
+            let descHtml = '';
+            
+            let appliedCardDiscount = parseFloat(customerData.cardDiscount) || 0;
+            let appliedCardMonthly = parseFloat(customerData.monthlyCardDiscount) || 0;
+            
+            // 4구좌인 경우 교원측 실적 충족으로 발생하는 1.7만(122.4만) 외에 전 단계 카드를 온전히 독립 스택
+            let pureKyowon = parseFloat(customerData.kyowonDiscount) || 0;
+            if (customerData.kyowonTier === '4구좌') {
+                pureKyowon = 410.4; // 4구좌 독립 가치 스택 확보
+            }
+            
+            let kyoMonthly = (pureKyowon / 72).toFixed(1).replace('.0', '');
+
+            if (customerData.combineBenefits) {
+                finalTotalAmount = (appliedCardDiscount + pureKyowon).toFixed(1);
+                if (finalTotalAmount.endsWith('.0')) { finalTotalAmount = finalTotalAmount.slice(0, -2); }
+                
+                descHtml = `
+                    <div style="padding: 15px; background: white; border-radius: 8px; border: 1px solid #eee;">
+                        <strong>■ 고객님 맞춤 구독료 할인 내역:</strong><br><br>
+                        ① 제휴카드 구독 실적 할인: 약 <span style="font-weight: bold; color: var(--lg-red);">${appliedCardDiscount}만원</span> <span style="font-size:14px; color:#555;">(월 ${appliedCardMonthly}만 x 72개월간 할인)</span><br>
+                        ② LG구독교원 지원금 혜택: 약 <span style="font-weight: bold; color: var(--lg-red);">${pureKyowon}만원</span> <span style="font-size:14px; color:#555;">(월 ${kyoMonthly}만 x 72개월간 할인)</span><br>
+                    </div>
+                `;
+                
+                document.getElementById('finalTotalAmount').innerText = `총 약 ${finalTotalAmount}만원 혜택`;
+                document.getElementById('finalDesc').innerHTML = descHtml + customerData.kyowonPaymentInfoHtml + customerData.kyowonSpecialAlertHtml + `
+                    <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+                    <span style="color:#A50034; font-weight:bold; padding: 0 5px;">고객님, 위 두 가지 혜택을 결합하시면 매월 납부해야 할 '가전 구독료'가 사실상 거의 0원에 가까워집니다.</span>
+                `;
+            } else {
+                finalTotalAmount = pureKyowon;
+                
+                descHtml = `
+                    <div style="padding: 15px; background: white; border-radius: 8px; border: 1px solid #eee;">
+                        <strong>■ 고객님 맞춤 구독료 할인 내역:</strong><br><br>
+                        ① LG구독교원 지원금 혜택: 약 <span style="font-weight: bold; color: var(--lg-red);">${pureKyowon}만원</span> <span style="font-size:14px; color:#555;">(월 ${kyoMonthly}만 x 72개월간 할인)</span><br>
+                    </div>
+                `;
+                
+                document.getElementById('finalTotalAmount').innerText = `총 약 ${finalTotalAmount}만원 혜택`;
+                document.getElementById('finalDesc').innerHTML = descHtml + customerData.kyowonPaymentInfoHtml + customerData.kyowonSpecialAlertHtml + `
+                    <hr style="border:0; border-top:1px dashed #ccc; margin:15px 0;">
+                    <span style="color:#A50034; font-weight:bold; padding: 0 5px;">고객님, 무리한 소비(카드 실적) 없이 순수한 '저축'만으로도 가전 구독료를 이렇게나 크게 낮출 수 있습니다.</span>
+                `;
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
