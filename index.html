@@ -394,7 +394,7 @@
         .security-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.85); /* 배경색을 더 진하게 설정 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -667,7 +667,7 @@
             }
 
             body { padding: 0; margin: 0; padding-bottom: 40px !important; }
-            .container { display: block; max-width: none; margin: 0; }
+            .container { display: block !important; max-width: none; margin: 0; } /* 인쇄시 강제 표시 */
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 20px; page-break-inside: avoid; }
             .left-panel, .right-column, .right-panel { position: static !important; overflow: visible !important; width: 100% !important; display: block !important; }
             .table-scroll, #quoteTableWrap { max-height: none !important; overflow: visible !important; }
@@ -797,12 +797,10 @@
         }
     
 </style>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=537"></script>
-<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;request-id=5329"></script>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="mainAppContainer" style="display: none;">
     <div class="panel left-panel" id="estimatePanel">
         <h2>📊 강남담당 고객맞춤 플래너</h2>
         <div class="print-toolbar">
@@ -1058,9 +1056,9 @@
         const empBirth = birthInput.value.trim();
 
         if (typeof MANAGER_DATA !== 'undefined' && MANAGER_DATA[empId]) {
-            // 생년월일 검증: 입력한 생년월일이 일치하거나, 누락 데이터(000000)일 때 000000을 입력한 경우 통과
             if (MANAGER_DATA[empId].birth === empBirth || (MANAGER_DATA[empId].birth === "000000" && empBirth === "000000")) {
                 document.getElementById('securityOverlay').style.display = 'none';
+                document.getElementById('mainAppContainer').style.display = 'flex'; 
                 sessionStorage.setItem('planner_emp_id', empId); 
                 error.innerText = '';
                 updateAppMeta(); 
@@ -1085,6 +1083,7 @@
         
         if (savedId && typeof MANAGER_DATA !== 'undefined' && MANAGER_DATA[savedId] && !isExpired()) {
             document.getElementById('securityOverlay').style.display = 'none';
+            document.getElementById('mainAppContainer').style.display = 'flex'; 
             updateAppMeta();
             return;
         }
@@ -1544,6 +1543,15 @@
     }
 
     function parseExcelData() {
+        // --- 🚨 이중 보안 장치: 강제 우회 계산 차단 ---
+        const savedId = sessionStorage.getItem('planner_emp_id');
+        if (!savedId || typeof MANAGER_DATA === 'undefined' || !MANAGER_DATA[savedId]) {
+            alert("정상적인 로그인 절차를 거치지 않았습니다. 새로고침 후 로그인해주세요.");
+            location.reload();
+            return;
+        }
+        // ---------------------------------------------
+        
         const rawText = document.getElementById("rawPasteArea").value;
         if (rawText.trim() === "") {
             alert("Data를 먼저 붙여넣어 주세요.");
