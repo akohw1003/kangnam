@@ -7,10 +7,9 @@
     <style>
         :root {
             --lg-red: #A50034;
-            --chat-bg: #b2c7d9; /* 카카오톡 배경색과 유사한 블루그레이 */
+            --chat-bg: #b2c7d9;
             --bot-bubble: #ffffff;
-            --user-bubble: #ffeb33; /* 카카오톡 내 폰트/말풍선 노란색 계열, 하지만 LG스럽게 커스텀 가능 */
-            --user-bubble-lg: #fce4ec; /* LG 톤에 맞춘 연핑크/레드 계열 사용 */
+            --user-bubble-lg: #fce4ec;
             --text-dark: #333;
         }
 
@@ -46,10 +45,9 @@
             }
         }
 
-        /* 상단 헤더 */
         .header {
             background-color: white;
-            padding: 15px 20px;
+            padding: 15px 15px;
             text-align: center;
             font-weight: bold;
             font-size: 18px;
@@ -58,12 +56,28 @@
             z-index: 10;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
         }
+        .header .header-title { flex: 1; text-align: center; font-size: 17px; }
         .header .logo-text { color: var(--lg-red); font-weight: 900; }
+        
+        /* 뒤로가기 버튼 시인성 강화 및 넓이 확보 */
+        .back-btn {
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 14.5px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px;
+            visibility: hidden; /* 첫 화면엔 이전 내역이 없으므로 숨김 */
+            width: 85px; 
+            text-align: left;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: var(--lg-red); }
+        .header-spacer { width: 85px; } /* 헤더 타이틀 중앙 정렬용 */
 
-        /* 채팅 영역 */
         .chat-container {
             flex: 1;
             padding: 20px 15px;
@@ -73,7 +87,6 @@
             gap: 15px;
         }
 
-        /* 말풍선 공통 */
         .message-wrapper {
             display: flex;
             width: 100%;
@@ -120,9 +133,9 @@
             background-color: var(--lg-red);
             color: white;
             border-top-right-radius: 4px;
+            border-top-left-radius: 14px;
         }
 
-        /* 봇 리치 카드 (결과창) */
         .rich-card {
             background: white;
             border: 2px solid var(--lg-red);
@@ -155,29 +168,67 @@
             border-radius: 8px;
         }
 
-        /* 하단 선택 옵션 (키보드 영역) */
+        .stacker-box {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+        .stacker-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .stacker-item input {
+            margin-right: 8px;
+            accent-color: var(--lg-red);
+        }
+        .stacker-total-bar {
+            background: #f1f3f5;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 14px;
+            border-left: 4px solid var(--lg-red);
+        }
+
         .options-container {
             background-color: white;
-            padding: 15px;
+            padding: 10px 15px; 
             border-top: 1px solid #ddd;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px; 
             animation: slideUp 0.3s ease-out;
+        }
+
+        .options-container.as-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .option-btn {
             background-color: #fff;
             border: 1px solid var(--lg-red);
             color: var(--lg-red);
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 15px;
+            padding: 10px 12px;
+            border-radius: 6px; 
+            font-size: 14.5px; 
             font-weight: bold;
             cursor: pointer;
             transition: all 0.1s;
             text-align: center;
             width: 100%;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis; 
         }
         .option-btn:active, .option-btn:hover {
             background-color: var(--lg-red);
@@ -189,11 +240,6 @@
         }
         .option-btn.primary:active, .option-btn.primary:hover {
             background-color: #8a002b;
-        }
-
-        .option-row {
-            display: flex;
-            gap: 10px;
         }
 
         .typing-indicator {
@@ -217,7 +263,6 @@
         .dot:nth-child(1) { animation-delay: -0.32s; }
         .dot:nth-child(2) { animation-delay: -0.16s; }
 
-        /* 스크롤바 숨기기 */
         .chat-container::-webkit-scrollbar { width: 6px; }
         .chat-container::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 3px; }
 
@@ -230,14 +275,15 @@
 
 <div class="phone-container">
     <div class="header">
-        <span class="logo-text">LG BESTSHOP</span> 스마트 플래너
+        <button class="back-btn" id="backBtn" onclick="goBack()">← 뒤로가기</button>
+        <div class="header-title"><span class="logo-text">LG BESTSHOP</span> 플래너</div>
+        <div class="header-spacer"></div>
     </div>
     
     <div class="chat-container" id="chatContainer">
-        <!-- 채팅 메시지가 여기에 동적으로 추가됩니다 -->
+        <!-- 대화 메세지 동적 추가 영역 -->
     </div>
 
-    <!-- 타이핑 인디케이터 (메시지 대기 중) -->
     <div style="padding: 0 15px;">
         <div class="message-wrapper bot" id="typingIndicator" style="display: none;">
             <div class="profile-pic">LG</div>
@@ -247,9 +293,8 @@
         </div>
     </div>
 
-    <!-- 하단 선택지 영역 -->
     <div class="options-container" id="optionsContainer">
-        <!-- 버튼이 여기에 동적으로 추가됩니다 -->
+        <!-- 하단 키보드 버튼 동적 추가 영역 -->
     </div>
 </div>
 
@@ -257,62 +302,69 @@
     const chatContainer = document.getElementById('chatContainer');
     const optionsContainer = document.getElementById('optionsContainer');
     const typingIndicator = document.getElementById('typingIndicator');
+    const backBtn = document.getElementById('backBtn');
 
-    // 고객 데이터 저장 객체
     let customerData = {
-        card: false,
-        purchaseType: '',
-        lumpSum: 0,
-        lumpSumDiscount: 0,
-        cardUsage: '',
-        cardDiscount: 0,
-        monthlyCardDiscount: 0,
-        kyowon: false,
-        kyowonTier: '',
-        kyowonDiscount: 0,
-        combineBenefits: true,
-        kyowonPaymentInfoHtml: '',
-        kyowonSpecialAlertHtml: ''
+        card: false, purchaseType: '', lumpSum: 0, lumpSumDiscount: 0,
+        cardUsage: '', cardDiscount: 0, monthlyCardDiscount: 0,
+        kyowon: false, kyowonTier: '', kyowonDiscount: 0, combineBenefits: true,
+        kyowonPaymentInfoHtml: '', kyowonSpecialAlertHtml: ''
     };
 
-    // --- UI Helper Functions ---
+    let chatHistory = [];
+    let lastWaitingState = null;
+    let currentChatStep = 0; // 뒤로가기 시 타이핑 꼬임 방지용 글로벌 식별자
+
     function scrollToBottom() {
-        setTimeout(() => {
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 50);
+        setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 50);
+    }
+
+    function resetOptionsContainer() {
+        optionsContainer.innerHTML = '';
+        optionsContainer.classList.remove('as-grid'); 
+    }
+
+    function updateBackButton() {
+        if (chatHistory.length > 0) {
+            backBtn.style.visibility = 'visible';
+        } else {
+            backBtn.style.visibility = 'hidden';
+        }
     }
 
     function addBotMessage(htmlContent, showProfile = true) {
         return new Promise(resolve => {
-            optionsContainer.innerHTML = ''; // 선택지 초기화
+            let step = currentChatStep; // 현재 실행 흐름의 식별자 저장
+            resetOptionsContainer();
             typingIndicator.style.display = 'flex';
             scrollToBottom();
 
             setTimeout(() => {
+                // 대기 시간 도중 뒤로가기를 눌러 흐름이 바뀌었다면 메시지 출력 중단
+                if (step !== currentChatStep) return resolve();
+                
                 typingIndicator.style.display = 'none';
                 const msgWrapper = document.createElement('div');
                 msgWrapper.className = 'message-wrapper bot';
-                
                 let profileHtml = showProfile ? `<div class="profile-pic">LG</div>` : `<div class="profile-pic" style="visibility:hidden;"></div>`;
-                
-                msgWrapper.innerHTML = `
-                    ${profileHtml}
-                    <div class="bubble">${htmlContent}</div>
-                `;
+                msgWrapper.innerHTML = `${profileHtml}<div class="bubble">${htmlContent}</div>`;
                 chatContainer.appendChild(msgWrapper);
                 scrollToBottom();
                 resolve();
-            }, 600); // 0.6초 타이핑 딜레이
+            }, 600);
         });
     }
 
     function addBotRichCard(title, amountHtml, descHtml) {
         return new Promise(resolve => {
-            optionsContainer.innerHTML = '';
+            let step = currentChatStep;
+            resetOptionsContainer();
             typingIndicator.style.display = 'flex';
             scrollToBottom();
 
             setTimeout(() => {
+                if (step !== currentChatStep) return resolve();
+
                 typingIndicator.style.display = 'none';
                 const msgWrapper = document.createElement('div');
                 msgWrapper.className = 'message-wrapper bot';
@@ -339,43 +391,64 @@
         scrollToBottom();
     }
 
-    function showOptions(options) {
-        optionsContainer.innerHTML = '';
-        let html = '';
-        
-        // 2열 배치 체크 (옵션이 4개 이상이거나 그리드 형태가 필요할 때)
-        const isGrid = options.some(opt => opt.grid);
-
+    function showOptions(options, isGrid = false) {
         if (isGrid) {
-            html += '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">';
-            options.forEach(opt => {
-                const btnClass = opt.primary ? 'option-btn primary' : 'option-btn';
-                html += `<button class="${btnClass}" onclick="handleOption('${opt.id}')">${opt.label}</button>`;
-            });
-            html += '</div>';
+            optionsContainer.classList.add('as-grid');
         } else {
-            options.forEach(opt => {
-                const btnClass = opt.primary ? 'option-btn primary' : 'option-btn';
-                html += `<button class="${btnClass}" onclick="handleOption('${opt.id}')">${opt.label}</button>`;
-            });
+            optionsContainer.classList.remove('as-grid');
         }
         
+        let html = '';
+        options.forEach(opt => {
+            const btnClass = opt.primary ? 'option-btn primary' : 'option-btn';
+            html += `<button class="${btnClass}" onclick="handleOption('${opt.id}')" title="${opt.label}">${opt.label}</button>`;
+        });
         optionsContainer.innerHTML = html;
-        window.currentOptions = options; // 핸들러에서 찾기 위해 저장
+        window.currentOptions = options;
+
+        lastWaitingState = {
+            chatHtml: chatContainer.innerHTML,
+            data: JSON.parse(JSON.stringify(customerData)),
+            options: options,
+            isGrid: isGrid
+        };
     }
 
     function handleOption(id) {
         const option = window.currentOptions.find(o => o.id === id);
         if(option) {
-            optionsContainer.innerHTML = ''; // 누르는 순간 버튼 숨김
-            if(!option.silent) {
-                addUserMessage(option.userText || option.label);
+            if (!option.silent && lastWaitingState) {
+                chatHistory.push(lastWaitingState);
+                updateBackButton();
             }
+            resetOptionsContainer(); 
+            if(!option.silent) { addUserMessage(option.userText || option.label); }
             option.action();
         }
     }
 
+    // [수정/강화] 뒤로가기 실행 함수
+    function goBack() {
+        if (chatHistory.length === 0) return;
+        
+        currentChatStep++; // 현재 진행 중인 타이핑 딜레이 무효화
+        typingIndicator.style.display = 'none'; // 혹시 돌고 있던 인디케이터 숨김
+
+        let prevState = chatHistory.pop();
+        updateBackButton();
+        
+        chatContainer.innerHTML = prevState.chatHtml;
+        customerData = JSON.parse(JSON.stringify(prevState.data)); // 데이터 완벽 복구
+        showOptions(prevState.options, prevState.isGrid);
+        
+        scrollToBottom();
+    }
+
     function restartChat() {
+        chatHistory = [];
+        updateBackButton();
+        currentChatStep++;
+        typingIndicator.style.display = 'none';
         chatContainer.innerHTML = '';
         customerData = {
             card: false, purchaseType: '', lumpSum: 0, lumpSumDiscount: 0,
@@ -389,9 +462,8 @@
 
     // --- Chat Flow Logic ---
 
-    // 1. 초기 멘트 및 카드 발급 확인
     async function startChat() {
-        await addBotMessage('안녕하세요! <b>LG BESTSHOP 스마트 구독 플래너</b>입니다. 😊');
+        await addBotMessage('안녕하세요! <b>LG BESTSHOP 스마트 플래너</b>입니다. 😊');
         await addBotMessage('가전 구매 할인을 위해 신규 제휴 카드 발급이 가능하신가요?<br><br><small style="color:#666;">※ 신규 제휴카드를 만드시면 최고의 혜택을 드립니다.</small>', false);
         
         showOptions([
@@ -400,26 +472,24 @@
         ]);
     }
 
-    // 2. 일시불 vs 구독 선택
     async function askPurchaseType() {
         await addBotMessage('감사합니다! 🎉<br>가전제품, 어떻게 장만하실 계획이신가요? 고객님께 가장 유리한 구매 방식을 설계해 드립니다.');
         showOptions([
-            { id: 'pt_sub', label: '가전 관리와 6년 무상 A/S, 가전 구독 (추천!)', primary: true, action: () => { customerData.purchaseType = 'sub'; askCardUsage(); } },
-            { id: 'pt_lumpsum', label: '목돈으로 한 번에 결제 (일시불)', action: () => { customerData.purchaseType = 'lumpsum'; askLumpSum(); } }
+            { id: 'pt_sub', label: '가전 구독 (추천!)', userText: '가전 관리와 6년 무상 A/S, 가전 구독이요.', primary: true, action: () => { customerData.purchaseType = 'sub'; askCardUsageBuilder(); } },
+            { id: 'pt_lumpsum', label: '일시불 결제', userText: '목돈으로 한 번에 결제할게요.', action: () => { customerData.purchaseType = 'lumpsum'; askLumpSum(); } }
         ]);
     }
 
-    // [분기 A] 일시불 -> 결제 금액 확인
     async function askLumpSum() {
         await addBotMessage('일시불 예상 결제 금액은 얼마인가요? 금액대별 할인 혜택을 확인해 드리겠습니다.');
         showOptions([
-            { id: 'ls_300', label: '300만 원대', grid: true, action: () => { customerData.lumpSum=300; customerData.lumpSumDiscount=18; showLumpSumResult(); } },
-            { id: 'ls_600', label: '600만 원대', grid: true, action: () => { customerData.lumpSum=600; customerData.lumpSumDiscount=27; showLumpSumResult(); } },
-            { id: 'ls_900', label: '900만 원대', grid: true, action: () => { customerData.lumpSum=900; customerData.lumpSumDiscount=36; showLumpSumResult(); } },
-            { id: 'ls_1200', label: '1,200만 원대', grid: true, action: () => { customerData.lumpSum=1200; customerData.lumpSumDiscount=45; showLumpSumResult(); } },
-            { id: 'ls_1500', label: '1,500만 원대', grid: true, action: () => { customerData.lumpSum=1500; customerData.lumpSumDiscount=54; showLumpSumResult(); } },
-            { id: 'ls_2000', label: '2,000만 원 이상', grid: true, action: () => { customerData.lumpSum=2000; customerData.lumpSumDiscount=69; showLumpSumResult(); } }
-        ]);
+            { id: 'ls_300', label: '300만 원대', action: () => { customerData.lumpSum=300; customerData.lumpSumDiscount=18; showLumpSumResult(); } },
+            { id: 'ls_600', label: '600만 원대', action: () => { customerData.lumpSum=600; customerData.lumpSumDiscount=27; showLumpSumResult(); } },
+            { id: 'ls_900', label: '900만 원대', action: () => { customerData.lumpSum=900; customerData.lumpSumDiscount=36; showLumpSumResult(); } },
+            { id: 'ls_1200', label: '1,200만 원대', action: () => { customerData.lumpSum=1200; customerData.lumpSumDiscount=45; showLumpSumResult(); } },
+            { id: 'ls_1500', label: '1,500만 원대', action: () => { customerData.lumpSum=1500; customerData.lumpSumDiscount=54; showLumpSumResult(); } },
+            { id: 'ls_2000', label: '2,000만 원 이상', action: () => { customerData.lumpSum=2000; customerData.lumpSumDiscount=69; showLumpSumResult(); } }
+        ], true); 
     }
 
     async function showLumpSumResult() {
@@ -430,25 +500,84 @@
             - ${customerData.lumpSum}만 원대 결제 시 ${total}만원 지원
         `;
         await addBotRichCard('제휴카드 일시불 혜택', `총 약 ${total}만원`, desc);
-        
         await addBotMessage('💡 <b>매니저의 추천 플랜</b><br>고객님, 일회성 할인을 위해 단기간에 100만 원 실적을 채우시는 것보다, <strong>어차피 매달 쓰시는 생활비/고정비로 실적을 채워 6년 내내 가전 구독료를 할인받으시는 것</strong>이 총 혜택 금액에서 훨씬 유리합니다!');
         
         showOptions([
-            { id: 'pivot_sub', label: '가전 구독 혜택 비교해보기 (추천)', primary: true, action: () => { customerData.purchaseType = 'sub'; askCardUsage(); } },
+            { id: 'pivot_sub', label: '가전 구독 혜택 비교해보기 (추천)', userText: '가전 구독 혜택을 비교해볼게요.', primary: true, action: () => { customerData.purchaseType = 'sub'; askCardUsageBuilder(); } },
             { id: 'stay_ls', label: '그냥 일시불로 진행할게요', action: () => showFinalLumpSum() }
         ]);
     }
 
-    // [분기 B] 가전 구독 -> 카드 실적 확인
-    async function askCardUsage() {
-        await addBotMessage('가전 구독 시, 매월 카드는 얼마나 사용하실 수 있나요?<br><br><small style="color:#666;">아파트 관리비, 보험료, 생활비 등이 <b>포함된 월 예상 카드 사용 금액</b>입니다.</small>');
+    async function askCardUsageBuilder() {
+        resetOptionsContainer();
+        await addBotMessage('가전 구독료 할인을 위해, <b>이미 매달 지출하고 계신 고정 항목</b>들을 체크해 보세요! 실물 소비 없이 실적이 채워집니다.');
+        
+        const msgWrapper = document.createElement('div');
+        msgWrapper.className = 'message-wrapper bot';
+        
+        // onchange 속성 안에 this를 전달하여 HTML 태그 자체에 체크 속성을 강제 주입(뒤로가기 복구 시 상태 유지용)
+        msgWrapper.innerHTML = `
+            <div class="profile-pic" style="visibility:hidden;"></div>
+            <div class="bubble" style="max-width:85%; background: #fff; border: 1px solid #A50034;">
+                <div style="font-weight:bold; margin-bottom:10px; color:var(--lg-red);">📊 내 숨은 카드 실적 찾기</div>
+                <div class="stacker-box">
+                    <label class="stacker-item"><span><input type="checkbox" value="25" onchange="calcStackedUsage(this)"> 아파트 관리비</span> <span>약 25만</span></label>
+                    <label class="stacker-item"><span><input type="checkbox" value="15" onchange="calcStackedUsage(this)"> 카드 납입 가능 보험료</span> <span>약 15만</span></label>
+                    <label class="stacker-item"><span><input type="checkbox" value="30" onchange="calcStackedUsage(this)"> 교육비 / 학원비</span> <span>약 30만</span></label>
+                    <label class="stacker-item"><span><input type="checkbox" value="7" onchange="calcStackedUsage(this)"> 통신비 / 인터넷</span> <span>약 7만</span></label>
+                    <label class="stacker-item"><span><input type="checkbox" value="20" onchange="calcStackedUsage(this)"> 마트 / 주유 / 생활비</span> <span>약 20만</span></label>
+                    <div class="stacker-total-bar" id="stackerTotalText">현재 선택한 고정 지출: 0만 원</div>
+                </div>
+            </div>
+        `;
+        chatContainer.appendChild(msgWrapper);
+        scrollToBottom();
+
         showOptions([
-            { id: 'cu_30', label: '월 30만원 실적 가능', userText: '월 30만원 정도 쓸 수 있어요.', action: () => { customerData.cardUsage = '30만'; showCardUsageResult(); } },
-            { id: 'cu_40', label: '월 40만원 실적 가능', userText: '월 40만원 정도 쓸 수 있어요.', action: () => { customerData.cardUsage = '40만'; showCardUsageResult(); } },
-            { id: 'cu_70', label: '월 70만원 실적 가능', userText: '월 70만원 정도 쓸 수 있어요.', action: () => { customerData.cardUsage = '70만'; showCardUsageResult(); } },
-            { id: 'cu_100', label: '월 100만원 이상 가능', userText: '월 100만원 이상 쓸 수 있어요.', action: () => { customerData.cardUsage = '100만'; showCardUsageResult(); } }
-        ]);
+            { id: 'apply_stacked_30', label: '월 30만 실적 충족하기', action: () => { customerData.cardUsage = '30만'; showCardUsageResult(); } },
+            { id: 'apply_stacked_40', label: '월 40만 실적 충족하기', action: () => { customerData.cardUsage = '40만'; showCardUsageResult(); } },
+            { id: 'apply_stacked_70', label: '월 70만 실적 충족하기', action: () => { customerData.cardUsage = '70만'; showCardUsageResult(); } },
+            { id: 'apply_stacked_100', label: '월 100만 이상 충족하기', action: () => { customerData.cardUsage = '100만'; showCardUsageResult(); } }
+        ], true);
+
+        // 스냅샷 갱신
+        lastWaitingState = {
+            chatHtml: chatContainer.innerHTML,
+            data: JSON.parse(JSON.stringify(customerData)),
+            options: window.currentOptions,
+            isGrid: true
+        };
     }
+
+    // [강화] 뒤로가기 복구를 위해 checked 속성을 HTML 태그에 직접 명시
+    window.calcStackedUsage = function(el) {
+        if(el) {
+            if(el.checked) el.setAttribute('checked', 'checked');
+            else el.removeAttribute('checked');
+        }
+
+        let total = 0;
+        const checkboxes = chatContainer.querySelectorAll('.stacker-item input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            if(cb.checked) total += parseInt(cb.value);
+        });
+        
+        let tierRecommend = "30만 원 미만";
+        if(total >= 30 && total < 40) tierRecommend = "★ 월 30만 실적";
+        else if(total >= 40 && total < 70) tierRecommend = "★ 월 40만 실적";
+        else if(total >= 70 && total < 100) tierRecommend = "★ 월 70만 실적";
+        else if(total >= 100) tierRecommend = "★ 월 100만 실적";
+
+        const totalBar = chatContainer.querySelector('#stackerTotalText');
+        if(totalBar) {
+            totalBar.innerHTML = `합산 지출: <span style="color:var(--lg-red); font-size:16px;">${total}만 원</span><br>→ <span style="color:#d9534f;">[${tierRecommend} 구간]</span> 즉시 달성 가능!`;
+        }
+
+        // 체크 상태가 변경되었으므로 스냅샷 다시 갱신
+        if (lastWaitingState) {
+            lastWaitingState.chatHtml = chatContainer.innerHTML;
+        }
+    };
 
     async function showCardUsageResult() {
         let cardDiscount = 0, monthlyCardDiscount = 0, cardRecsHtml = '';
@@ -458,20 +587,20 @@
             cardDiscount = 129.6; monthlyCardDiscount = 1.8;
             cardRecsHtml = `
                 <div style="font-weight:bold; margin-bottom:5px;">[매니저 추천 카드 3종]</div>
-                <div>① 우리 LG전자: 월 1.8만 혜택 (최대 129.6만)</div>
-                <div>② 신한 더구독케어: 월 1.7만 혜택 (최대 122.4만)</div>
-                <div>③ KB국민카드: 월 1.7만 혜택 (최대 114만)</div>
+                <div>① 우리 LG전자: 월 1.8만 (최대 129.6만)</div>
+                <div>② 신한 더구독케어: 월 1.7만 (최대 122.4만)</div>
+                <div>③ KB국민카드: 월 1.7만 (최대 114만)</div>
                 <div style="margin-top: 5px; font-size: 13.5px; color: var(--lg-red); font-weight:bold;">※ KB국민: 아파트 관리비 실적 인정 (관리비 30만 가량 시 추가 소비 불필요)</div>
             `;
         } else if (customerData.cardUsage === '40만') {
             cardDiscount = 144; monthlyCardDiscount = 2.0;
-            cardRecsHtml = `<b>[매니저 추천 카드]</b><br>① 롯데 구독엔로카: 월 2.0만 혜택 (최대 144만)`;
+            cardRecsHtml = `<b>[매니저 추천 카드]</b><br>① 롯데 구독엔로카: 월 2.0만 (최대 144만)`;
         } else if (customerData.cardUsage === '70만') {
             cardDiscount = 158.4; monthlyCardDiscount = 2.2;
-            cardRecsHtml = `<b>[매니저 추천 카드]</b><br>① 우리 LG전자: 월 2.2만 혜택 (최대 158.4만)`;
+            cardRecsHtml = `<b>[매니저 추천 카드]</b><br>① 우리 LG전자: 월 2.2만 (최대 158.4만)`;
         } else if (customerData.cardUsage === '100만') {
             cardDiscount = 252; monthlyCardDiscount = 3.5;
-            cardRecsHtml = `<b>[매니저 추천 카드]</b><br>① 우리 LG전자 Platinum: 월 3.5만 혜택 (최대 252만)`;
+            cardRecsHtml = `<b>[매니저 추천 카드]</b><br>① 우리 LG전자 Platinum: 월 3.5만 (최대 252만)`;
         }
 
         customerData.cardDiscount = cardDiscount;
@@ -486,7 +615,6 @@
         `;
 
         await addBotRichCard('6년간 매월 가전 구독료 할인', `최대 약 ${cardDiscount}만원<br>${detailText}`, descHtml);
-        
         await addBotMessage(`고객님, 앞서 확인하신 카드 할인 <b style="color:var(--lg-red);">${cardDiscount}만원</b>을 받으시려면, 72개월간 <b style="color:#d9534f;">총 ${totalSpendOver72Months.toLocaleString()}만원을 소비</b>하셔야 합니다.<br><br>만약 이 금액을 '소비'하지 않고, <b>만기 시 100% 돌려받는 '저축'</b>을 하면서 동일하게 구독료 할인을 받는다면 어떠신가요?`);
         
         showOptions([
@@ -495,7 +623,6 @@
         ]);
     }
 
-    // 3. 교원 구좌 선택
     async function askKyowonTier() {
         await addBotMessage('저축(납입) 시 월 부담 없는 금액대는 어느 정도이신가요? (만기 시 전액 환급됩니다)');
         showOptions([
@@ -503,7 +630,7 @@
             { id: 'tier_3', label: '20만 ~ 30만 원', userText: '월 20~30만 원 정도요.', action: () => { customerData.kyowonTier = '3구좌'; showKyowonResult(); } },
             { id: 'tier_2', label: '10만 ~ 20만 원', userText: '월 10~20만 원 정도요.', action: () => { customerData.kyowonTier = '2구좌'; showKyowonResult(); } },
             { id: 'tier_1', label: '0 ~ 10만 원', userText: '10만 원 미만이요.', action: () => { customerData.kyowonTier = '1구좌'; showKyowonResult(); } }
-        ]);
+        ], true); 
     }
 
     async function showKyowonResult() {
@@ -512,17 +639,17 @@
         let specialAlertHtml = '';
 
         if (customerData.kyowonTier === '1구좌') {
-            kyowonDiscount = 72; visualKyowonTotal = 72; visualMonthlyTxt = '(월 1.0만 x 72개월간)';
+            kyowonDiscount = 72; visualKyowonTotal = 72; visualMonthlyTxt = '(월 1.0만 x 72개월)';
             monthlyPay = '84,000'; lastPay = '26,000'; refundAmount = '599';
         } else if (customerData.kyowonTier === '2구좌') {
-            kyowonDiscount = 144; visualKyowonTotal = 144; visualMonthlyTxt = '(월 2.0만 x 72개월간)';
+            kyowonDiscount = 144; visualKyowonTotal = 144; visualMonthlyTxt = '(월 2.0만 x 72개월)';
             monthlyPay = '168,000'; lastPay = '52,000'; refundAmount = '1,198';
         } else if (customerData.kyowonTier === '3구좌') {
-            kyowonDiscount = 216; visualKyowonTotal = 216; visualMonthlyTxt = '(월 3.0만 x 72개월간)';
+            kyowonDiscount = 216; visualKyowonTotal = 216; visualMonthlyTxt = '(월 3.0만 x 72개월)';
             monthlyPay = '252,000'; lastPay = '78,000'; refundAmount = '1,797';
         } else if (customerData.kyowonTier === '4구좌') {
             kyowonDiscount = 288; visualKyowonTotal = 410.4;  
-            visualMonthlyTxt = '(월 5.7만 x 72개월간)';
+            visualMonthlyTxt = '(교원 4만 + 카드 1.7만 = 월 5.7만 x 72개월)';
             monthlyPay = '336,000'; lastPay = '104,000'; refundAmount = '2,396';
             
             specialAlertHtml = `
@@ -551,16 +678,14 @@
         let descHtml = `<b>■ LG구독교원(72) 결합 혜택</b><br>- ${customerData.kyowonTier} 가입 시 혜택<br><br>${paymentInfoHtml} ${specialAlertHtml}`;
 
         await addBotRichCard('저축하고 가전 구독료 지원받기', amountHtml, descHtml);
-        
         await addBotMessage('최종적으로 어떤 방식으로 할인을 받으시겠습니까?<br><small style="color:#666;">※ 생활비 카드 실적과 저축을 결합하면 혜택이 가장 커집니다.</small>');
         
         showOptions([
-            { id: 'fin_combo', label: '월 카드 사용 + 저축 동시 진행 (최대 혜택)', primary: true, action: () => { customerData.combineBenefits = true; showFinalSubCombined(); } },
-            { id: 'fin_kyo_only', label: '저축(교원)만 진행할게요', action: () => { customerData.combineBenefits = false; showFinalSubCombined(); } }
+            { id: 'fin_combo', label: '월 카드사용+저축 동시진행', userText: '월 카드 사용 + 저축 동시 진행할게요.', primary: true, action: () => { customerData.combineBenefits = true; showFinalSubCombined(); } },
+            { id: 'fin_kyo_only', label: '저축(교원)만 진행', userText: '저축(교원)만 진행할게요.', action: () => { customerData.combineBenefits = false; showFinalSubCombined(); } }
         ]);
     }
 
-    // 4. 최종 결과 출력 (구독 + 동시/저축)
     async function showFinalSubCombined() {
         let finalTotalAmount = 0;
         let descHtml = ''; 
@@ -571,7 +696,6 @@
         let kyoMonthly = (pureKyowon / 72).toFixed(1).replace('.0', '');
 
         if (customerData.combineBenefits) {
-            // [동시 진행]
             if (customerData.kyowonTier === '4구좌') {
                 finalTotalAmount = (appliedCardDiscount + pureKyowon + 122.4).toFixed(1);
                 if (finalTotalAmount.endsWith('.0')) { finalTotalAmount = finalTotalAmount.slice(0, -2); }
@@ -580,6 +704,7 @@
                     ① 기존 선택 제휴카드 할인: <b>약 ${appliedCardDiscount}만원</b> <span style="font-size:12px;color:#555;">(월 ${appliedCardMonthly}만)</span><br>
                     ② LG구독교원(4구좌) 지원금: <b>약 ${pureKyowon}만원</b> <span style="font-size:12px;color:#555;">(월 ${kyoMonthly}만)</span><br>
                     ③ 4구좌 자동충족(카드) 할인: <b>약 122.4만원</b> <span style="font-size:12px;color:#555;">(월 1.7만)</span><br>
+                    <small style="color:#666; display:block; margin-top:5px; line-height:1.3;">※ 교원 납입금이 카드 실적으로 인정되어 ③번 할인이 자동 적용됩니다.</small>
                 `;
             } else {
                 finalTotalAmount = (appliedCardDiscount + pureKyowon).toFixed(1);
@@ -591,14 +716,16 @@
                 `;
             }
         } else {
-            // [저축만 진행]
             if (customerData.kyowonTier === '4구좌') {
-                finalTotalAmount = (pureKyowon + 122.4).toFixed(1);
+                appliedCardDiscount = 122.4;
+                appliedCardMonthly = 1.7;
+                finalTotalAmount = (appliedCardDiscount + pureKyowon).toFixed(1);
                 if (finalTotalAmount.endsWith('.0')) { finalTotalAmount = finalTotalAmount.slice(0, -2); }
                 
                 descHtml = `
                     ① 4구좌 자동충족(카드) 할인: <b>약 122.4만원</b> <span style="font-size:12px;color:#555;">(월 1.7만)</span><br>
                     ② LG구독교원(4구좌) 지원금: <b>약 ${pureKyowon}만원</b> <span style="font-size:12px;color:#555;">(월 ${kyoMonthly}만)</span><br>
+                    <small style="color:#666; display:block; margin-top:5px; line-height:1.3;">※ 교원 납입금이 카드 실적으로 인정되어 ①번 할인이 자동 적용됩니다.</small>
                 `;
             } else {
                 finalTotalAmount = pureKyowon;
@@ -610,42 +737,34 @@
 
         let fullDesc = `
             <b>■ 고객님 맞춤 구독료 할인 내역</b><br><br>
-            ${descHtml}<br>
-            <b style="color:var(--lg-red);">위 혜택으로 매월 가전 구독료가 사실상 0원에 가까워집니다! 🎉</b>
+            <div style="background:#f8f9fa; padding:10px; border-radius:6px; font-size:13px; margin-bottom:10px;">
+            ${descHtml}
+            </div>
+            <b style="color:var(--lg-red); font-size:14px;">위 혜택으로 매월 가전 구독료가 사실상 0원에 가까워집니다! 🎉</b>
         `;
 
         await addBotRichCard('가전 구독 총 할인 혜택', `총 약 ${finalTotalAmount}만원`, fullDesc);
-        
-        showOptions([
-            { id: 'restart', label: '처음부터 다시 상담하기', silent: true, action: () => restartChat() }
-        ]);
+        showOptions([{ id: 'restart', label: '처음부터 다시 상담하기', silent: true, action: () => restartChat() }]);
     }
 
-    // 결과: 일시불 종료
     async function showFinalLumpSum() {
         let total = customerData.lumpSumDiscount;
         await addBotRichCard('일시불 지원금 혜택', `약 ${total}만원`, `※ 해당 할인은 익월 말까지 카드 100만 원 추가 사용 시에만 적용됩니다.<br><br>장기적인 가전 구독 혜택이 궁금하시다면 언제든 다시 플래닝 해보세요!`);
         showOptions([{ id: 'restart', label: '처음부터 다시 상담하기', silent: true, action: () => restartChat() }]);
     }
 
-    // 결과: 구독 카드만 종료
     async function showFinalSubCardOnly() {
         let total = customerData.cardDiscount;
         await addBotRichCard('제휴카드 구독료 할인', `최대 약 ${total}만원`, `고객님이 생활비/고정비로 채우시는 실적을 통해 가전 구독료를 크게 할인받으십니다.<br><br>※ '구독교원' 결합 시 할인 금액이 훨씬 커집니다!`);
         showOptions([{ id: 'restart', label: '처음부터 다시 상담하기', silent: true, action: () => restartChat() }]);
     }
 
-    // 결과: 카드 발급 불가 종료
     async function showResultNoCard() {
         await addBotRichCard('기본 혜택 적용', `매장 기본 프로모션`, `제휴 카드를 발급하지 않으실 경우, 매장 내 기본 프로모션 혜택만 적용됩니다.<br><br>※ 제휴카드+구독교원 결합 시 수백만 원의 추가 혜택이 있습니다.`);
         showOptions([{ id: 'restart', label: '처음부터 다시 상담하기', silent: true, action: () => restartChat() }]);
     }
 
-    // 앱 시작
-    window.onload = () => {
-        startChat();
-    };
-
+    window.onload = () => { startChat(); };
 </script>
 
 </body>
