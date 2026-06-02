@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교원72 통합 상담 패널 (총 환급금 로직 완벽 반영)</title>
+<title>교원72 통합 상담 패널 (전체 초기화 버튼 추가)</title>
 <style>
   :root{
     --bg:#eef3f8; --panel:#ffffff; --line:#d9e3ee; --text:#0f172a; --sub:#64748b;
@@ -17,9 +17,12 @@
   /* 공통 레이아웃 */
   .shell{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,.04); margin-bottom:10px;}
   
-  /* 팝업 버튼 스타일 */
+  /* 버튼 스타일 */
   .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(190,24,93,0.1); transition: 0.2s; white-space:nowrap; margin:0; }
   .popupBtn:hover { background:#fdf2f8; }
+  
+  .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:6px 12px; font-size:11px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; gap:4px; }
+  .resetBtn:hover { background:#f1f5f9; color:#0f172a; border-color:#94a3b8; }
 
   /* ★ 최상단 고정 결과 패널 ★ */
   .top-result-panel {
@@ -184,6 +187,8 @@
             <input type="text" id="subFeeInput" placeholder="0" style="width:70px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
             <span style="font-size:11px; font-weight:900; color:#475569; margin-left:4px;">원</span>
         </div>
+        <!-- 상담 초기화 버튼 추가 -->
+        <button class="resetBtn" type="button" onclick="resetEntireConsultation()">🔄 상담 초기화</button>
         <button class="popupBtn" type="button" onclick="openKyowonPopup()">🎁 교원 라이프케어 안내</button>
       </div>
     </div>
@@ -249,7 +254,7 @@
           <div class="hd-inner"><h2>2단계: 고객 맞춤 교원 상품 설계</h2><span class="badge green">교원 필수</span></div>
           <div class="bd" style="display:flex;flex-direction:column;">
             
-            <!-- ① 예산 탭 필터 (30만원 이상이 가장 먼저 오도록 역순 배치) -->
+            <!-- ① 예산 탭 필터 -->
             <div style="font-size:11px; font-weight:900; color:#334155; margin-bottom:4px;">① 월 저축 가능 금액 선택</div>
             <div id="budgetGrid" class="budgetGrid"></div>
             
@@ -354,6 +359,31 @@ function updateSubFee(el) {
     renderUnifiedResult(); 
 }
 function formatSubFee(el) { el.value = fmtInput(subFee); }
+
+// 전체 초기화 함수
+function resetEntireConsultation() {
+    data1.expenseLabels.forEach(l => st1.expenses[l] = 0);
+    st1.selectedCardIds = [];
+    
+    isStep2Revealed = false;
+    document.getElementById('view-step2').style.display = 'none';
+    state2.budgetTab = 4;
+    state2.comboId = allCombos.filter(c => c.tab === 4)[0].id;
+    state2.cardDiscount = 0;
+    
+    subFee = 0;
+    const feeInput = document.getElementById('subFeeInput');
+    if(feeInput) feeInput.value = '';
+    
+    document.getElementById('resultTitle').textContent = "1단계 합산 소비형 할인 결과";
+    document.getElementById('resultTitle').style.color = "#1e3a8a";
+    document.getElementById('topResultPanel').style.borderColor = "#3b82f6";
+    document.getElementById('topResultPanel').querySelector('.hd').style.background = "linear-gradient(90deg, #f0fdf4, #ffffff)";
+    document.getElementById('resultBadge').textContent = "선택 카드 합산 누적액";
+    
+    renderAll();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 function revealStep2() {
     isStep2Revealed = true;
@@ -562,14 +592,13 @@ for(let p in kyowonProducts) {
    }
 }
 
-// ★ 72교원이 가장 먼저 나오도록 커스텀 정렬 (상품별 우선순위 -> 캐시백 순)
+// ★ 정렬: 72교원이 가장 앞, 그 다음은 혜택이 높은 순
 allCombos.sort((a, b) => {
     if (a.prod.id === 'p72' && b.prod.id !== 'p72') return -1;
     if (a.prod.id !== 'p72' && b.prod.id === 'p72') return 1;
     return b.cb - a.cb;
 });
 
-// ★ 30만원 이상이 가장 먼저 오도록 역순 배치
 const budgetTabs = [
   {id: 4, label: "30만원 이상"},
   {id: 3, label: "20만~30만원"},
@@ -611,7 +640,6 @@ function renderMini2(){
   document.getElementById("totalBenefit2").textContent = w(totalCombinedMonthly);
 }
 
-// 우측 패널: 예산 필터링에 맞는 추천 상품 리스트 뷰
 function renderBenefitGrid2(){
   const step1Monthly = getStep1YearlyArr()[0];
   const filteredCombos = allCombos.filter(c => c.tab === state2.budgetTab);
