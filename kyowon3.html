@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교원72 통합 상담 패널 (공식 홈페이지 라이브 연동)</title>
+<title>교원72 통합 상담 패널 (FHD/QHD 해상도 최적화)</title>
 <style>
   :root{
     --bg:#eef3f8; --panel:#ffffff; --line:#d9e3ee; --text:#0f172a; --sub:#64748b;
@@ -11,162 +11,168 @@
     --orange:#ea580c; --orangeSoft:#fff7ed; --yellow:#facc15; --dark:#0b1736;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text); padding: 10px;}
-  .wrap{max-width:1710px;margin:0 auto;}
+  body{margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text); padding: 16px;}
   
-  /* 공통 레이아웃 */
-  .shell{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 8px 24px rgba(15,23,42,.04); margin-bottom:10px;}
+  /* 베이스 FHD (1920x1080) 최적화 넓이 */
+  .wrap{max-width:1820px;margin:0 auto;}
+  
+  /* QHD (2560x1440) 이상일 경우 화면 전체 1.3배 스케일업 */
+  @media (min-width: 2400px) {
+      .wrap { zoom: 1.3; } 
+  }
+
+  /* 공통 레이아웃 (여백 확대) */
+  .shell{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(15,23,42,.04); margin-bottom:16px;}
   
   /* 팝업 버튼 스타일 */
-  .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:8px; padding:6px 10px; font-size:11px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(190,24,93,0.1); transition: 0.2s; white-space:nowrap; margin:0; }
+  .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:10px; padding:10px 14px; font-size:13px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(190,24,93,0.1); transition: 0.2s; white-space:nowrap; margin:0; }
   .popupBtn:hover { background:#fdf2f8; }
   
   /* 초기화 버튼 */
-  .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:6px 12px; font-size:11px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; gap:4px; }
+  .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:10px; padding:10px 14px; font-size:13px; font-weight:900; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; gap:6px; }
   .resetBtn:hover { background:#f1f5f9; color:#0f172a; border-color:#94a3b8; }
 
   /* ★ 최상단 고정 결과 패널 ★ */
   .top-result-panel {
       position: sticky;
-      top: 8px;
+      top: 10px;
       z-index: 1000;
       border: 2px solid #3b82f6; 
-      box-shadow: 0 6px 16px rgba(37,99,235,0.12); 
+      box-shadow: 0 8px 20px rgba(37,99,235,0.15); 
       background: #ffffff;
-      border-radius: 12px; 
+      border-radius: 16px; 
       overflow: hidden;
-      margin-bottom: 12px; 
+      margin-bottom: 16px; 
   }
   .top-result-panel .hd {
       display: flex; justify-content: space-between; align-items: center; 
-      padding: 8px 14px; background: linear-gradient(90deg, #f0fdf4, #ffffff); border-bottom: 1px solid #e2e8f0;
-      flex-wrap: wrap; gap: 8px;
+      padding: 12px 20px; background: linear-gradient(90deg, #f0fdf4, #ffffff); border-bottom: 1px solid #e2e8f0;
+      flex-wrap: wrap; gap: 10px;
   }
   
-  /* 메인 그리드 */
-  .mainGrid{display:grid;grid-template-columns:300px 1fr;gap:12px;align-items:start}
-  .leftCol,.rightCol{display:flex;flex-direction:column;gap:10px}
-  .panel{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
-  .hd-inner{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:8px 12px;border-bottom:1px solid #e8eef5;background:#f8fafc;}
-  .hd-inner h2{margin:0;font-size:13px;white-space:nowrap;font-weight:900; letter-spacing:-0.03em;}
-  .badge{display:inline-flex;align-items:center;padding:3px 6px;border-radius:999px;font-size:10px;font-weight:900;white-space:nowrap}
+  /* 메인 그리드 (좌측 컨트롤 패널 영역 확대 300px -> 360px) */
+  .mainGrid{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start}
+  .leftCol,.rightCol{display:flex;flex-direction:column;gap:16px}
+  .panel{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden}
+  .hd-inner{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid #e8eef5;background:#f8fafc;}
+  .hd-inner h2{margin:0;font-size:16px;white-space:nowrap;font-weight:900; letter-spacing:-0.03em;}
+  .badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
   .badge.orange{background:var(--orangeSoft);color:#c2410c;border:1px solid #ffedd5;}
   .badge.green{background:var(--greenSoft);color:#166534;border:1px solid #d1fae5;}
   .badge.blue{background:var(--blueSoft);color:#1d4ed8;border:1px solid #bfdbfe;}
-  .bd{padding:10px}
+  .bd{padding:16px}
   
   /* 버튼 및 공통 요소 */
-  .btns{display:flex;gap:6px;flex-wrap:wrap}
-  .actionBtn{border:1px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-size:11px;font-weight:900;cursor:pointer;white-space:nowrap;}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .actionBtn{border:1px solid #cbd5e1;border-radius:8px;padding:8px 12px;font-size:13px;font-weight:900;cursor:pointer;white-space:nowrap;}
   .btn-secondary{background:#fff;color:var(--blue);border-color:#bfdbfe;}
   .btn-gray{background:#f1f5f9;color:#475569;}
-  .sumBox{background:var(--dark);color:#fff;border-radius:10px;padding:8px 10px;display:grid;grid-template-columns:1fr;gap:6px;align-items:center;}
-  .sumBox .ttl{font-size:11px;opacity:.9;white-space:nowrap}
-  .sumBox .money{font-size:18px;font-weight:1000;white-space:nowrap;color:#fff;}
-  .calcBtn{width:100%;padding:8px;font-size:12px;background:#0f766e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:900; transition:0.2s;}
+  .sumBox{background:var(--dark);color:#fff;border-radius:12px;padding:12px 16px;display:grid;grid-template-columns:1fr;gap:8px;align-items:center;}
+  .sumBox .ttl{font-size:14px;opacity:.9;white-space:nowrap}
+  .sumBox .money{font-size:24px;font-weight:1000;white-space:nowrap;color:#fff;}
+  .calcBtn{width:100%;padding:14px;font-size:16px;background:#0f766e;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900; transition:0.2s;}
   .calcBtn:hover{background:#115e59;}
 
   /* 년차별 그리드 */
-  .yearGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px} 
-  .yearBox{border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 4px;text-align:center;display:flex;flex-direction:column;justify-content:center; align-items:center;} 
-  .yearBox b{display:block;font-size:11px;color:#334155;margin-bottom:2px;white-space:nowrap} 
-  .yearBox .pure-disc{font-size:14px;color:#dc2626;font-weight:1000;white-space:nowrap; margin-top:4px;} 
-  .yearBox .ori-fee{font-size:10px; color:#94a3b8; text-decoration:line-through; margin-top:2px;}
-  .yearBox .disc-amt{font-size:11px; color:#dc2626; margin:2px 0; font-weight:800;}
-  .yearBox .final-amt{font-size:15px; color:#1e3a8a; font-weight:1000; margin-top:2px; background:#eff6ff; padding:2px 6px; border-radius:4px;}
+  .yearGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px} 
+  .yearBox{border:1px solid var(--line);border-radius:12px;background:#fff;padding:12px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center; align-items:center;} 
+  .yearBox b{display:block;font-size:14px;color:#334155;margin-bottom:4px;white-space:nowrap} 
+  .yearBox .pure-disc{font-size:18px;color:#dc2626;font-weight:1000;white-space:nowrap; margin-top:6px;} 
+  .yearBox .ori-fee{font-size:12px; color:#94a3b8; text-decoration:line-through; margin-top:4px;}
+  .yearBox .disc-amt{font-size:14px; color:#dc2626; margin:4px 0; font-weight:800;}
+  .yearBox .final-amt{font-size:20px; color:#1e3a8a; font-weight:1000; margin-top:4px; background:#eff6ff; padding:4px 8px; border-radius:6px;}
   .yearBox.total{border:2px solid var(--yellow);background:#fffbeb}
-  .yearBox.total span{color:#b45309;font-size:14px; margin-top:4px; font-weight:1000;} 
+  .yearBox.total span{color:#b45309;font-size:18px; margin-top:6px; font-weight:1000;} 
 
   /* 1단계 전용 스타일 */
-  .expenseGrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .expCard{border:1px solid var(--line);border-radius:8px;padding:6px;background:#fff}
-  .expCard label{display:block;margin-bottom:2px;font-size:10px;font-weight:900;color:#334155;white-space:nowrap}
-  .inputWrap{display:grid;grid-template-columns:1fr 32px;gap:4px}
-  .inputWrap input{width:100%;height:24px;border:1px solid #cbd5e1;border-radius:6px;padding:0 6px;font-size:12px;font-weight:900;color:#1d4ed8; text-align:right;}
-  .unit{display:flex;align-items:center;justify-content:center;height:24px;border:1px solid #cbd5e1;border-radius:6px;background:#f8fafc;font-size:11px;font-weight:900;color:#475569}
+  .expenseGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .expCard{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+  .expCard label{display:block;margin-bottom:6px;font-size:13px;font-weight:900;color:#334155;white-space:nowrap}
+  .inputWrap{display:grid;grid-template-columns:1fr 36px;gap:6px}
+  .inputWrap input{width:100%;height:32px;border:1px solid #cbd5e1;border-radius:8px;padding:0 10px;font-size:15px;font-weight:900;color:#1d4ed8; text-align:right;}
+  .unit{display:flex;align-items:center;justify-content:center;height:32px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;font-size:13px;font-weight:900;color:#475569}
   
   /* 주력 5종 카드 */
-  .cardGrid{display:grid;grid-template-columns:repeat(5, minmax(0, 1fr));gap:6px}
-  .card{border:1px solid var(--line);border-radius:12px;padding:8px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
+  .cardGrid{display:grid;grid-template-columns:repeat(5, minmax(0, 1fr));gap:10px}
+  .card{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
   .card.recommended{border:2px solid #60a5fa;background:#f8fbff}
   .card.selected{border:2px solid var(--green);background:#ecfdf5}
-  .cardTop{display:flex;justify-content:space-between;align-items:flex-start;gap:4px;min-height:18px;flex-wrap:wrap;}
-  .pill{display:inline-flex;padding:2px 5px;border-radius:999px;font-size:10px;font-weight:1000;white-space:nowrap;letter-spacing:-0.5px;}
+  .cardTop{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;min-height:24px;flex-wrap:wrap;}
+  .pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:1000;white-space:nowrap;letter-spacing:-0.5px;}
   .pill.green{background:#dcfce7;color:#047857} .pill.blue{background:#dbeafe;color:#1d4ed8}
-  .card h3{margin:4px 0 2px;font-size:12px;line-height:1.2;word-break:keep-all;letter-spacing:-0.5px;}
-  .card .recon{font-size:10.5px;color:#1d4ed8;font-weight:800;margin-bottom:4px;letter-spacing:-0.5px;}
-  .card .alloc{font-size:10.5px;color:#dc2626;font-weight:900;margin-bottom:4px;background:#fee2e2;padding:3px 4px;border-radius:4px;display:inline-block;letter-spacing:-0.5px;}
-  .card .error{font-size:10.5px;color:#64748b;font-weight:700;margin-bottom:4px;background:#f1f5f9;padding:3px 4px;border-radius:4px;display:inline-block;letter-spacing:-0.5px;}
-  .tiers{border-top:1px dashed var(--line);padding-top:4px;flex:1}
-  .tier{display:grid;grid-template-columns:1fr auto;gap:4px;padding:2px 0;align-items:center}
-  .tier div{font-size:10.5px;color:#64748b;letter-spacing:-0.5px;white-space:nowrap;} 
+  .card h3{margin:8px 0 6px;font-size:15px;line-height:1.3;word-break:keep-all;letter-spacing:-0.5px;}
+  .card .recon{font-size:13px;color:#1d4ed8;font-weight:800;margin-bottom:8px;letter-spacing:-0.5px;}
+  .card .alloc{font-size:12px;color:#dc2626;font-weight:900;margin-bottom:6px;background:#fee2e2;padding:4px 6px;border-radius:6px;display:inline-block;letter-spacing:-0.5px;}
+  .card .error{font-size:12px;color:#64748b;font-weight:700;margin-bottom:6px;background:#f1f5f9;padding:4px 6px;border-radius:6px;display:inline-block;letter-spacing:-0.5px;}
+  .tiers{border-top:1px dashed var(--line);padding-top:8px;flex:1}
+  .tier{display:grid;grid-template-columns:1fr auto;gap:6px;padding:3px 0;align-items:center}
+  .tier div{font-size:13px;color:#64748b;letter-spacing:-0.5px;white-space:nowrap;} 
   .hit{color:#dc2626 !important;font-weight:1000} .disc{font-weight:1000}
   
-  .selBtn{width:100%;margin-top:6px;background:#f8fafc;color:#475569;border:1px solid #cbd5e1;padding:6px;border-radius:6px;font-size:11px;font-weight:900;cursor:pointer;transition:0.2s;}
+  .selBtn{width:100%;margin-top:10px;background:#f8fafc;color:#475569;border:1px solid #cbd5e1;padding:10px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;transition:0.2s;}
   .selBtn:hover{background:#e2e8f0;}
   .selBtn.selected-btn{background:#0f766e;color:#fff;border-color:#0f766e;box-shadow:0 4px 10px rgba(15,118,110,0.2);}
-  .errorBox{grid-column:1/-1; background:#fef2f2; border:1px solid #fca5a5; color:#dc2626; font-weight:800; padding:10px; border-radius:8px; text-align:center; font-size:12px;}
+  .errorBox{grid-column:1/-1; background:#fef2f2; border:1px solid #fca5a5; color:#dc2626; font-weight:800; padding:12px; border-radius:10px; text-align:center; font-size:14px;}
 
   /* 2단계 전개 버튼 */
   .revealBtn {
-      width: 100%; padding: 12px; font-size: 14px; font-weight: 900; letter-spacing: -0.05em;
+      width: 100%; padding: 18px; font-size: 18px; font-weight: 900; letter-spacing: -0.05em;
       background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff;
-      border: none; border-radius: 12px; cursor: pointer; margin-top: 4px;
-      box-shadow: 0 4px 12px rgba(29,78,216,0.25); transition: transform 0.2s;
+      border: none; border-radius: 16px; cursor: pointer; margin-top: 6px;
+      box-shadow: 0 6px 16px rgba(29,78,216,0.25); transition: transform 0.2s;
   }
-  .revealBtn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(29,78,216,0.35); }
+  .revealBtn:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(29,78,216,0.35); }
 
   @keyframes fadeInDown { from{opacity:0; transform:translateY(-10px)} to{opacity:1; transform:translateY(0)} }
   .step2-panel { display: none; animation: fadeInDown 0.4s ease forwards; }
 
   /* 2단계 예산 탭 및 할인 컨트롤 */
-  .budgetGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-  .budgetBtn{border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 4px;cursor:pointer;text-align:center;transition:0.2s;}
+  .budgetGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .budgetBtn{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 6px;cursor:pointer;text-align:center;transition:0.2s;}
   .budgetBtn.active{border:2px solid #3b82f6;background:#eff6ff;color:#1d4ed8;}
-  .budgetBtn b{display:block;font-size:12px;}
+  .budgetBtn b{display:block;font-size:15px;}
   
-  .discountRow{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px}
-  .discountBtn{border:1px solid #bfdbfe;border-radius:8px;background:#fff;padding:6px 2px;cursor:pointer;font-size:11px;font-weight:900;text-align:center;transition:0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;}
-  .discountBtn.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff;box-shadow:0 4px 10px rgba(29,78,216,0.2);}
+  .discountRow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+  .discountBtn{border:1px solid #bfdbfe;border-radius:10px;background:#fff;padding:10px 4px;cursor:pointer;font-size:14px;font-weight:900;text-align:center;transition:0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;}
+  .discountBtn.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff;box-shadow:0 6px 12px rgba(29,78,216,0.2);}
   
-  .summaryMini{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px;}
-  .mini{display:flex; flex-direction:column; gap:1px;}
-  .mini b{font-size:10px;color:#64748b;}
-  .mini span{font-size:12px;font-weight:1000;}
+  .summaryMini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:12px;}
+  .mini{display:flex; flex-direction:column; gap:4px;}
+  .mini b{font-size:13px;color:#64748b;}
+  .mini span{font-size:16px;font-weight:1000;}
   .mini .red{color:#dc2626} .mini .blue{color:#1d4ed8} .mini .greenTxt{color:#047857}
   
   /* 2단계 우측: 추천 상품 리스트 (카드 그리드) */
-  .benefitGrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px;}
-  .benefitCard{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
-  .benefitCard:hover{border-color:#bfdbfe; box-shadow:0 4px 12px rgba(37,99,235,0.05);}
-  .benefitCard.selected{border:2px solid var(--yellow);background:#fffdf2; box-shadow:0 4px 12px rgba(250,204,21,0.15);}
-  .benefitTop{display:flex;justify-content:space-between;align-items:flex-start;gap:2px;}
-  .rows{border-top:1px dashed var(--line);padding-top:6px;flex:1;}
-  .row{display:grid;grid-template-columns:1fr auto;gap:4px;padding:3px 0;align-items:center;}
-  .row div{font-size:11.5px; color:#475569;} .hi{color:#dc2626 !important;font-weight:1000; font-size:12.5px;}
+  .benefitGrid{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:16px;}
+  .benefitCard{border:1px solid var(--line);border-radius:16px;padding:20px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
+  .benefitCard:hover{border-color:#bfdbfe; box-shadow:0 6px 16px rgba(37,99,235,0.08);}
+  .benefitCard.selected{border:2px solid var(--yellow);background:#fffdf2; box-shadow:0 6px 16px rgba(250,204,21,0.2);}
+  .benefitTop{display:flex;justify-content:space-between;align-items:flex-start;gap:4px;}
+  .rows{border-top:1px dashed var(--line);padding-top:10px;flex:1;}
+  .row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:5px 0;align-items:center;}
+  .row div{font-size:14px; color:#475569;} .hi{color:#dc2626 !important;font-weight:1000; font-size:16px;}
 
-  /* ★ 팝업 모달 리뉴얼 (iframe 탭 적용) ★ */
-  .modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;z-index:9999;padding:24px}
+  /* ★ 팝업 모달 리뉴얼 (Iframe 탭 적용) ★ */
+  .modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;z-index:9999;padding:32px}
   .modalOverlay.show{display:flex}
-  .modalBox{width:min(1400px, 96vw); height: 85vh; background:#fff;border-radius:24px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(15,23,42,.28);display:flex;flex-direction:column;overflow:hidden}
-  .modalHd{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid #e8eef5;background:linear-gradient(90deg,#fff7fb,#ffffff)}
-  .modalHd h3{margin:0;font-size:20px;letter-spacing:-.03em}
-  .closeBtn{min-width:42px;height:42px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;color:#334155;font-size:20px;font-weight:1000;cursor:pointer}
-  .modalBody{padding:18px;overflow:hidden;background:#f8fafc; height:100%; display:flex; flex-direction:column;}
+  .modalBox{width:min(1500px, 96vw); height: 85vh; background:#fff;border-radius:28px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(15,23,42,.3);display:flex;flex-direction:column;overflow:hidden}
+  .modalHd{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #e8eef5;background:linear-gradient(90deg,#fff7fb,#ffffff)}
+  .modalHd h3{margin:0;font-size:24px;letter-spacing:-.03em}
+  .closeBtn{min-width:48px;height:48px;border-radius:14px;border:1px solid #e2e8f0;background:#fff;color:#334155;font-size:24px;font-weight:1000;cursor:pointer}
+  .modalBody{padding:24px;overflow:hidden;background:#f8fafc; height:100%; display:flex; flex-direction:column;}
   
-  .modalInfoGrid{display:grid;grid-template-columns:360px 1fr;gap:16px;align-items:start; height: 100%;}
-  .modalTextPanel{border:1px solid var(--line);border-radius:18px;background:#fff;padding:16px; height:100%; overflow-y:auto;}
-  .modalTextPanel h4{margin:0 0 10px;font-size:18px;line-height:1.35; color:#1e3a8a; font-weight:900;}
-  .modalTextPanel p{margin:0 0 12px;font-size:13px;line-height:1.6;color:#475569}
-  .modalMiniCards{display:grid;gap:10px}
-  .modalMiniCard{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fbfdff}
-  .modalMiniCard b{display:block;margin-bottom:6px;font-size:14px;color:#0f172a}
-  .modalMiniCard span{display:block;font-size:12px;line-height:1.6;color:#64748b; margin-bottom:4px;}
+  .modalInfoGrid{display:grid;grid-template-columns:420px 1fr;gap:24px;align-items:start; height: 100%;}
+  .modalTextPanel{border:1px solid var(--line);border-radius:20px;background:#fff;padding:20px; height:100%; overflow-y:auto;}
+  .modalTextPanel h4{margin:0 0 16px;font-size:22px;line-height:1.35; color:#1e3a8a; font-weight:900;}
+  .modalMiniCards{display:grid;gap:12px}
+  .modalMiniCard{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fbfdff}
+  .modalMiniCard b{display:block;margin-bottom:8px;font-size:16px;color:#0f172a}
+  .modalMiniCard span{display:block;font-size:14px;line-height:1.6;color:#64748b; margin-bottom:4px;}
   
   /* Iframe Wrap */
-  .modalImageWrap{display:flex; flex-direction:column; border:1px solid #cbd5e1;border-radius:18px;background:#fff; overflow:hidden; height:100%;}
+  .modalImageWrap{display:flex; flex-direction:column; border:1px solid #cbd5e1;border-radius:20px;background:#fff; overflow:hidden; height:100%;}
   .modalTab { display:flex; border-bottom:1px solid #e2e8f0; background:#f8fafc; }
-  .tabBtn { flex: 1; padding: 14px; background: transparent; border: none; font-size: 14px; font-weight: 900; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; outline:none; letter-spacing:-0.05em;}
+  .tabBtn { flex: 1; padding: 18px; background: transparent; border: none; font-size: 16px; font-weight: 900; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; outline:none; letter-spacing:-0.05em;}
   .tabBtn.active { color: #1e3a8a; border-bottom-color: #1e3a8a; background: #fff; }
   .tabBtn:hover:not(.active) { background: #e2e8f0; }
 
@@ -187,21 +193,22 @@
   <!-- ★ 최상단: 최종 결과 패널 ★ -->
   <div class="top-result-panel" id="topResultPanel">
     <div class="hd">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <h2 id="resultTitle" style="font-size: 15px; color: #1e3a8a; font-weight: 900; margin:0;">1단계 합산 소비형 할인 결과</h2>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <h2 id="resultTitle" style="font-size: 18px; color: #1e3a8a; font-weight: 900; margin:0;">1단계 합산 소비형 할인 결과</h2>
         <span id="resultBadge" class="badge orange">선택 카드 합산 누적액</span>
       </div>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <div style="display:flex; align-items:center; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:3px 8px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);">
-            <span style="font-size:11px; font-weight:900; color:#334155; margin-right:6px;">가전 구독료</span>
-            <input type="text" id="subFeeInput" placeholder="0" style="width:70px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
-            <span style="font-size:11px; font-weight:900; color:#475569; margin-left:4px;">원</span>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <!-- 구독료 입력 -->
+        <div style="display:flex; align-items:center; background:#fff; border:1px solid #cbd5e1; border-radius:10px; padding:6px 12px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.05);">
+            <span style="font-size:13px; font-weight:900; color:#334155; margin-right:8px;">가전 구독료</span>
+            <input type="text" id="subFeeInput" placeholder="0" style="width:90px; border:none; outline:none; text-align:right; font-size:18px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
+            <span style="font-size:13px; font-weight:900; color:#475569; margin-left:6px;">원</span>
         </div>
         <button class="resetBtn" type="button" onclick="resetEntireConsultation()">🔄 상담 초기화</button>
         <button class="popupBtn" type="button" onclick="openKyowonPopup()">🎁 교원 라이프케어 안내</button>
       </div>
     </div>
-    <div class="bd" style="padding: 8px 14px;">
+    <div class="bd" style="padding: 12px 20px;">
       <div id="yearGrid" class="yearGrid"></div>
     </div>
   </div>
@@ -209,12 +216,14 @@
   <!-- [상단] 1단계: 소비형 할인 설계 -->
   <div class="shell" id="step1-container">
     <div class="mainGrid">
+      
+      <!-- [1단계 좌측] 입력부 -->
       <div class="leftCol">
         <div class="panel">
           <div class="hd-inner"><h2>1단계: 카드 사용금액 입력</h2><span class="badge orange">KB국민만 관리비 인정</span></div>
           <div class="bd" style="display:flex;flex-direction:column;">
             <div id="expenseGrid1" class="expenseGrid"></div>
-            <div class="btns" style="margin:6px 0">
+            <div class="btns" style="margin:10px 0">
               <button class="actionBtn btn-secondary" onclick="fillExample1()">예시값(70만) 입력</button>
               <button class="actionBtn btn-gray" onclick="resetAll1()">금액 초기화</button>
             </div>
@@ -229,13 +238,14 @@
         </div>
       </div>
       
+      <!-- [1단계 우측] 주력 카드 분배 리스트 -->
       <div class="rightCol">
         <div class="panel" style="height:100%;">
           <div class="hd-inner">
             <h2>제휴카드 목록 및 자동 분배 결과 (주력 5종)</h2>
             <span class="badge blue">복수 중복 선택 가능</span>
           </div>
-          <div class="bd" style="height:calc(100% - 32px); display:flex; flex-direction:column; justify-content:center;">
+          <div class="bd" style="height:calc(100% - 40px); display:flex; flex-direction:column; justify-content:center;">
             <div id="cardGrid1" class="cardGrid"></div>
           </div>
         </div>
@@ -243,30 +253,32 @@
 
     </div>
     
+    <!-- 2단계 전개 버튼 -->
     <button id="revealStep2Btn" class="revealBtn" style="display:none;" onclick="revealStep2()">
       🎁 저축하면서 추가 할인이 가능합니다! [2단계 교원 결합] 설계하기 ⬇️
     </button>
   </div>
 
 
-  <!-- [하단] 2단계: 저축형 할인 -->
+  <!-- [하단] 2단계: 저축형 할인 (예산 필터링 맞춤형) -->
   <div class="shell step2-panel" id="view-step2" style="margin-bottom: 0;">
     <div class="mainGrid">
       
+      <!-- [2단계 좌측] 컨트롤 패널 -->
       <div class="leftCol">
         <div class="panel">
           <div class="hd-inner"><h2>2단계: 고객 맞춤 교원 상품 설계</h2><span class="badge green">교원 필수</span></div>
           <div class="bd" style="display:flex;flex-direction:column;">
             
-            <div style="font-size:11px; font-weight:900; color:#334155; margin-bottom:4px;">① 월 저축 가능 금액 선택</div>
+            <div style="font-size:13px; font-weight:900; color:#334155; margin-bottom:6px;">① 월 저축 가능 금액 선택</div>
             <div id="budgetGrid" class="budgetGrid"></div>
             
-            <div style="font-size:11px; font-weight:900; color:#334155; margin-top:14px; margin-bottom:4px;">② 교원 전용 [신한] 제휴카드 혜택 선택</div>
+            <div style="font-size:13px; font-weight:900; color:#334155; margin-top:20px; margin-bottom:6px;">② 교원 전용 [신한] 제휴카드 혜택 선택</div>
             <div class="discountRow" id="discountRow2"></div>
             
-            <div class="summaryMini" style="margin-top:14px;">
-              <div class="mini" style="grid-column: 1 / -1; padding-bottom:6px; margin-bottom:4px; border-bottom:1px solid #e2e8f0;">
-                <b style="font-size:12px; color:#0f172a;">선택된 상품 조합 요약</b>
+            <div class="summaryMini" style="margin-top:20px;">
+              <div class="mini" style="grid-column: 1 / -1; padding-bottom:8px; margin-bottom:6px; border-bottom:1px solid #e2e8f0;">
+                <b style="font-size:14px; color:#0f172a;">선택된 상품 조합 요약</b>
               </div>
               <div class="mini"><b>교원 월 납입금액</b><span id="miniDeposit2">0원</span></div>
               <div class="mini"><b>교원 지원 캐시백</b><span class="blue" id="miniCashback2">0원</span></div>
@@ -274,23 +286,24 @@
               <div class="mini"><b>1단계 소비형 혜택</b><span class="greenTxt" id="miniStep1">0원</span></div>
             </div>
             
-            <div class="sumBox" style="background:#0f172a; padding: 10px; margin-top:10px;">
+            <div class="sumBox" style="background:#0f172a; padding: 14px; margin-top:14px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span class="ttl" style="color:#cbd5e1;">월 최종 혜택 합산 (1+2단계)</span>
-                <span id="totalBenefit2" class="money" style="font-size: 20px;">0원</span>
+                <span id="totalBenefit2" class="money" style="font-size: 24px;">0원</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- [2단계 우측] 메인 추천 상품 리스트 뷰 -->
       <div class="rightCol">
         <div class="panel" style="height:100%; border:2px solid #bfdbfe; box-shadow:0 4px 12px rgba(37,99,235,0.05);">
           <div class="hd-inner" style="background:linear-gradient(90deg, #f8fbff, #ffffff);">
-            <h2 style="font-size:15px; color:#1e3a8a;">조건에 맞는 추천 상품 리스트 (선택해주세요)</h2>
+            <h2 style="font-size:16px; color:#1e3a8a;">조건에 맞는 추천 상품 리스트 (선택해주세요)</h2>
             <span class="badge blue">최적 설계</span>
           </div>
-          <div class="bd" style="display:flex; flex-direction:column; justify-content:flex-start; padding:16px;">
+          <div class="bd" style="display:flex; flex-direction:column; justify-content:flex-start; padding:20px;">
               <div id="benefitGrid2" class="benefitGrid"></div>
           </div>
         </div>
@@ -301,13 +314,13 @@
 
 </div> <!-- End of wrap -->
 
-<!-- ★ 리뉴얼된 공통 모달 팝업 (Iframe 연동) ★ -->
+<!-- ★ 팝업 모달 (Iframe 연동) ★ -->
 <div id="kyowonPopup" class="modalOverlay" onclick="if(event.target===this) closeKyowonPopup()">
   <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="kyowonPopupTitle">
     <div class="modalHd">
       <div>
         <h3 id="kyowonPopupTitle">교원 라이프케어 공식 안내</h3>
-        <div class="modalSub">LG전자 · 교원 제휴 상품 및 전환 서비스 공식 홈페이지 화면입니다.</div>
+        <div class="modalSub" style="font-size:14px; color:#64748b; margin-top:4px;">LG전자 · 교원 제휴 상품 및 전환 서비스 공식 홈페이지 화면입니다.</div>
       </div>
       <button class="closeBtn" type="button" aria-label="닫기" onclick="closeKyowonPopup()">×</button>
     </div>
@@ -346,9 +359,9 @@
           <!-- iframe 영역 -->
           <iframe id="kyowonIframe" src="https://www.kyowonlife.co.kr/Service/ProductView?categoryCd=01&basiSeq=58" style="width:100%; flex:1; border:none; background:#f8fafc;"></iframe>
           <!-- 새창 열기 버튼 영역 -->
-          <div style="padding:10px 16px; background:#fff; border-top:1px solid #cbd5e1; display:flex; justify-content:flex-end; align-items:center;">
-              <span style="font-size:11px; color:#64748b; margin-right:12px;">태블릿 화면이 작다면 새 창으로 띄워보세요.</span>
-              <a id="kyowonLink" href="https://www.kyowonlife.co.kr/Service/ProductView?categoryCd=01&basiSeq=58" target="_blank" class="softBtn" style="background:#1e3a8a; color:#fff; text-decoration:none; border:none;">🌐 공식 홈페이지 새 창 열기 ↗</a>
+          <div style="padding:14px 20px; background:#fff; border-top:1px solid #cbd5e1; display:flex; justify-content:flex-end; align-items:center;">
+              <span style="font-size:13px; color:#64748b; margin-right:16px;">화면이 작다면 새 창으로 띄워보세요.</span>
+              <a id="kyowonLink" href="https://www.kyowonlife.co.kr/Service/ProductView?categoryCd=01&basiSeq=58" target="_blank" class="actionBtn" style="background:#1e3a8a; color:#fff; text-decoration:none; border:none; padding:10px 16px; font-size:13px;">🌐 공식 홈페이지 새 창 열기 ↗</a>
           </div>
         </div>
         
@@ -372,7 +385,6 @@ function updateSubFee(el) {
 }
 function formatSubFee(el) { el.value = fmtInput(subFee); }
 
-// 전체 초기화 함수
 function resetEntireConsultation() {
     data1.expenseLabels.forEach(l => st1.expenses[l] = 0);
     st1.selectedCardIds = [];
@@ -632,9 +644,9 @@ function renderBudgetGrid2() {
 
 function renderDiscountRow2(){
   document.getElementById("discountRow2").innerHTML = cardDiscounts2.map(v=>{
-      let label = v === 0 ? "선택 안 함<br><span style='font-size:9px; font-weight:normal;'>(기존 신한)</span>" : 
-                  v === 17000 ? "30만 이상<br><span style='font-size:12px;'>1.7만</span>" : 
-                  v === 27000 ? "70만 이상<br><span style='font-size:12px;'>2.7만</span>" : "130만 이상<br><span style='font-size:12px;'>3.0만</span>";
+      let label = v === 0 ? "선택 안 함<br><span style='font-size:11px; font-weight:normal;'>(기존 신한)</span>" : 
+                  v === 17000 ? "30만 이상<br><span style='font-size:14px;'>1.7만</span>" : 
+                  v === 27000 ? "70만 이상<br><span style='font-size:14px;'>2.7만</span>" : "130만 이상<br><span style='font-size:14px;'>3.0만</span>";
       return `<div class="discountBtn ${state2.cardDiscount===v?"active":""}" onclick="selectDiscount2(${v})">${label}</div>`
   }).join("");
 }
@@ -656,7 +668,7 @@ function renderBenefitGrid2(){
   const filteredCombos = allCombos.filter(c => c.tab === state2.budgetTab);
 
   if (filteredCombos.length === 0) {
-      document.getElementById("benefitGrid2").innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#64748b;">해당 금액대의 추천 상품이 없습니다.</div>`;
+      document.getElementById("benefitGrid2").innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:#64748b; font-size:15px;">해당 금액대의 추천 상품이 없습니다.</div>`;
       return;
   }
 
@@ -668,28 +680,28 @@ function renderBenefitGrid2(){
     return `
     <div class="benefitCard ${isSelected ? "selected" : ""}" style="cursor:pointer;" onclick="selectCombo('${c.id}')">
       <div class="benefitTop">
-        <span class="pill green">${c.prod.name} ${c.units}구좌</span>
-        ${isSelected ? '<span class="pill blue">선택됨</span>' : ''}
+        <span class="pill green" style="font-size:13px; padding:6px 10px;">${c.prod.name} ${c.units}구좌</span>
+        ${isSelected ? '<span class="pill blue" style="font-size:12px; padding:4px 8px;">선택됨</span>' : ''}
       </div>
       
-      <h3 style="margin:10px 0 2px; font-size:15px; color:#1e3a8a; font-weight:900;">월 ${w(c.cb)} 캐시백</h3>
-      ${c.prod.id === 'p130' ? `<div style="font-size:10.5px; color:#64748b; font-weight:normal; margin-bottom:6px; letter-spacing:-0.5px;">(※ 100회차 단일 ${w(c.prod.lastMonthCb * c.units)})</div>` : `<div style="margin-bottom:8px;"></div>`}
+      <h3 style="margin:16px 0 4px; font-size:18px; color:#1e3a8a; font-weight:900;">월 ${w(c.cb)} 캐시백</h3>
+      ${c.prod.id === 'p130' ? `<div style="font-size:12px; color:#64748b; font-weight:normal; margin-bottom:12px; letter-spacing:-0.5px;">(※ 100회차 단일 ${w(c.prod.lastMonthCb * c.units)})</div>` : `<div style="margin-bottom:16px;"></div>`}
       
       <div class="rows">
         <div class="row"><div>월 납입금액</div><div style="font-weight:900;">${w(c.deposit)}</div></div>
         <div class="row"><div>[신한] 할인</div><div class="hi">${w(state2.cardDiscount)}</div></div>
         <div class="row"><div>1단계 할인</div><div style="font-weight:900;color:#047857;">${w(step1Monthly)}</div></div>
-        <div class="row" style="margin-top:6px; padding-top:6px; border-top:1px dashed #cbd5e1;">
-            <div>월 최종 합산</div><div class="hi" style="font-size:15px; color:#b45309">${w(totalBenefit)}</div>
+        <div class="row" style="margin-top:10px; padding-top:10px; border-top:1px dashed #cbd5e1;">
+            <div>월 최종 합산</div><div class="hi" style="font-size:18px; color:#b45309">${w(totalBenefit)}</div>
         </div>
       </div>
       
-      <div style="margin-top:10px; background:#eff6ff; padding:8px; border-radius:8px; text-align:center; font-size:11px; line-height:1.4;">
-        <div style="color:#1e3a8a; font-weight:800; margin-bottom:2px; font-size:11.5px;">${c.prod.desc}</div>
-        <span style="color:#dc2626; font-weight:900; font-size:13px;">${w(refundAmt)} 100% 환급</span>
+      <div style="margin-top:14px; background:#eff6ff; padding:12px; border-radius:10px; text-align:center; line-height:1.5;">
+        <div style="color:#1e3a8a; font-weight:800; margin-bottom:4px; font-size:13px;">${c.prod.desc}</div>
+        <span style="color:#dc2626; font-weight:900; font-size:16px;">${w(refundAmt)} 100% 환급</span>
       </div>
       
-      <button class="selBtn" style="background:${isSelected?'#0f766e':'#f8fafc'}; color:${isSelected?'#fff':'#475569'}; border:1px solid ${isSelected?'#0f766e':'#cbd5e1'}; margin-top:10px;" onclick="event.stopPropagation(); selectCombo('${c.id}')">${isSelected ? "현재 선택됨" : "이 상품 선택"}</button>
+      <button class="selBtn" style="background:${isSelected?'#0f766e':'#f8fafc'}; color:${isSelected?'#fff':'#475569'}; border:1px solid ${isSelected?'#0f766e':'#cbd5e1'}; margin-top:14px; font-size:15px; padding:12px;" onclick="event.stopPropagation(); selectCombo('${c.id}')">${isSelected ? "현재 선택됨" : "이 상품 선택"}</button>
     </div>`;
   }).join("");
 
