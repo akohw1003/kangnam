@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교원72 통합 상담 패널 (선택 상품 강조형)</title>
+<title>교원72 통합 상담 패널 (입력창 너비 확장)</title>
 <style>
   :root{
     --bg:#eef3f8; --panel:#ffffff; --line:#d9e3ee; --text:#0f172a; --sub:#64748b;
@@ -24,13 +24,13 @@
   /* 공통 레이아웃 */
   .shell{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(15,23,42,.04); margin-bottom:16px;}
   
-  /* 팝업/초기화 버튼 스타일 */
+  /* 팝업/초기화 버튼 스타일 (슬림화) */
   .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:900; cursor:pointer; box-shadow:0 2px 6px rgba(190,24,93,0.1); transition: 0.2s; white-space:nowrap; margin:0; }
   .popupBtn:hover { background:#fdf2f8; }
   .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:900; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.05); transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; gap:4px; }
   .resetBtn:hover { background:#f1f5f9; color:#0f172a; border-color:#94a3b8; }
 
-  /* ★ 최상단 고정 결과 패널 ★ */
+  /* ★ 최상단 고정 결과 패널 (전체적으로 슬림하게 축소) ★ */
   .top-result-panel {
       position: sticky;
       top: 10px;
@@ -71,7 +71,7 @@
   .calcBtn{width:100%;padding:14px;font-size:16px;background:#0f766e;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:900; transition:0.2s;}
   .calcBtn:hover{background:#115e59;}
 
-  /* 년차별 그리드 */
+  /* 년차별 그리드 (슬림화) */
   .yearGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px} 
   .yearBox{border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 4px;text-align:center;display:flex;flex-direction:column;justify-content:center; align-items:center;} 
   .yearBox b{display:block;font-size:12px;color:#334155;margin-bottom:2px;white-space:nowrap} 
@@ -163,13 +163,13 @@
   
   .benefitCard:hover:not(.selected) { border-color:#bfdbfe; box-shadow:0 6px 16px rgba(37,99,235,0.08); }
   
-  /* ★ 4번 솔리드 배경 및 스케일업 강조 스타일 ★ */
+  /* 4번 솔리드 배경 및 스케일업 강조 스타일 */
   .benefitCard.selected {
-      border: 3px solid #2563eb; /* 굵은 딥블루 테두리 */
-      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%); /* 입체감 있는 파스텔 스카이블루 덮기 */
-      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25); /* 묵직한 그림자 */
-      transform: scale(1.03); /* 앞으로 튀어나오는 스케일 업 효과 */
-      z-index: 10; /* 다른 카드 위로 올라오게 */
+      border: 3px solid #2563eb; 
+      background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%); 
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25); 
+      transform: scale(1.03); 
+      z-index: 10; 
   }
   
   .benefitTop{display:flex;justify-content:space-between;align-items:flex-start;gap:4px; flex-wrap:wrap;}
@@ -221,7 +221,6 @@
 
 <div class="wrap">
   
-  <!-- ★ 최상단: 최종 결과 패널 (슬림화) ★ -->
   <div class="top-result-panel" id="topResultPanel">
     <div class="hd">
       <div style="display:flex; align-items:center; gap:8px;">
@@ -229,26 +228,22 @@
         <span id="resultBadge" class="badge orange">선택 카드 합산 누적액</span>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <!-- ★ 일시불/선납/구독료 통합 입력 바 (슬림) ★ -->
         <div style="display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:4px 12px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.04);">
-            <!-- 일시불 금액 -->
             <div style="display:flex; align-items:center;">
                 <span style="font-size:12px; font-weight:900; color:#475569; margin-right:6px;">가전 일시불가</span>
-                <input type="text" id="lumpSumInput" placeholder="0" style="width:80px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#334155; background:transparent;" oninput="updateLumpSum(this)" onblur="formatLumpSum(this)">
+                <input type="text" id="lumpSumInput" placeholder="0" style="width:120px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#334155; background:transparent;" oninput="updateLumpSum(this)" onblur="formatLumpSum(this)">
                 <span style="font-size:12px; font-weight:900; color:#475569; margin-left:2px;">원</span>
             </div>
             <div style="width:1px; height:18px; background:#cbd5e1;"></div>
-            <!-- 선납 금액 -->
             <div style="display:flex; align-items:center;">
                 <span style="font-size:12px; font-weight:900; color:#475569; margin-right:6px;">선납금액</span>
-                <input type="text" id="prepayInput" placeholder="0" style="width:80px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#0f766e; background:transparent;" oninput="updatePrepay(this)" onblur="formatPrepay(this)">
+                <input type="text" id="prepayInput" placeholder="0" style="width:120px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#0f766e; background:transparent;" oninput="updatePrepay(this)" onblur="formatPrepay(this)">
                 <span style="font-size:12px; font-weight:900; color:#475569; margin-left:2px;">원</span>
             </div>
             <div style="width:1px; height:18px; background:#cbd5e1;"></div>
-            <!-- 월 구독료 -->
             <div style="display:flex; align-items:center;">
                 <span style="font-size:12px; font-weight:900; color:#1d4ed8; margin-right:6px;">월 구독료</span>
-                <input type="text" id="subFeeInput" placeholder="0" style="width:70px; border:none; outline:none; text-align:right; font-size:15px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
+                <input type="text" id="subFeeInput" placeholder="0" style="width:90px; border:none; outline:none; text-align:right; font-size:15px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
                 <span style="font-size:12px; font-weight:900; color:#475569; margin-left:2px;">원</span>
             </div>
         </div>
@@ -259,19 +254,15 @@
     </div>
     
     <div class="bd" style="padding: 10px 16px;">
-      <!-- 월별 그리드 -->
       <div id="yearGrid" class="yearGrid"></div>
       
-      <!-- ★ 일시불 vs 구독 총비용 비교 바 표시 영역 ★ -->
       <div id="compareBar"></div>
     </div>
   </div>
 
-  <!-- [상단] 1단계: 소비형 할인 설계 -->
   <div class="shell" id="step1-container">
     <div class="mainGrid">
       
-      <!-- [1단계 좌측] 입력부 -->
       <div class="leftCol">
         <div class="panel">
           <div class="hd-inner">
@@ -295,7 +286,6 @@
         </div>
       </div>
       
-      <!-- [1단계 우측] 주력 카드 분배 리스트 -->
       <div class="rightCol">
         <div class="panel" style="height:100%;">
           <div class="hd-inner">
@@ -313,18 +303,15 @@
 
     </div>
     
-    <!-- 2단계 전개 버튼 -->
     <button id="revealStep2Btn" class="revealBtn" style="display:none;" onclick="revealStep2()">
       🎁 저축하면서 추가 할인이 가능합니다! [2단계 교원 결합] 설계하기 ⬇️
     </button>
   </div>
 
 
-  <!-- [하단] 2단계: 저축형 할인 (예산 필터링 맞춤형) -->
   <div class="shell step2-panel" id="view-step2" style="margin-bottom: 0;">
     <div class="mainGrid">
       
-      <!-- [2단계 좌측] 컨트롤 패널 -->
       <div class="leftCol">
         <div class="panel">
           <div class="hd-inner"><h2>2단계: 고객 맞춤 교원 상품 설계</h2><span class="badge green">교원 필수</span></div>
@@ -356,7 +343,6 @@
         </div>
       </div>
 
-      <!-- [2단계 우측] 메인 추천 상품 리스트 뷰 -->
       <div class="rightCol">
         <div class="panel" style="height:100%; border:2px solid #bfdbfe; box-shadow:0 4px 12px rgba(37,99,235,0.05);">
           <div class="hd-inner" style="background:linear-gradient(90deg, #f8fbff, #ffffff);">
@@ -372,10 +358,7 @@
     </div>
   </div>
 
-</div> <!-- End of wrap -->
-
-<!-- ★ 팝업 모달 (Iframe 연동) ★ -->
-<div id="kyowonPopup" class="modalOverlay" onclick="if(event.target===this) closeKyowonPopup()">
+</div> <div id="kyowonPopup" class="modalOverlay" onclick="if(event.target===this) closeKyowonPopup()">
   <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="kyowonPopupTitle">
     <div class="modalHd">
       <div>
@@ -387,7 +370,6 @@
     <div class="modalBody">
       <div class="modalInfoGrid">
         
-        <!-- 좌측 핵심 소구 포인트 -->
         <div class="modalTextPanel">
           <h4 style="color:#1e3a8a; font-weight:900;">고객 안내 스크립트 핵심</h4>
           <div class="modalMiniCards">
@@ -410,7 +392,6 @@
           </div>
         </div>
         
-        <!-- 우측 공식 홈페이지 연동 (Iframe) -->
         <div class="modalImageWrap">
           <div class="modalTab">
               <button class="tabBtn active" onclick="switchIframe(0)">🛒 구독교원 상품 상세안내</button>
@@ -858,6 +839,7 @@ function renderBenefitGrid2(){
         ? `background:#2563eb; color:#ffffff; border-color:#2563eb; box-shadow:0 4px 10px rgba(37,99,235,0.25);`
         : `background:#f8fafc; color:#475569; border-color:#cbd5e1;`;
 
+    // ★ 납입금액과 혜택 위치 스왑 적용 ★
     return `
     <div class="benefitCard ${isSelected ? "selected" : ""}" style="cursor:pointer;" onclick="selectCombo('${c.id}')">
       <div class="benefitTop">
@@ -865,11 +847,11 @@ function renderBenefitGrid2(){
         ${isSelected ? '<span class="pill blue" style="font-size:12px; padding:4px 8px; background:#1d4ed8; color:#fff; border:none;">✓ 선택됨</span>' : ''}
       </div>
       
-      <h3 style="margin:16px 0 4px; font-size:16px; color:#1e3a8a; font-weight:900; word-break:keep-all;">월 ${w(c.cb)} 캐시백</h3>
-      ${c.prod.id === 'p130' ? `<div style="font-size:11px; color:#64748b; font-weight:normal; margin-bottom:12px; letter-spacing:-0.5px;">(※ 100회차 단일 ${w(c.prod.lastMonthCb * c.units)})</div>` : `<div style="margin-bottom:16px;"></div>`}
+      <h3 style="margin:16px 0 4px; font-size:18px; color:#0f172a; font-weight:900; word-break:keep-all;">월 납입금액 ${w(c.deposit)}</h3>
+      ${c.prod.id === 'p130' ? `<div style="font-size:11px; color:#64748b; font-weight:normal; margin-bottom:12px; letter-spacing:-0.5px;">(※ 100회차 단일 납부액 변동 주의)</div>` : `<div style="margin-bottom:16px;"></div>`}
       
       <div class="rows">
-        <div class="row"><div>월 납입금액</div><div style="font-weight:900;">${w(c.deposit)}</div></div>
+        <div class="row"><div>교원 지원 캐시백</div><div class="hi" style="color:#2563eb !important;">${w(c.cb)}</div></div>
         <div class="row"><div>[신한] 할인</div><div class="hi">${w(state2.cardDiscount)}</div></div>
         <div class="row"><div>1단계 할인</div><div style="font-weight:900;color:#047857;">${w(step1Monthly)}</div></div>
         <div class="row" style="margin-top:10px; padding-top:10px; border-top:1px dashed #cbd5e1;">
