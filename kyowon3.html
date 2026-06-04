@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교원72 통합 상담 패널 (컨설팅 메인 레이아웃)</title>
+<title>교원72 통합 상담 패널 (비율 자동조절형)</title>
 <style>
   :root{
     --bg:#eef3f8; --panel:#ffffff; --line:#d9e3ee; --text:#0f172a; --sub:#64748b;
@@ -110,14 +110,18 @@
   .pFilterBtn.active { background:#2563eb; color:#fff; border-color:#2563eb; box-shadow:0 4px 10px rgba(37,99,235,0.2); }
   .pFilterBtn:hover:not(.active) { background:#f1f5f9; }
 
-  /* ★ 결과 영역 레이아웃 (상품카드 고정 + 컨설팅 멘트 확장) ★ */
+  /* ★ 결과 영역 레이아웃 (비율 자동조절 핵심) ★ */
   .benefitLayout { display: flex; gap: 24px; align-items: stretch; padding: 10px 0; }
   
-  /* 좌측 상품 카드 (너비 고정) */
-  .cardsWrap { width: 340px; flex-shrink: 0; display: flex; gap: 12px; }
+  /* 좌측 상품 카드 영역 (최대 너비 60% 제한, 초과 시 스크롤) */
+  .cardsWrap { 
+      display: flex; gap: 16px; flex-wrap: nowrap; overflow-x: auto; 
+      padding-bottom: 8px; max-width: 60%; /* 비율 유지의 핵심 */
+  }
   
+  /* 개별 상품 카드 고정 너비 (찌그러짐 방지) */
   .benefitCard {
-      width: 100%; border: 1px solid var(--line); border-radius: 16px;
+      width: 280px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 16px;
       padding: 24px 20px; background: #fff; display: flex; flex-direction: column; transition: all 0.3s;
   }
   .benefitCard.selected {
@@ -132,7 +136,7 @@
 
   /* 우측 매니저 맞춤 컨설팅 박스 (나머지 영역 모두 차지) */
   .pitchBox { 
-      flex: 1; background: linear-gradient(145deg, #f0fdf4, #ffffff); border: 2px solid #10b981; 
+      flex: 1; min-width: 320px; background: linear-gradient(145deg, #f0fdf4, #ffffff); border: 2px solid #10b981; 
       border-radius: 16px; padding: 32px 40px; display: flex; flex-direction: column; justify-content: center; 
       box-shadow: 0 8px 24px rgba(16,185,129,0.15);
   }
@@ -166,7 +170,6 @@
   .tabBtn { flex: 1; padding: 18px; background: transparent; border: none; font-size: 16px; font-weight: 900; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; outline:none; }
   .tabBtn.active { color: #1e3a8a; border-bottom-color: #1e3a8a; background: #fff; }
 
-  @media(max-width:1450px){.cardGrid{grid-template-columns:repeat(5,1fr)}}
 </style>
 </head>
 <body>
@@ -658,7 +661,7 @@ function renderBenefitGrid2(){
       
       <div style="margin-top:14px; padding:16px; border-radius:12px; text-align:center; line-height:1.5; ${innerBoxStyle}">
         <div style="color:#1e3a8a; font-weight:800; margin-bottom:4px; font-size:13px;">${c.prod.desc}</div>
-        <span style="color:#dc2626; font-weight:900; font-size:18px;">${w(refundAmt)} 100% 환급!</span>
+        <span style="color:#dc2626; font-weight:900; font-size:16px;">${w(refundAmt)} 100% 환급!</span>
       </div>
       
       <button class="selBtn" style="${btnStyle}" onclick="event.stopPropagation(); selectCombo('${c.id}')">${isSelected ? "✓ 상품 선택됨" : "이 상품 선택"}</button>
@@ -854,7 +857,7 @@ function renderAll() {
     if (isStep2Revealed) {
         renderBudgetGrid2();
         renderDiscountRow2();
-        renderProductFilter();
+        renderProductFilter(); 
         
         if(state2.budgetTab !== null && state2.cardDiscount !== null) {
             renderMini2();
