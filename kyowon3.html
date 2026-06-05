@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교원72 통합 상담 패널 (좌우 대칭 컨설팅형)</title>
+<title>교원72 통합 상담 대시보드 (완벽 대칭 및 슬림바 최종)</title>
 <style>
   :root{
     --bg:#eef3f8; --panel:#ffffff; --line:#d9e3ee; --text:#0f172a; --sub:#64748b;
@@ -11,71 +11,66 @@
     --orange:#ea580c; --orangeSoft:#fff7ed; --yellow:#facc15; --dark:#0b1736;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text); padding: 16px 24px; height: 100vh; overflow-y: auto;}
   
-  .wrap{max-width:1860px;margin:0 auto; display:flex; flex-direction:column; min-height:100%;}
+  body{margin:0;font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--text); padding: 16px 24px; overflow-y: auto;}
+  
+  .wrap{max-width:1860px; margin:0 auto; display:flex; flex-direction:column; gap: 16px; min-height: 100vh;}
   @media (min-width: 2400px) { .wrap { zoom: 1.25; } }
 
-  .shell{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 8px 24px rgba(15,23,42,.04); display:flex; flex-direction:column;}
+  .shell{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 4px 16px rgba(15,23,42,.03); display:flex; flex-direction:column;}
   
-  .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:900; cursor:pointer; box-shadow:0 2px 6px rgba(190,24,93,0.1); transition: 0.2s; white-space:nowrap; margin:0; }
+  .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:900; cursor:pointer; transition: 0.2s; white-space:nowrap; margin:0; }
   .popupBtn:hover { background:#fdf2f8; }
-  .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:8px 12px; font-size:12px; font-weight:900; cursor:pointer; box-shadow:0 2px 6px rgba(0,0,0,0.05); transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; gap:4px; }
+  .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:900; cursor:pointer; transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; gap:4px; }
   .resetBtn:hover { background:#f1f5f9; color:#0f172a; border-color:#94a3b8; }
 
   /* 최상단 고정 패널 */
   .top-result-panel {
-      flex-shrink: 0; z-index: 1000;
-      border: 2px solid #3b82f6; box-shadow: 0 6px 16px rgba(37,99,235,0.12); 
-      background: #ffffff; border-radius: 12px; overflow: hidden; margin-bottom: 16px; 
+      position: sticky; top: 10px; z-index: 1000;
+      flex-shrink: 0; border: 2px solid #3b82f6; background: #ffffff; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 6px 16px rgba(37,99,235,0.12);
   }
-  .top-result-panel .hd {
-      display: flex; justify-content: space-between; align-items: center; 
-      padding: 8px 16px; background: linear-gradient(90deg, #f0fdf4, #ffffff); border-bottom: 1px solid #e2e8f0;
-      flex-wrap: wrap; gap: 8px;
-  }
+  .top-result-panel .hd { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: linear-gradient(90deg, #f0fdf4, #ffffff); border-bottom: 1px solid #e2e8f0; }
+  .bd{padding:16px; flex:1; display:flex; flex-direction:column; overflow:hidden;}
   
-  .panel{border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden; display:flex; flex-direction:column;}
-  .hd-inner{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid #e8eef5;background:#f8fafc; flex-shrink:0;}
-  .hd-inner h2{margin:0;font-size:16px;white-space:nowrap;font-weight:900; letter-spacing:-0.03em;}
-  .badge{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
+  .badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
   .badge.orange{background:var(--orangeSoft);color:#c2410c;border:1px solid #ffedd5;}
   .badge.green{background:var(--greenSoft);color:#166534;border:1px solid #d1fae5;}
   .badge.blue{background:var(--blueSoft);color:#1d4ed8;border:1px solid #bfdbfe;}
-  .bd{padding:16px; flex:1; overflow-y:auto;}
-  
-  /* 년차별 그리드 */
+
   .yearGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px} 
-  .yearBox{border:1px solid var(--line);border-radius:10px;background:#fff;padding:8px 4px;text-align:center;display:flex;flex-direction:column;justify-content:center; align-items:center;} 
-  .yearBox b{display:block;font-size:12px;color:#334155;margin-bottom:2px;white-space:nowrap} 
-  .yearBox .pure-disc{font-size:15px;color:#dc2626;font-weight:1000;white-space:nowrap; margin-top:4px;} 
-  .yearBox .ori-fee{font-size:11px; color:#94a3b8; text-decoration:line-through; margin-top:2px;}
+  .yearBox{border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px 4px;text-align:center;} 
+  .yearBox b{display:block;font-size:12px;color:#334155;margin-bottom:2px;} 
+  .yearBox .pure-disc{display:block;font-size:15px;color:#dc2626;font-weight:1000; margin-top:4px;} 
+  .yearBox .ori-fee{font-size:11px; color:#94a3b8; text-decoration:line-through;}
   .yearBox .disc-amt{font-size:12px; color:#dc2626; margin:2px 0; font-weight:800;}
-  .yearBox .final-amt{font-size:16px; color:#1e3a8a; font-weight:1000; margin-top:2px; background:#eff6ff; padding:2px 6px; border-radius:4px;}
+  .yearBox .final-amt{font-size:15px; color:#1e3a8a; font-weight:1000; background:#eff6ff; padding:2px 6px; border-radius:4px; display:inline-block;}
   .yearBox.total{border:2px solid var(--yellow);background:#fffbeb}
-  .yearBox.total span{color:#b45309;font-size:16px; margin-top:4px; font-weight:1000;} 
+  .yearBox.total span{display:block; color:#b45309;font-size:16px; margin-top:4px; font-weight:1000;} 
 
   /* 메인 대시보드 좌우 레이아웃 */
-  .dashboard-wrap {
-      display: flex; gap: 20px; flex: 1; align-items: stretch; min-height: 0;
-  }
-  .col-left { flex: 0 0 42%; display: flex; flex-direction: column; }
-  .col-right { flex: 1; display: flex; flex-direction: column; position: relative; }
+  .dashboard-wrap { display: flex; gap: 20px; align-items: stretch; flex:1; min-height: 0;}
+  .col-left { flex: 0 0 54%; display: flex; flex-direction: column; overflow:hidden;}
+  .col-right { flex: 1; display: flex; flex-direction: column; position: relative; border: 2px solid #0f766e; overflow:hidden;}
 
-  /* 1단계 카드 배열 (좌측 2열) */
-  .cardGrid{display:grid;grid-template-columns:repeat(2, 1fr);gap:14px;}
-  .card{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
+  .hd-inner{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #e8eef5;background:#f8fafc; flex-shrink:0;}
+  .hd-inner h2{margin:0;font-size:16px;font-weight:900;}
+
+  /* 1단계 카드 배열 (좌측 3열) */
+  .cardGridWrap { flex: 1; overflow-y: auto; padding-right: 6px; margin-bottom: 16px; min-height: 0; }
+  .cardGrid{display:grid;grid-template-columns:repeat(3, 1fr);gap:14px;}
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
   .card.selected{border:2px solid var(--green);background:#ecfdf5; box-shadow:0 8px 20px rgba(15,118,110,0.15); transform:scale(1.02);}
   .cardTop{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;min-height:24px;flex-wrap:wrap;}
   .pill{display:inline-flex;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:1000;white-space:nowrap;letter-spacing:-0.5px;}
   .pill.green{background:#dcfce7;color:#047857} .pill.blue{background:#dbeafe;color:#1d4ed8}
-  .card h3{margin:10px 0 8px;font-size:17px;line-height:1.3;word-break:keep-all;letter-spacing:-0.5px; color:#0f172a; font-weight:900;}
+  .card h3{margin:10px 0 8px;font-size:16px;line-height:1.3;word-break:keep-all;letter-spacing:-0.5px; color:#0f172a; font-weight:900;}
   .card .alloc{font-size:13px;color:#854d0e;font-weight:900;margin-bottom:10px;background:#fef08a;border:1px solid #fde047;padding:6px 10px;border-radius:8px;display:inline-block;letter-spacing:-0.5px;}
   .tiers{border-top:1px dashed var(--line);padding-top:10px;flex:1}
   .tier{display:grid;grid-template-columns:1fr auto;gap:6px;padding:4px 0;align-items:center}
-  .tier div{font-size:14px;color:#64748b;letter-spacing:-0.5px;white-space:nowrap;} 
+  .tier div{font-size:13px;color:#64748b;letter-spacing:-0.5px;white-space:nowrap;} 
   .hit{color:#dc2626 !important;font-weight:1000} .disc{font-weight:1000}
-  .selBtn{width:100%;margin-top:14px;background:#f8fafc;color:#475569;border:1px solid #cbd5e1;padding:12px;border-radius:10px;font-size:15px;font-weight:900;cursor:pointer;transition:0.2s;}
+  .selBtn{width:100%;margin-top:14px;background:#f8fafc;color:#475569;border:1px solid #cbd5e1;padding:10px;border-radius:10px;font-size:14px;font-weight:900;cursor:pointer;transition:0.2s;}
   .selBtn:hover{background:#e2e8f0;}
   .selBtn.selected-btn{background:#0f766e;color:#fff;border-color:#0f766e;box-shadow:0 4px 10px rgba(15,118,110,0.2);}
 
@@ -98,79 +93,89 @@
   .revealBtn:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(15,118,110,0.5); }
 
   /* 2단계 내부 옵션 레이아웃 */
-  .optionsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px dashed #cbd5e1; margin-bottom: 16px;}
-  .optionCol { display: flex; flex-direction: column; }
+  .optionsGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-bottom:16px; border-bottom:1px dashed #cbd5e1; margin-bottom:16px; flex-shrink:0;}
   .optionTitle { font-size: 15px; font-weight: 900; color: #334155; margin-bottom: 10px; display:flex; align-items:center; gap:6px;}
   .optionTitle .num { background:#1e3a8a; color:#fff; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; font-size:12px; }
   
   .budgetGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-  .budgetBtn{border:1px solid var(--line);border-radius:10px;background:#fff;padding:16px 8px;cursor:pointer;text-align:center;transition:0.2s;}
-  .budgetBtn.active{border:2px solid #3b82f6;background:#eff6ff;color:#1d4ed8; box-shadow:0 4px 10px rgba(37,99,235,0.15);}
-  .budgetBtn b{display:block;font-size:15px;}
+  .budgetBtn{border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px 6px;cursor:pointer;text-align:center; font-size:13px; font-weight:700;}
+  .budgetBtn.active{border:2px solid #3b82f6;background:#eff6ff;color:#1d4ed8; font-weight:900;}
   
   .discountRow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  .discountBtn{border:1px solid #bfdbfe;border-radius:10px;background:#fff;padding:12px 4px;cursor:pointer;font-size:14px;font-weight:900;text-align:center;transition:0.2s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;}
-  .discountBtn.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff;box-shadow:0 6px 12px rgba(29,78,216,0.2);}
+  .discountBtn{border:1px solid #bfdbfe;border-radius:10px;background:#fff;padding:10px 4px;cursor:pointer;font-size:13px;font-weight:700;text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;}
+  .discountBtn.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff; font-weight:900;}
   
   /* 상품 필터 탭 */
-  .pFilterBtn { border:1px solid #cbd5e1; background:#fff; color:#64748b; padding:8px 16px; border-radius:20px; font-size:14px; font-weight:900; cursor:pointer; transition:0.2s; }
+  .pFilterBtn { border:1px solid #cbd5e1; background:#fff; color:#64748b; padding:8px 14px; border-radius:20px; font-size:13px; font-weight:900; cursor:pointer; transition:0.2s; }
   .pFilterBtn.active { background:#2563eb; color:#fff; border-color:#2563eb; box-shadow:0 4px 10px rgba(37,99,235,0.2); }
   .pFilterBtn:hover:not(.active) { background:#f1f5f9; }
 
   /* 결과 영역 레이아웃 */
-  .benefitLayout { display: flex; gap: 24px; align-items: stretch; padding: 10px 0; }
-  .cardsWrap { display: flex; gap: 16px; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 8px; max-width: 50%; }
+  .resultsWrap { display: none; flex: 1; flex-direction: column; overflow:hidden;}
+  .benefitLayout { display: flex; flex-direction: column; gap: 16px; flex: 1; overflow:hidden;}
   
-  .benefitCard {
-      width: 280px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 16px;
-      padding: 24px 20px; background: #fff; display: flex; flex-direction: column; transition: all 0.3s;
-  }
-  .benefitCard.selected {
-      border: 3px solid #2563eb; background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%); 
-      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25); z-index: 10; 
-  }
-  .benefitTop{display:flex;justify-content:space-between;align-items:flex-start;gap:4px; flex-wrap:wrap;}
-  .rows{border-top:1px dashed var(--line);padding-top:14px;flex:1;}
-  .row{display:grid;grid-template-columns:1fr auto;gap:4px;padding:6px 0;align-items:center;}
-  .row div{font-size:14px; color:#475569; letter-spacing:-0.5px; word-break:keep-all;} 
-  .hi{color:#dc2626 !important;font-weight:1000; font-size:16px;}
+  /* 상품 카드는 위에서 좌우 스크롤 가능하게 */
+  .cardsWrap { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 8px; width: 100%; flex-shrink: 0; margin-bottom: auto;}
+  
+  .benefitCard { width: 280px; flex: 0 0 auto; border: 1px solid var(--line); border-radius: 16px; padding: 20px; background: #fff; display: flex; flex-direction: column; justify-content: space-between;}
+  .benefitCard.selected { border: 3px solid #2563eb; background: linear-gradient(145deg, #eff6ff 0%, #dbeafe 100%); z-index: 10; }
+  .benefitCard h3 { margin:12px 0 6px; font-size:18px; color:#0f172a; font-weight:900; }
+  .benefitCard .rows { border-top:1px dashed var(--line); padding-top:12px; margin-top: auto; margin-bottom: 16px; }
+  .benefitCard .row { display:flex; justify-content:space-between; font-size:13px; color:#475569; padding:5px 0; }
+  .benefitCard .hi { color:#dc2626; font-weight:1000; font-size:15px; }
 
-  /* 우측 매니저 맞춤 컨설팅 박스 */
+  /* ★ 좌/우 대칭형 컨설팅 박스 (완벽 동일 구조) ★ */
   .pitchBox { 
-      flex: 1; min-width: 300px; background: linear-gradient(145deg, #f0fdf4, #ffffff); border: 2px solid #10b981; 
-      border-radius: 16px; padding: 24px 32px; display: flex; flex-direction: column; justify-content: center; 
-      box-shadow: 0 8px 24px rgba(16,185,129,0.15);
+      background: linear-gradient(145deg, #f8fafc, #ffffff); border: 2px solid #cbd5e1; 
+      border-radius: 16px; padding: 20px 24px; display: flex; flex-direction: column; 
+      margin-top: auto; flex-shrink: 0; 
   }
+  .pitchBox.right-pitch { background: linear-gradient(145deg, #f0fdf4, #ffffff); border-color: #10b981;}
+  .pitchBox h4 { font-size: 18px; font-weight: 900; margin: 0 0 16px 0; padding-bottom: 12px; display:flex; align-items:center; gap:6px; border-bottom: 2px dashed #cbd5e1;}
+  .pitchBox.right-pitch h4 { border-bottom-color: #a7f3d0; color: #047857;}
 
-  .summaryGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-  .summaryMini{display:grid;grid-template-columns:1fr 1fr;gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px;}
-  .mini{display:flex; flex-direction:column; gap:4px;}
-  .mini b{font-size:13px;color:#64748b;}
-  .mini span{font-size:18px;font-weight:1000;}
-  .mini .red{color:#dc2626} .mini .blue{color:#1d4ed8} .mini .greenTxt{color:#047857}
+  /* ★ 최하단 다크 슬림바 완벽 구현 (오류 수정 완료) ★ */
+  #bottomSummaryWrap { 
+      display: none; 
+      flex-direction: row; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: #0f172a; 
+      border-radius: 12px; 
+      padding: 16px 24px; 
+      margin-top: 0; 
+      flex-shrink: 0;
+      box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+  }
+  .bottom-bar-left { display: flex; align-items: center; gap: 20px; }
+  .bottom-bar-left .title { font-size: 15px; color: #cbd5e1; font-weight: 700; display:flex; align-items:center; gap:6px;}
+  .tWrap { display:flex; gap:6px; background:rgba(255,255,255,0.1); border-radius:10px; padding:6px;}
+  .tBtn { padding:8px 16px; border:none; background:transparent; color:#94a3b8; font-size:14px; font-weight:900; border-radius:6px; cursor:pointer; transition:0.2s;}
+  .tBtn.active { background:#2563eb; color:#fff; box-shadow:0 2px 6px rgba(37,99,235,0.4); }
   
-  /* 혜택 적용 모드 스위치 */
-  .tWrap { display:flex; gap:6px; background:rgba(0,0,0,0.3); border-radius:10px; padding:6px; margin-bottom:16px;}
-  .tBtn { flex:1; padding:10px 0; border:none; background:transparent; color:#94a3b8; font-size:14px; font-weight:900; border-radius:8px; cursor:pointer; transition:0.2s; }
-  .tBtn.active { background:#2563eb; color:#fff; box-shadow:0 2px 8px rgba(37,99,235,0.4); }
-
-  .resultsWrap { display: none; }
+  .bottom-bar-right { display: flex; align-items: center; gap: 24px; }
   
   /* 팝업 모달 */
   .modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;z-index:9999;padding:32px}
   .modalOverlay.show{display:flex}
-  .modalBox{width:min(1500px, 96vw); height: 85vh; background:#fff;border-radius:28px;border:1px solid var(--line);box-shadow:0 30px 80px rgba(15,23,42,.3);display:flex;flex-direction:column;overflow:hidden}
-  .modalHd{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;border-bottom:1px solid #e8eef5;background:linear-gradient(90deg,#fff7fb,#ffffff)}
-  .closeBtn{min-width:48px;height:48px;border-radius:14px;border:1px solid #e2e8f0;background:#fff;color:#334155;font-size:24px;font-weight:1000;cursor:pointer}
+  .modalBox{width:min(1400px, 96vw); height: 85vh; background:#fff;border-radius:24px;display:flex;flex-direction:column;overflow:hidden}
+  .modalHd{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;background:#f8fafc; border-bottom:1px solid #e2e8f0;}
+  .closeBtn{width:44px;height:44px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;font-size:24px;font-weight:900;cursor:pointer}
   .modalBody{padding:24px;overflow:hidden;background:#f8fafc; height:100%; display:flex; flex-direction:column;}
-  .modalInfoGrid{display:grid;grid-template-columns:420px 1fr;gap:24px;align-items:start; height: 100%;}
+  .modalInfoGrid{display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start; height: 100%;}
   .modalTextPanel{border:1px solid var(--line);border-radius:20px;background:#fff;padding:20px; height:100%; overflow-y:auto;}
   .modalMiniCards{display:grid;gap:12px}
-  .modalMiniCard{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fbfdff}
+  .modalMiniCard{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fbfdff}
   .modalImageWrap{display:flex; flex-direction:column; border:1px solid #cbd5e1;border-radius:20px;background:#fff; overflow:hidden; height:100%;}
   .modalTab { display:flex; border-bottom:1px solid #e2e8f0; background:#f8fafc; }
-  .tabBtn { flex: 1; padding: 18px; background: transparent; border: none; font-size: 16px; font-weight: 900; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.2s; outline:none; }
+  .tabBtn { flex: 1; padding: 16px; background: transparent; border: none; font-size: 15px; font-weight: 900; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; }
   .tabBtn.active { color: #1e3a8a; border-bottom-color: #1e3a8a; background: #fff; }
+
+  /* 스크롤바 커스텀 */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 </style>
 </head>
 <body>
@@ -184,30 +189,27 @@
         <span id="resultBadge" class="badge orange">선택 카드 합산 누적액</span>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <div style="display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:4px 12px; box-shadow:inset 0 1px 3px rgba(0,0,0,0.04);">
+        <div style="display:flex; align-items:center; gap:8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:4px 10px;">
             <div style="display:flex; align-items:center;">
-                <span style="font-size:12px; font-weight:900; color:#475569; margin-right:6px;">가전 일시불가</span>
-                <input type="text" id="lumpSumInput" placeholder="0" style="width:120px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#334155; background:transparent;" oninput="updateLumpSum(this)" onblur="formatLumpSum(this)">
-                <span style="font-size:12px; font-weight:900; color:#475569; margin-left:2px;">원</span>
+                <span style="font-size:12px; font-weight:900; color:#475569; margin-right:6px;">일시불가</span>
+                <input type="text" id="lumpSumInput" placeholder="0" style="width:100px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#334155; background:transparent;" oninput="updateLumpSum(this)" onblur="formatLumpSum(this)">
             </div>
-            <div style="width:1px; height:18px; background:#cbd5e1;"></div>
+            <div style="width:1px; height:14px; background:#cbd5e1;"></div>
             <div style="display:flex; align-items:center;">
                 <span style="font-size:12px; font-weight:900; color:#475569; margin-right:6px;">선납금액</span>
-                <input type="text" id="prepayInput" placeholder="0" style="width:120px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#0f766e; background:transparent;" oninput="updatePrepay(this)" onblur="formatPrepay(this)">
-                <span style="font-size:12px; font-weight:900; color:#475569; margin-left:2px;">원</span>
+                <input type="text" id="prepayInput" placeholder="0" style="width:100px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#0f766e; background:transparent;" oninput="updatePrepay(this)" onblur="formatPrepay(this)">
             </div>
-            <div style="width:1px; height:18px; background:#cbd5e1;"></div>
+            <div style="width:1px; height:14px; background:#cbd5e1;"></div>
             <div style="display:flex; align-items:center;">
-                <span style="font-size:12px; font-weight:900; color:#1d4ed8; margin-right:6px;">월 구독료</span>
-                <input type="text" id="subFeeInput" placeholder="0" style="width:90px; border:none; outline:none; text-align:right; font-size:15px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
-                <span style="font-size:12px; font-weight:900; color:#475569; margin-left:2px;">원</span>
+                <span style="font-size:12px; font-weight:900; color:#1d4ed8; margin-right:6px;">월구독료</span>
+                <input type="text" id="subFeeInput" placeholder="0" style="width:80px; border:none; outline:none; text-align:right; font-size:14px; font-weight:900; color:#1d4ed8; background:transparent;" oninput="updateSubFee(this)" onblur="formatSubFee(this)">
             </div>
         </div>
-        <button class="resetBtn" type="button" onclick="resetEntireConsultation()">🔄 상담 초기화</button>
+        <button class="resetBtn" type="button" onclick="resetEntireConsultation()">🔄 초기화</button>
         <button class="popupBtn" type="button" onclick="openKyowonPopup()">🎁 교원 안내</button>
       </div>
     </div>
-    <div class="bd" style="padding: 10px 16px;">
+    <div class="bd" style="padding: 12px 16px;">
       <div id="yearGrid" class="yearGrid"></div>
       <div id="compareBar"></div>
     </div>
@@ -215,43 +217,37 @@
 
   <div class="dashboard-wrap">
       
-      <!-- [좌측] 1단계: 소비형 제휴카드 -->
+      <!-- [좌측] 1단계: 소비형 (54% 너비) -->
       <div class="shell col-left" style="margin-bottom: 0;">
-          <div class="hd-inner" style="padding:16px 20px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <h2 style="font-size:18px;">1단계: 제휴카드 혜택 선택</h2>
-            </div>
-            <span class="badge blue">복수 중복 선택 가능</span>
+          <div class="hd-inner">
+            <h2 style="font-size:16px;">1단계: 제휴카드 혜택 선택</h2>
+            <span class="badge blue">복수 선택 가능</span>
           </div>
-          <div class="bd" style="padding:20px; display:flex; flex-direction:column;">
-            <div id="cardGrid1" class="cardGrid"></div>
-            
-            <!-- ★ 좌측 1단계 매니저 맞춤 요약 (소비형) ★ -->
-            <div id="leftConsultingBox" style="display:none; margin-top:auto; background: linear-gradient(145deg, #f8fafc, #f1f5f9); border: 2px solid #cbd5e1; border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.05);">
-                <h4 style="color: #475569; font-size: 18px; font-weight: 900; margin: 0 0 16px 0; border-bottom: 2px dashed #cbd5e1; padding-bottom: 12px; display:flex; align-items:center; justify-content:center; gap:8px;">💡 매니저의 맞춤 요약</h4>
-                <div style="display:inline-block; font-weight:900; color:#475569; font-size:15px; background:#e2e8f0; padding:6px 16px; border-radius:8px; margin-bottom:16px;">💳 단순 소비형</div>
-                <div style="color:#0f172a; font-weight:900; font-size:24px; margin-bottom:8px;"><span id="leftSpendAmt">0</span>만 원 사용</div>
-                <div style="color:#475569; font-size:18px; font-weight:700;">➔ <span id="leftDiscAmt">0</span>만 원 할인</div>
+          <div class="bd" style="padding:16px 20px; display:flex; flex-direction:column; overflow:hidden;">
+            <!-- 스크롤 보장 구역 -->
+            <div class="cardGridWrap">
+                <div id="cardGrid1" class="cardGrid"></div>
             </div>
-
+            
+            <!-- ★ 좌측 1단계 매니저 맞춤 요약 (대칭용 / 하단 고정) ★ -->
+            <div id="leftConsultingBox" class="pitchBox left-pitch" style="display:none;"></div>
           </div>
       </div>
 
-      <!-- [우측] 2단계: 저축형 교원 설계 -->
-      <div class="shell col-right" style="margin-bottom: 0; border: 2px solid #0f766e;">
+      <!-- [우측] 2단계: 저축형 (46% 너비) -->
+      <div class="shell col-right" style="margin-bottom: 0;">
           
           <div id="step2Overlay" class="step2-overlay">
-              <button id="revealStep2Btn" class="revealBtn" style="display:none;" onclick="revealStep2()">
+              <button id="revealStep2Btn" class="revealBtn" onclick="revealStep2()">
                 💡 72개월간 <b id="dynamicSpendText" style="color:#fde047; font-size:24px;">[0만 원]</b>을 사용하는 소비형 혜택도 좋지만,<br>100% 돌려받는 '저축형' 혜택도 비교해 볼까요? ⬇️
               </button>
           </div>
 
           <div class="hd-inner" style="background:#ecfdf5; border-bottom:1px solid #d1fae5;">
-              <h2 style="color:#047857; font-size:18px;">2단계: 고객 맞춤 교원 상품 설계</h2>
-              <span class="badge green">옵션을 모두 선택해주세요</span>
+              <h2 style="color:#047857; font-size:16px;">2단계: 고객 맞춤 교원 상품 설계</h2>
           </div>
           
-          <div class="bd" style="display:flex; flex-direction:column; padding: 0;">
+          <div class="bd" style="padding: 16px; display:flex; flex-direction:column; overflow:hidden;">
               <div class="optionsGrid">
                   <div class="optionCol">
                       <div class="optionTitle"><span class="num">1</span> 월 저축 가능 금액 선택</div>
@@ -263,72 +259,79 @@
                   </div>
               </div>
 
-              <div id="step2Results" class="resultsWrap" style="flex:1; display:none; flex-direction:column; padding:0 20px 20px 20px;">
-                  <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
-                      <h2 style="font-size:18px; color:#1e3a8a; margin:0; font-weight:900;">조건에 맞는 추천 상품 리스트</h2>
-                      <div id="productFilterWrap" style="display:flex; gap:8px;"></div>
+              <!-- 결과 렌더링 영역 -->
+              <div id="step2Results" class="resultsWrap">
+                  <div style="display:flex; align-items:center; gap:12px; margin-bottom: 12px; flex-shrink:0;">
+                      <h2 style="font-size:16px; color:#1e3a8a; margin:0; font-weight:900;">조건에 맞는 추천 상품 리스트</h2>
+                      <div id="productFilterWrap" style="display:flex; gap:6px;"></div>
                   </div>
                   
-                  <!-- 상품 리스트 & 우측 맞춤 컨설팅 -->
-                  <div id="benefitGrid2"></div>
-                  
-                  <div class="summaryGrid">
-                      <div class="summaryMini">
-                          <div class="mini" style="grid-column: 1 / -1; padding-bottom:8px; margin-bottom:6px; border-bottom:1px solid #e2e8f0;">
-                            <b style="font-size:15px; color:#0f172a;">선택된 상품 조합 요약 (최종 혜택 확인)</b>
-                          </div>
-                          <div class="mini"><b>교원 월 납입금액</b><span id="miniDeposit2">0원</span></div>
-                          <div class="mini"><b>교원 캐시백</b><span class="blue" id="miniCashback2">0원</span></div>
-                          <div class="mini"><b>[신한] 제휴 할인</b><span class="red" id="miniCardDisc2">0원</span></div>
-                          <div class="mini"><b>1단계 혜택</b><span class="greenTxt" id="miniStep1">0원</span></div>
-                      </div>
-                      
-                      <div style="background:var(--dark); border-radius:12px; padding:16px 20px; display:flex; flex-direction:column; justify-content:center;">
-                          <div style="font-size:14px; color:#cbd5e1; margin-bottom:10px; font-weight:700;">💡 혜택 적용 모드 (자유롭게 전환하며 비교해 보세요)</div>
-                          <div class="tWrap">
-                              <button class="tBtn active" id="btnModeStep2" onclick="setCombineMode('step2')">교원 단독 적용</button>
-                              <button class="tBtn" id="btnModeStep1" onclick="setCombineMode('step1')">제휴카드 단독 적용</button>
-                              <button class="tBtn" id="btnModeBoth" onclick="setCombineMode('both')">교원 + 카드 동시 결합</button>
-                          </div>
-                          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed rgba(255,255,255,0.2); padding-top:16px;">
-                              <span class="ttl" style="font-size:16px; color:#e2e8f0;">월 최종 혜택 합산</span>
-                              <span id="totalBenefit2" class="money" style="font-size:32px; font-weight:1000; color:#fff;">0원</span>
-                          </div>
-                      </div>
-                  </div>
+                  <div id="benefitGrid2" style="display: flex; flex-direction: column; flex: 1; overflow:hidden;"></div>
               </div>
           </div>
       </div>
   </div>
+
+  <!-- ★ 최하단 다크 슬림바 완벽 구현 ★ -->
+  <div id="bottomSummaryWrap">
+      <div class="bottom-bar-left">
+          <div class="title">💡 혜택 적용 모드 (자유롭게 전환하며 비교해 보세요)</div>
+          <div class="tWrap">
+              <button class="tBtn active" id="btnModeStep2" onclick="setCombineMode('step2')">교원 단독 적용</button>
+              <button class="tBtn" id="btnModeStep1" onclick="setCombineMode('step1')">제휴카드 단독 적용</button>
+              <button class="tBtn" id="btnModeBoth" onclick="setCombineMode('both')">교원 + 카드 동시 결합</button>
+          </div>
+      </div>
+      <div class="bottom-bar-right">
+          <span style="font-size:16px; color:#e2e8f0; font-weight:700;">월 최종 혜택 합산</span>
+          <span id="totalBenefit2" class="money" style="font-size:36px; font-weight:1000; color:#fff;">0원</span>
+      </div>
+  </div>
+
 </div> 
 
 <!-- 팝업 모달 -->
 <div id="kyowonPopup" class="modalOverlay" onclick="if(event.target===this) closeKyowonPopup()">
-  <div class="modalBox">
+  <div class="modalBox" role="dialog" aria-modal="true" aria-labelledby="kyowonPopupTitle">
     <div class="modalHd">
       <div>
-        <h3 id="kyowonPopupTitle">교원 라이프케어 공식 안내</h3>
-        <div class="modalSub" style="font-size:14px; color:#64748b; margin-top:4px;">LG전자 · 교원 제휴 상품 및 전환 서비스 공식 홈페이지 화면입니다.</div>
+        <h3 id="kyowonPopupTitle" style="color:#1e3a8a; font-weight:900; margin:0;">교원 라이프케어 공식 안내</h3>
       </div>
-      <button class="closeBtn" type="button" onclick="closeKyowonPopup()">×</button>
+      <button class="closeBtn" type="button" aria-label="닫기" onclick="closeKyowonPopup()">×</button>
     </div>
     <div class="modalBody">
       <div class="modalInfoGrid">
+        
         <div class="modalTextPanel">
           <h4 style="color:#1e3a8a; font-weight:900;">고객 안내 스크립트 핵심</h4>
           <div class="modalMiniCards">
-            <div class="modalMiniCard"><b>🎁 1. 가전 구독료 매월 지원!</b><span>1~4구좌 결합 시 구좌 수에 비례하여 매월 통장으로 캐시백 혜택이 입금됩니다.</span></div>
-            <div class="modalMiniCard"><b>💰 2. 만기 시 100% 전액 환급!</b><span>계약 종료 시까지 라이프케어 서비스를 미이용하시면, 납입하신 원금 전액을 돌려드립니다.</span></div>
-            <div class="modalMiniCard"><b>👨‍👩‍👧‍👦 3. 라이프케어 서비스 자유 전환</b><span>살아가며 목돈이 필요한 순간(웨딩, 크루즈, 어학연수 등) 전환 사용 가능합니다.</span></div>
+            <div class="modalMiniCard">
+              <b>🎁 1. 가전 구독료 매월 지원!</b>
+              <span>1~4구좌 결합 시 구좌 수에 비례하여 매월 통장으로 캐시백 혜택이 입금됩니다.</span>
+            </div>
+            <div class="modalMiniCard">
+              <b>💰 2. 만기 시 100% 전액 환급!</b>
+              <span>계약 종료 시까지 라이프케어 서비스를 미이용하시면, 납입하신 원금 전액을 1원도 빠짐없이 돌려드립니다.</span>
+            </div>
+            <div class="modalMiniCard">
+              <b>👨‍👩‍👧‍👦 3. 라이프케어 서비스 자유 전환</b>
+              <span>살아가며 목돈이 필요한 순간(웨딩, 크루즈, 어학연수 등) 프리미엄 서비스로 100% 전환 사용 가능합니다.</span>
+            </div>
           </div>
         </div>
+        
         <div class="modalImageWrap">
           <div class="modalTab">
               <button class="tabBtn active" onclick="switchIframe(0)">🛒 구독교원 상품 상세안내</button>
               <button class="tabBtn" onclick="switchIframe(1)">🏖️ 전환 가능 라이프케어 서비스</button>
           </div>
           <iframe id="kyowonIframe" src="https://www.kyowonlife.co.kr/Service/ProductView?categoryCd=01&basiSeq=58" style="width:100%; flex:1; border:none; background:#f8fafc;"></iframe>
+          <div style="padding:14px 20px; background:#fff; border-top:1px solid #cbd5e1; display:flex; justify-content:flex-end; align-items:center;">
+              <span style="font-size:13px; color:#64748b; margin-right:16px;">화면이 작다면 새 창으로 띄워보세요.</span>
+              <a id="kyowonLink" href="https://www.kyowonlife.co.kr/Service/ProductView?categoryCd=01&basiSeq=58" target="_blank" class="actionBtn" style="background:#1e3a8a; color:#fff; text-decoration:none; border:none; padding:10px 16px; font-size:13px; border-radius: 8px;">🌐 공식 홈페이지 새 창 열기 ↗</a>
+          </div>
         </div>
+        
       </div>
     </div>
   </div>
@@ -340,6 +343,7 @@ const raw = v => Number(String(v||"").replace(/[^0-9]/g,"")||0);
 function fmtInput(v){ return v ? Number(v).toLocaleString("ko-KR") : ""; }
 
 let isStep2Revealed = false; 
+
 let lumpSumFee = 0; 
 let prepayFee = 0;  
 let subFee = 0;     
@@ -360,6 +364,7 @@ function formatPrepay(el) { el.value = fmtInput(prepayFee); }
 function updateSubFee(el) { subFee = raw(el.value); el.value = fmtInput(subFee); renderUnifiedResult(); }
 function formatSubFee(el) { el.value = fmtInput(subFee); }
 
+
 function resetEntireConsultation() {
     st1.selectedCardIds = [];
     st1.fixedTiers = {}; 
@@ -367,6 +372,7 @@ function resetEntireConsultation() {
     isStep2Revealed = false;
     document.getElementById('step2Overlay').classList.remove('hidden');
     document.getElementById('step2Results').style.display = 'none';
+    document.getElementById('bottomSummaryWrap').style.display = 'none'; 
     
     state2.budgetTab = null;
     state2.cardDiscount = null;
@@ -394,7 +400,10 @@ function revealStep2() {
     document.getElementById('step2Overlay').classList.add('hidden');
     document.getElementById('revealStep2Btn').style.display = 'none';
     
-    state2.combineMode = 'step2'; 
+    // 2단계 진입 시 기본 세팅
+    state2.budgetTab = 4; // 30만원 이상
+    state2.cardDiscount = 0; // 선택 안 함
+    state2.combineMode = 'both'; // 기본 콤보 모드로 변경
     state2.productFilter = 'p72'; 
     
     document.getElementById('resultTitle').textContent = "최종 결합 할인 결과 리포트";
@@ -403,11 +412,12 @@ function revealStep2() {
     document.getElementById('topResultPanel').querySelector('.hd').style.background = "linear-gradient(90deg, #fffbeb, #ffffff)";
     document.getElementById('resultBadge').textContent = "년차별 월 혜택 + 6년 누적";
 
+    checkStep2Completion(); 
     renderAll();
 }
 
 /* =========================================
-   1단계 (제휴카드 원클릭 배정)
+   1단계 (소비형 할인) 로직
 ========================================= */
 const data1 = {
   cards:[
@@ -444,10 +454,9 @@ function renderCards1(){
             const sel = selectedMin === t.min ? "selected" : "";
             options += `<option value="${t.min}" ${sel}>🎯 ${w(t.min)} 실적 적용 (${w(t.discount)} 할인)</option>`;
         });
-        
         selectHtml = `
-        <div style="margin-top:8px;">
-            <select onchange="setFixedTier1('${card.id}', this.value)" style="width:100%; padding:8px; font-size:14px; font-weight:900; border:1px solid #fde047; border-radius:8px; background:#fef08a; color:#854d0e; outline:none; cursor:pointer;">
+        <div style="margin-top:6px;">
+            <select onchange="setFixedTier1('${card.id}', this.value)" style="width:100%; padding:6px; font-size:13px; font-weight:900; border:1px solid #fde047; border-radius:8px; background:#fef08a; color:#854d0e; outline:none; cursor:pointer;">
                 ${options}
             </select>
         </div>`;
@@ -462,7 +471,7 @@ function renderCards1(){
           return `<div class="tier"><div class="${isHit?"hit":""}">${Number(t.min).toLocaleString("ko-KR")}원↑</div><div class="disc ${isHit?"hit":""}">${Number(t.discount).toLocaleString("ko-KR")}원/월</div></div>`
       }).join("")}</div>
       ${selectHtml}
-      <button class="selBtn ${isSelected ? 'selected-btn' : ''}" onclick="selectCard1('${card.id}')">${isSelected ? "✓ 혜택 적용 중" : "이 카드 담기"}</button>
+      <button class="selBtn ${isSelected ? 'selected-btn' : ''}" onclick="selectCard1('${card.id}')">${isSelected ? "✓ 적용 중" : "추가 선택"}</button>
     </div>`
   }).join("");
   grid.innerHTML = html;
@@ -504,7 +513,7 @@ function getCombinedMonthlyArr() {
 }
 
 /* =========================================
-   2단계 (저축형 할인) 
+   2단계 (저축형 할인)
 ========================================= */
 const kyowonProducts = {
   p72:  { id: 'p72',  name: '교원 72',  deposit: 84000,  cashback: 10000, totalRefund: 5990000, desc: '72개월 납부 + 28개월 거치' },
@@ -522,7 +531,6 @@ for(let p in kyowonProducts) {
        if(dep >= 300000) tabId = 4;
        else if(dep >= 200000) tabId = 3;
        else if(dep >= 100000) tabId = 2;
-       
        allCombos.push({ id: `${p}_${u}`, prod: kyowonProducts[p], units: u, deposit: dep, cb: cb, tab: tabId });
    }
 }
@@ -533,11 +541,7 @@ allCombos.sort((a, b) => {
     return b.cb - a.cb;
 });
 
-const budgetTabs = [
-  {id: 4, label: "30만원 이상"}, {id: 3, label: "20만~30만원"},
-  {id: 2, label: "10만~20만원"}, {id: 1, label: "10만원 미만"}
-];
-
+const budgetTabs = [{id: 4, label: "30만원 이상"}, {id: 3, label: "20만~30만원"}, {id: 2, label: "10만~20만원"}, {id: 1, label: "10만원 미만"}];
 const state2 = { budgetTab: null, comboId: '', cardDiscount: null, combineMode: 'step2', productFilter: 'p72' };
 const cardDiscounts2 = [0, 17000, 27000, 30000];
 const productFilters = [{id:'p72', label:'교원 72'}, {id:'p130', label:'교원 130'}, {id:'p144', label:'교원 144'}, {id:'p216', label:'교원 216'}];
@@ -552,6 +556,7 @@ function setCombineMode(mode) {
 
 function checkStep2Completion() {
     if (state2.budgetTab !== null && state2.cardDiscount !== null) {
+        document.getElementById('bottomSummaryWrap').style.display = 'flex'; 
         const resultsPanel = document.getElementById('step2Results');
         if (resultsPanel.style.display === 'none' || resultsPanel.style.display === '') {
             resultsPanel.style.display = 'flex';
@@ -587,153 +592,7 @@ function renderProductFilter() {
 
 function setProductFilter(pid) {
     state2.productFilter = pid;
-    const filteredCombos = allCombos.filter(c => c.tab === state2.budgetTab && c.prod.id === state2.productFilter);
-    if(filteredCombos.length > 0) {
-        state2.comboId = filteredCombos[0].id;
-    }
-    renderAll();
-}
-
-function currentCombo() { 
-    return allCombos.find(c => c.id === state2.comboId) || allCombos.filter(c => c.tab === state2.budgetTab && c.prod.id === state2.productFilter)[0]; 
-}
-
-function renderMini2(){
-  if(state2.budgetTab === null || state2.cardDiscount === null) return;
-  
-  const combo = currentCombo();
-  const step1Monthly = getCombinedMonthlyArr()[0];
-  
-  const isStep1 = (state2.combineMode === 'both' || state2.combineMode === 'step1');
-  const isStep2 = (state2.combineMode === 'both' || state2.combineMode === 'step2');
-
-  const s1Amt = isStep1 ? step1Monthly : 0;
-  const s2Cb = isStep2 ? combo.cb : 0;
-  const s2Card = isStep2 ? state2.cardDiscount : 0;
-  const totalCombinedMonthly = s1Amt + s2Cb + s2Card;
-
-  document.getElementById("miniDeposit2").textContent = w(combo.deposit);
-  document.getElementById("miniCashback2").textContent = w(s2Cb);
-  document.getElementById("miniCardDisc2").textContent = w(s2Card);
-  document.getElementById("miniStep1").textContent = w(s1Amt);
-  document.getElementById("totalBenefit2").textContent = w(totalCombinedMonthly);
-}
-
-function renderBenefitGrid2(){
-  if(state2.budgetTab === null) return;
-
-  const step1Monthly = getCombinedMonthlyArr()[0];
-  const filteredCombos = allCombos.filter(c => c.tab === state2.budgetTab && c.prod.id === state2.productFilter);
-
-  if (filteredCombos.length === 0) {
-      document.getElementById("benefitGrid2").innerHTML = `<div style="text-align:center; padding:40px; color:#64748b; font-size:15px; width:100%;">해당 조건에 맞는 상품이 없습니다.</div>`;
-      return;
-  }
-
-  if(!state2.comboId || !filteredCombos.find(c => c.id === state2.comboId)) {
-      state2.comboId = filteredCombos[0].id;
-  }
-  
-  const isStep2 = (state2.combineMode === 'both' || state2.combineMode === 'step2');
-
-  const cardsHtml = filteredCombos.map(c => {
-    const isSelected = state2.comboId === c.id;
-    const cardDisc = state2.cardDiscount || 0;
-    
-    const s2Cb = isStep2 ? c.cb : 0;
-    const s2Card = isStep2 ? cardDisc : 0;
-    const cardTotalBenefit = s2Cb + s2Card; 
-    const refundAmt = c.prod.totalRefund * c.units;
-
-    const innerBoxStyle = isSelected ? `background:#ffffff; box-shadow:0 4px 12px rgba(37,99,235,0.06);` : `background:#eff6ff;`;
-    const btnStyle = isSelected ? `background:#2563eb; color:#ffffff; border-color:#2563eb; box-shadow:0 4px 10px rgba(37,99,235,0.25);` : `background:#f8fafc; color:#475569; border-color:#cbd5e1;`;
-
-    return `
-    <div class="benefitCard ${isSelected ? "selected" : ""}" style="cursor:pointer;" onclick="selectCombo('${c.id}')">
-      <div class="benefitTop">
-        <span class="pill green" style="font-size:13px; padding:6px 10px;">${c.prod.name} ${c.units}구좌</span>
-        ${isSelected ? '<span class="pill blue" style="font-size:12px; padding:4px 8px; background:#1d4ed8; color:#fff; border:none;">✓ 선택됨</span>' : ''}
-      </div>
-      
-      <h3 style="margin:16px 0 4px; font-size:20px; color:#0f172a; font-weight:900; word-break:keep-all;">월 납입금액 ${w(c.deposit)}</h3>
-      ${c.prod.id === 'p130' ? `<div style="font-size:12px; color:#64748b; margin-bottom:12px;">(※ 100회차 변동)</div>` : `<div style="margin-bottom:16px;"></div>`}
-      
-      <div class="rows">
-        <div class="row"><div>교원 지원 캐시백</div><div class="hi" style="color:#2563eb !important;">${w(s2Cb)}</div></div>
-        <div class="row"><div>[신한] 제휴 할인</div><div class="hi">${w(s2Card)}</div></div>
-        <div class="row" style="margin-top:10px; padding-top:10px; border-top:1px dashed #cbd5e1;">
-            <div>월 최종 합산</div><div class="hi" style="font-size:18px; color:#b45309">${w(cardTotalBenefit)}</div>
-        </div>
-      </div>
-      
-      <div style="margin-top:14px; padding:16px; border-radius:12px; text-align:center; line-height:1.5; ${innerBoxStyle}">
-        <div style="color:#1e3a8a; font-weight:800; margin-bottom:4px; font-size:13px;">${c.prod.desc}</div>
-        <span style="color:#dc2626; font-weight:900; font-size:16px;">${w(refundAmt)} 100% 환급!</span>
-      </div>
-      
-      <button class="selBtn" style="${btnStyle}" onclick="event.stopPropagation(); selectCombo('${c.id}')">${isSelected ? "✓ 상품 선택됨" : "이 상품 선택"}</button>
-    </div>`;
-  }).join("");
-
-  // ★ 우측: 교원 전용 맞춤 컨설팅 박스 (VS 패널 제거) ★
-  let totalSpend = 0;
-  let totalStep1Disc = 0;
-  if(st1.selectedCardIds.length > 0) {
-      for(let id of st1.selectedCardIds) {
-          totalSpend += (st1.fixedTiers[id] || 0) * 72; 
-      }
-      totalStep1Disc = step1Monthly * 72;
-  }
-  
-  const currentC = currentCombo();
-  const cRefundAmt = currentC ? currentC.prod.totalRefund * currentC.units : 0;
-  const cDepositAmt = currentC ? currentC.deposit : 0;
-  
-  const s2CbMonthly = currentC ? currentC.cb : 0;
-  const s2CardMonthly = state2.cardDiscount || 0;
-  const totalStep2Disc = (s2CbMonthly + s2CardMonthly) * 72;
-
-  let pitchHtml = `
-  <div class="pitchBox" style="flex: 1; min-width: 300px; background: linear-gradient(145deg, #f0fdf4, #ffffff); border: 2px solid #10b981; border-radius: 16px; padding: 24px 32px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 8px 24px rgba(16,185,129,0.15);">
-      <h4 style="color: #047857; font-size: 18px; font-weight: 900; margin: 0 0 12px 0; border-bottom: 2px dashed #a7f3d0; padding-bottom: 12px; display:flex; align-items:center; justify-content:center; gap:8px;">💡 매니저의 맞춤 컨설팅</h4>
-      
-      ${totalSpend > 0 ? `
-      <div style="font-size:14px; color:#334155; line-height:1.5; word-break:keep-all; margin-bottom:16px; text-align:center;">
-          좌측의 사라지는 <b>'소비'</b> 대신 100% 환급되는 <b>'저축'</b>으로 바꾸면 혜택의 차이가 극명해집니다.
-      </div>` : `
-      <div style="font-size:14px; color:#334155; line-height:1.5; word-break:keep-all; margin-bottom:16px; text-align:center;">
-          가전 할인을 위해 불필요한 소비를 억지로 늘리실 필요가 없습니다. 100% 환급되는 <b>'저축'</b>으로 혜택을 받아보세요!
-      </div>`}
-
-      <div style="text-align:center; margin-bottom: 20px;">
-          <div style="display:inline-block; font-weight:900; color:#1d4ed8; font-size:15px; background:#eff6ff; padding:6px 16px; border-radius:8px; margin-bottom:12px;">🎁 교원 저축형</div>
-          <div style="color:#047857; font-weight:900; font-size:24px; margin-bottom:6px;">${(cRefundAmt/10000).toLocaleString("ko-KR")}만 원 저축 <span style="font-size:14px; color:#059669;">(100% 환급)</span></div>
-          <div style="color:#dc2626; font-weight:900; font-size:20px;">➔ 최대 ${(totalStep2Disc/10000).toLocaleString("ko-KR")}만 원 할인</div>
-          <div style="font-size:13px; color:#64748b; margin-top:6px;">(교원 ${(s2CbMonthly/10000).toLocaleString("ko-KR")}만 + 카드 ${(s2CardMonthly/10000).toLocaleString("ko-KR")}만)</div>
-      </div>
-
-      <!-- 포인트 박스 1 (실적 인정) -->
-      <div style="margin-top:auto; background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin-bottom:8px;">
-          <div style="color:#c2410c; font-weight:900; font-size:13px; margin-bottom:4px;">🔥 카드 실적 자동 인정! (특별 혜택)</div>
-          <div style="font-size:13px; color:#431407; line-height:1.4;">매달 저축하는 ${w(cDepositAmt)}원이 카드 실적으로 자동 인정! <b>따로 카드를 안 써도 교원+카드 할인이 매달 자동 적용</b>됩니다.</div>
-      </div>
-
-      <!-- 포인트 박스 2 (서비스 전환) -->
-      <div style="background:#f0fdf4; border:1px solid #a7f3d0; border-radius:12px; padding:12px 16px;">
-          <div style="color:#047857; font-weight:900; font-size:13px; margin-bottom:4px;">✨ 라이프케어 자유 전환</div>
-          <div style="font-size:13px; color:#064e3b; line-height:1.4;">환급 대신 웨딩, 여행 등 서비스로 즉시 전환 가능. <b>잔여금 완납 시 구독료 할인 혜택은 만기까지 유지</b>됩니다!</div>
-      </div>
-  </div>
-  `;
-
-  document.getElementById("benefitGrid2").innerHTML = `
-      <div class="benefitLayout">
-          <div class="cardsWrap">
-              ${cardsHtml}
-          </div>
-          ${pitchHtml}
-      </div>
-  `;
+    renderAll(); 
 }
 
 function selectBudgetTab(tabId) {
@@ -751,6 +610,142 @@ function selectDiscount2(v){
 function selectCombo(comboId) { 
     state2.comboId = comboId; 
     renderAll(); 
+}
+
+function currentCombo() { 
+    const combosForProduct = allCombos.filter(c => c.prod.id === state2.productFilter);
+    let match = combosForProduct.filter(c => c.tab === state2.budgetTab);
+    
+    if (match.length === 0) {
+        const maxTab = Math.max(...combosForProduct.map(c => c.tab));
+        const minTab = Math.min(...combosForProduct.map(c => c.tab));
+        match = combosForProduct.filter(c => c.tab === (state2.budgetTab > maxTab ? maxTab : minTab));
+    }
+    
+    if (state2.comboId) {
+        const selected = match.find(c => c.id === state2.comboId);
+        if (selected) return selected;
+    }
+    return match[match.length - 1]; 
+}
+
+// 하단 요약 바 업데이트 로직
+function updateBottomBar(){
+  if(state2.budgetTab === null || state2.cardDiscount === null) return;
+  
+  const combo = currentCombo();
+  const step1Monthly = getCombinedMonthlyArr()[0];
+  
+  const isStep1 = (state2.combineMode === 'both' || state2.combineMode === 'step1');
+  const isStep2 = (state2.combineMode === 'both' || state2.combineMode === 'step2');
+
+  const s1Amt = isStep1 ? step1Monthly : 0;
+  const s2Cb = isStep2 && combo ? combo.cb : 0;
+  const s2Card = isStep2 ? state2.cardDiscount : 0;
+  const totalCombinedMonthly = s1Amt + s2Cb + s2Card;
+
+  document.getElementById("totalBenefit2").textContent = w(totalCombinedMonthly);
+}
+
+function renderBenefitGrid2(){
+  if(state2.budgetTab === null) return;
+
+  const step1Monthly = getCombinedMonthlyArr()[0];
+  
+  const combosForProduct = allCombos.filter(c => c.prod.id === state2.productFilter);
+  let match = combosForProduct.filter(c => c.tab === state2.budgetTab);
+  
+  if (match.length === 0) {
+      const maxTab = Math.max(...combosForProduct.map(c => c.tab));
+      const minTab = Math.min(...combosForProduct.map(c => c.tab));
+      match = combosForProduct.filter(c => c.tab === (state2.budgetTab > maxTab ? maxTab : minTab));
+  }
+
+  if(!state2.comboId || !match.find(c => c.id === state2.comboId)) {
+      state2.comboId = match[match.length - 1].id;
+  }
+  
+  const isStep2 = (state2.combineMode === 'both' || state2.combineMode === 'step2');
+
+  const cardsHtml = match.map(c => {
+    const isSelected = state2.comboId === c.id;
+    const cardDisc = state2.cardDiscount || 0;
+    
+    const s2Cb = isStep2 ? c.cb : 0;
+    const s2Card = isStep2 ? cardDisc : 0;
+    const cardTotalBenefit = s2Cb + s2Card; 
+
+    const innerBoxStyle = isSelected ? `background:#ffffff; box-shadow:0 4px 12px rgba(37,99,235,0.06);` : `background:#eff6ff;`;
+    const btnStyle = isSelected ? `background:#2563eb; color:#ffffff; border-color:#2563eb; box-shadow:0 4px 10px rgba(37,99,235,0.25);` : `background:#f8fafc; color:#475569; border-color:#cbd5e1;`;
+
+    // 카드 내부 불필요한 환급 설명 제거 완료
+    return `
+    <div class="benefitCard ${isSelected ? "selected" : ""}" style="cursor:pointer;" onclick="selectCombo('${c.id}')">
+      <div class="benefitTop">
+        <span class="pill green" style="font-size:12px;">${c.prod.name} ${c.units}구좌</span>
+        ${isSelected ? '<span class="pill blue" style="font-size:11px; padding:3px 6px; background:#1d4ed8; color:#fff; border:none;">✓ 선택됨</span>' : ''}
+      </div>
+      
+      <h3 style="margin:12px 0 4px; font-size:18px; color:#0f172a; font-weight:900;">월 납입금액 ${w(c.deposit)}</h3>
+      ${c.prod.id === 'p130' ? `<div style="font-size:11px; color:#64748b; margin-bottom:10px;">(※ 100회차 변동)</div>` : `<div style="margin-bottom:12px;"></div>`}
+      
+      <div class="rows">
+        <div class="row"><div>교원 지원 캐시백</div><div class="hi" style="color:#2563eb !important;">${w(s2Cb)}</div></div>
+        <div class="row"><div>[신한] 제휴 할인</div><div class="hi">${w(s2Card)}</div></div>
+        <div class="row" style="margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1;">
+            <div>월 최종 합산</div><div class="hi" style="font-size:16px; color:#b45309">${w(cardTotalBenefit)}</div>
+        </div>
+      </div>
+      
+      <button class="selBtn" style="${btnStyle}; margin-top:auto;" onclick="event.stopPropagation(); selectCombo('${c.id}')">${isSelected ? "✓ 상품 선택됨" : "이 상품 선택"}</button>
+    </div>`;
+  }).join("");
+
+  // ★ 우측 매니저 맞춤 컨설팅 (저축형 - 포인트 박스 완전히 삭제하여 슬림화 완료) ★
+  let totalSpend = 0;
+  if(st1.selectedCardIds.length > 0) {
+      for(let id of st1.selectedCardIds) { totalSpend += (st1.fixedTiers[id] || 0) * 72; }
+  }
+  
+  const currentC = currentCombo();
+  const cRefundAmt = currentC ? currentC.prod.totalRefund * currentC.units : 0;
+  
+  const s2CbMonthly = currentC ? currentC.cb : 0;
+  const s2CardMonthly = state2.cardDiscount || 0;
+  const totalStep2Disc = (s2CbMonthly + s2CardMonthly) * 72;
+
+  // 하단 불필요한 포인트 설명박스 2개 날리고 심플하게 유지
+  let pitchHtml = `
+  <div class="pitchBox right-pitch">
+      <div>
+          <h4><span style="font-size:18px;">💡</span> 매니저의 맞춤 컨설팅</h4>
+          
+          ${totalSpend > 0 ? `
+          <div style="font-size:14px; color:#334155; line-height:1.6; word-break:keep-all; margin-bottom:16px;">
+              좌측의 사라지는 <b>'소비'</b> 대신 100% 환급되는 <b>'저축'</b>으로 바꾸면 혜택의 차이가 극명해집니다.
+          </div>` : `
+          <div style="font-size:14px; color:#334155; line-height:1.6; word-break:keep-all; margin-bottom:16px;">
+              가전 할인을 위해 불필요한 소비를 억지로 늘리실 필요가 없습니다. 100% 환급되는 <b>'저축'</b>으로 혜택을 받아보세요!
+          </div>`}
+      </div>
+
+      <div style="text-align:center; background:#eff6ff; padding:20px; border-radius:12px; border:1px solid #bfdbfe; margin-bottom:0;">
+          <div style="display:inline-block; font-weight:900; color:#1d4ed8; font-size:13px; background:#dbeafe; padding:4px 12px; border-radius:6px; margin-bottom:10px;">🎁 교원 저축형</div>
+          <div style="color:#047857; font-weight:900; font-size:20px; margin-bottom:6px;">${(cRefundAmt/10000).toLocaleString("ko-KR")}만 원 저축 <span style="font-size:13px; color:#059669;">(100% 환급)</span></div>
+          <div style="color:#dc2626; font-weight:900; font-size:18px;">➔ 최대 ${(totalStep2Disc/10000).toLocaleString("ko-KR")}만 원 할인</div>
+          <div style="font-size:12px; color:#64748b; margin-top:6px;">(교원 ${(s2CbMonthly/10000).toLocaleString("ko-KR")}만 + 카드 ${(s2CardMonthly/10000).toLocaleString("ko-KR")}만)</div>
+      </div>
+  </div>
+  `;
+
+  document.getElementById("benefitGrid2").innerHTML = `
+      <div class="benefitLayout">
+          <div class="cardsWrap">
+              ${cardsHtml}
+          </div>
+          ${pitchHtml}
+      </div>
+  `;
 }
 
 /* =========================================
@@ -827,25 +822,23 @@ function renderUnifiedResult() {
           let saveText = saveAmt >= 0 ? `<span style="color:#dc2626; font-weight:1000;">${w(saveAmt)} 더 저렴합니다!</span>` : `<span style="color:#2563eb; font-weight:1000;">${w(Math.abs(saveAmt))} 초과</span>`;
           
           compareHtml = promoBadge + `
-          <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg, #fffbeb, #fef3c7); border:1px solid #fde047; padding:12px 20px; border-radius:12px; box-shadow:0 2px 8px rgba(250,204,21,0.1);">
-              <div style="font-size:15px; font-weight:900; color:#475569;">일시불가 <span style="text-decoration:line-through; font-size:16px; margin-left:4px;">${w(lumpSumFee)}</span></div>
-              <div style="font-size:14px; font-weight:900; color:#94a3b8;">VS</div>
-              <div style="font-size:16px; font-weight:900; color:#1e3a8a;">구독 6년 총비용 <span style="font-size:24px; color:#1d4ed8; margin-left:6px;">${w(totalSubCost)}</span></div>
-              <div style="font-size:15px; font-weight:900;">
-                  <span style="background:#fff; padding:6px 16px; border-radius:8px; border:1px solid #facc15;">일시불 대비 ${saveText}</span>
-              </div>
+          <div style="margin-top:6px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg, #fffbeb, #fef3c7); border:1px solid #fde047; padding:8px 16px; border-radius:10px;">
+              <div style="font-size:13px; font-weight:900; color:#475569;">일시불가 <span style="text-decoration:line-through; font-size:14px; margin-left:4px;">${w(lumpSumFee)}</span></div>
+              <div style="font-size:13px; font-weight:900; color:#94a3b8;">VS</div>
+              <div style="font-size:14px; font-weight:900; color:#1e3a8a;">구독 6년 총비용 <span style="font-size:18px; color:#1d4ed8; margin-left:6px;">${w(totalSubCost)}</span></div>
+              <div style="font-size:13px; font-weight:900;"><span style="background:#fff; padding:4px 12px; border-radius:6px; border:1px solid #facc15; box-shadow:0 1px 3px rgba(0,0,0,0.05);">일시불 대비 ${saveText}</span></div>
           </div>`;
       } else {
           compareHtml = promoBadge + `
-          <div style="margin-top:6px; display:flex; justify-content:flex-end; align-items:center; background:#eff6ff; border:1px solid #bfdbfe; padding:12px 20px; border-radius:12px;">
-              <div style="font-size:15px; font-weight:900; color:#1e3a8a;">구독 시 6년 총비용 : <span style="font-size:24px; color:#1d4ed8; margin-left:8px;">${w(totalSubCost)}</span></div>
+          <div style="margin-top:6px; display:flex; justify-content:flex-end; align-items:center; background:#eff6ff; border:1px solid #bfdbfe; padding:8px 16px; border-radius:10px;">
+              <div style="font-size:14px; font-weight:900; color:#1e3a8a;">구독 시 6년 총비용 : <span style="font-size:20px; color:#1d4ed8; margin-left:8px;">${w(totalSubCost)}</span></div>
           </div>`;
       }
   } else if (lumpSumFee > 0 && isStep1) {
       let finalLumpSum = lumpSumFee - grandTotalDisc;
       compareHtml = `
-      <div style="margin-top:6px; display:flex; justify-content:flex-end; align-items:center; background:#f8fafc; border:1px solid #cbd5e1; padding:12px 20px; border-radius:12px;">
-          <div style="font-size:15px; font-weight:900; color:#475569;">일시불 체감가 <span style="font-size:13px; font-weight:normal;">(일시불가 - 총할인액)</span> : <span style="font-size:24px; color:#0f172a; margin-left:8px;">${w(finalLumpSum)}</span></div>
+      <div style="margin-top:6px; display:flex; justify-content:flex-end; align-items:center; background:#f8fafc; border:1px solid #cbd5e1; padding:8px 16px; border-radius:10px;">
+          <div style="font-size:14px; font-weight:900; color:#475569;">일시불 체감가 : <span style="font-size:20px; color:#0f172a; margin-left:8px;">${w(finalLumpSum)}</span></div>
       </div>`;
   }
   compareBar.innerHTML = compareHtml;
@@ -857,7 +850,7 @@ function renderAll() {
     const step1MonthlyArr = getCombinedMonthlyArr();
     const step1Monthly = step1MonthlyArr[0];
     
-    // ★ 1단계 요약 박스 업데이트 로직 ★
+    // ★ 좌측 1단계 매니저 맞춤 요약 (소비형 대칭 - 겹침 방지 보장) ★
     let totalSpend = 0;
     if(st1.selectedCardIds.length > 0) {
         for(let id of st1.selectedCardIds) {
@@ -865,9 +858,23 @@ function renderAll() {
         }
         let totalStep1Disc = step1Monthly * 72;
         
-        document.getElementById('leftSpendAmt').innerText = (totalSpend / 10000).toLocaleString("ko-KR");
-        document.getElementById('leftDiscAmt').innerText = (totalStep1Disc / 10000).toLocaleString("ko-KR");
-        document.getElementById('leftConsultingBox').style.display = 'block';
+        let leftHtml = `
+        <div class="pitchBox left-pitch" style="background: linear-gradient(145deg, #f8fafc, #ffffff); border: 2px solid #cbd5e1;">
+            <div>
+                <h4 style="color: #475569; border-bottom: 2px dashed #cbd5e1;"><span style="font-size:18px;">💡</span> 매니저의 맞춤 요약</h4>
+                <div style="font-size:14px; color:#334155; line-height:1.6; word-break:keep-all; margin-bottom:16px;">
+                    고객님, 관리비, 생활비, 학원비 등 매월 숨만 쉬어도 나가는 고정 지출!<br>어차피 써야 할 돈이라면 제휴카드로 결제하여 알뜰하게 할인을 받아보세요.
+                </div>
+            </div>
+            <div style="text-align:center; background:#f1f5f9; padding:20px; border-radius:12px; border:1px solid #e2e8f0; margin-bottom:0;">
+                <div style="display:inline-block; font-weight:900; color:#475569; font-size:13px; background:#e2e8f0; padding:4px 12px; border-radius:6px; margin-bottom:10px;">💳 제휴카드 단독 (소비형)</div>
+                <div style="color:#0f172a; font-weight:900; font-size:20px; margin-bottom:6px;">고정비 <span style="color:#dc2626;">${(totalSpend/10000).toLocaleString("ko-KR")}만 원</span> 사용</div>
+                <div style="font-weight:900; color:#2563eb; font-size:18px;">➔ 총 ${(totalStep1Disc/10000).toLocaleString("ko-KR")}만 원 할인</div>
+            </div>
+        </div>
+        `;
+        document.getElementById('leftConsultingBox').innerHTML = leftHtml;
+        document.getElementById('leftConsultingBox').style.display = 'flex';
     } else {
         document.getElementById('leftConsultingBox').style.display = 'none';
     }
@@ -889,8 +896,8 @@ function renderAll() {
         renderProductFilter(); 
         
         if(state2.budgetTab !== null && state2.cardDiscount !== null) {
-            renderMini2();
             renderBenefitGrid2();
+            updateBottomBar();
         }
     }
     renderUnifiedResult();
@@ -907,6 +914,7 @@ function openKyowonPopup(){ document.getElementById("kyowonPopup").classList.add
 function closeKyowonPopup(){ document.getElementById("kyowonPopup").classList.remove("show"); document.body.style.overflow=""; }
 document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeKyowonPopup(); });
 
+// 초기화
 resetEntireConsultation();
 
 </script>
