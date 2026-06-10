@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>교원72 통합 상담 대시보드 (UI 완벽 복구 및 최종 완성본)</title>
+<title>교원72 통합 상담 대시보드 (메모장 기본 펼침 버전)</title>
 <style>
   :root{
     --bg:#eef3f8; --panel:#ffffff; --line:#d9e3ee; --text:#0f172a; --sub:#64748b;
@@ -16,6 +16,7 @@
   @media (min-width: 2400px) { .wrap { zoom: 1.25; } }
 
   .shell{background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 4px 16px rgba(15,23,42,.03); display:flex; flex-direction:column;}
+  
   .popupBtn { background:#fff; color:#be185d; border:1px solid #f9a8d4; border-radius:8px; padding:6px 12px; font-size:12px; font-weight:900; cursor:pointer; transition: 0.2s; white-space:nowrap; margin:0; }
   .popupBtn:hover { background:#fdf2f8; }
   .resetBtn { background:#fff; color:#475569; border:1px solid #cbd5e1; border-radius:8px; padding:6px 12px; font-size:13px; font-weight:900; cursor:pointer; transition: 0.2s; white-space:nowrap; margin:0; display:flex; align-items:center; justify-content:center; gap:4px; }
@@ -26,11 +27,13 @@
   .top-result-panel .hd { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: #0f172a; flex-shrink: 0;}
   .top-result-panel .sub-hd { display: flex; justify-content: space-between; align-items: center; padding: 8px 24px; background: #f8fafc; border-bottom: 1px solid #cbd5e1; flex-shrink: 0;}
   .top-result-panel .bd { padding: 12px 24px; display: flex; flex-direction: column; flex-shrink: 0; min-height: 80px;} 
+  
+  /* 모드 스위치 버튼 스타일 */
   .tWrap { display:flex; gap:4px; background:rgba(255,255,255,0.1); border-radius:8px; padding:4px;}
   .tBtn { padding:6px 16px; border:none; background:transparent; color:#cbd5e1; font-size:13px; font-weight:900; border-radius:6px; cursor:pointer; transition:0.2s;}
   .tBtn.active { background:#3b82f6; color:#fff; box-shadow:0 2px 6px rgba(59,130,246,0.4); }
   .tBtn:hover:not(.active) { color:#fff; background:rgba(255,255,255,0.1); }
-  
+
   .badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
   .badge.orange{background:var(--orangeSoft);color:#c2410c;border:1px solid #ffedd5;}
   .badge.green{background:var(--greenSoft);color:#166534;border:1px solid #d1fae5;}
@@ -45,10 +48,12 @@
   .yearBox .final-amt{font-size:14px; color:#1e3a8a; font-weight:1000; background:#eff6ff; padding:2px 6px; border-radius:4px; display:inline-block;}
   .yearBox.total{border:2px solid var(--yellow);background:#fffbeb}
   .yearBox.total span{display:block; color:#b45309;font-size:15px; margin-top:2px; font-weight:1000;} 
-  
+
+  /* 메인 대시보드 좌우 레이아웃 (50:50 완벽 대칭) */
   .dashboard-wrap { display: flex; gap: 16px; align-items: stretch; flex: 1 1 auto; min-height: 0;}
   .col-left { flex: 0 0 50%; display: flex; flex-direction: column; overflow:hidden;}
   .col-right { flex: 0 0 50%; display: flex; flex-direction: column; position: relative; border: 2px solid #0f766e; overflow:hidden;}
+
   .hd-inner{display:flex;justify-content:space-between;align-items:center;padding:12px 20px; flex-shrink:0;}
   .hd-inner h2{margin:0;font-size:18px;font-weight:900; display:flex; align-items:center; gap:8px;}
 
@@ -79,7 +84,7 @@
   .memo-collapsed { height: 64px; overflow: hidden; } 
   .memo-expanded { height: 320px; overflow-y: auto; } 
 
-  /* ★ 삭제되었던 필수 UI CSS 완벽 복원 ★ */
+  /* 필수 UI CSS */
   .cardGridWrap { flex: 1 1 auto; overflow-y: auto; padding: 10px; margin: -10px; min-height: 0;}
   .cardGrid{display:grid;grid-template-columns:repeat(3, 1fr);gap:12px; padding: 8px;}
   .card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff;display:flex;flex-direction:column;transition:0.2s;}
@@ -122,7 +127,6 @@
   .benefitCard .row { display:flex; justify-content:space-between; font-size:13px; color:#475569; padding:4px 0; }
   .benefitCard .hi { color:#dc2626; font-weight:1000; font-size:15px; }
 
-  /* 강조 박스 (동일 크기 및 이펙트 완벽 대칭) */
   .standard-box {
       border: 2px solid #cbd5e1; background: #f8fafc; border-radius: 16px; padding: 24px 10px;
       text-align: center; flex: 1; max-width: 280px; display: flex; flex-direction: column;
@@ -133,13 +137,11 @@
   .highlight-blue { animation: pulseGlowBlue 2s infinite; border: 2px solid #3b82f6 !important; background: #eff6ff !important; }
   .highlight-red { animation: pulseGlowRed 2s infinite; border: 2px solid #ef4444 !important; background: #fef2f2 !important; }
 
-  /* 부드러운 화면 전환 애니메이션 */
   .fade-in-slow { opacity: 0; animation: fadeIn 1.5s ease-in-out forwards; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   .slide-in { animation: slideIn 0.3s ease-out forwards; }
   @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* 팝업 모달 */
   .modalOverlay{position:fixed;inset:0;background:rgba(15,23,42,.65);display:none;align-items:center;justify-content:center;z-index:9999;padding:32px}
   .modalOverlay.show{display:flex}
   .modalBox{width:min(1400px, 96vw); height: 85vh; background:#fff;border-radius:24px;display:flex;flex-direction:column;overflow:hidden}
@@ -154,30 +156,21 @@
   .modalTab { display:flex; border-bottom:1px solid #e2e8f0; background:#f8fafc; }
   .tabBtn { flex: 1; padding: 16px; background: transparent; border: none; font-size: 15px; font-weight: 900; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; }
   .tabBtn.active { color: #1e3a8a; border-bottom-color: #1e3a8a; background: #fff; }
-
-  /* 스크롤바 커스텀 */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 </style>
 </head>
 <body>
 
 <div class="wrap">
-  
   <div class="top-result-panel" id="topResultPanel">
     <div class="hd">
       <div style="display:flex; align-items:center; gap:20px;">
         <h2 id="resultTitle" style="font-size: 20px; color: #facc15; font-weight: 900; margin:0;">💡 최종 결합 할인 결과 리포트</h2>
-        
         <div class="tWrap" id="modeToggles">
             <button class="tBtn" id="btnModeStep1" onclick="setCombineMode('step1')">제휴카드 단독</button>
             <button class="tBtn" id="btnModeStep2" onclick="setCombineMode('step2')">교원 단독</button>
             <button class="tBtn active" id="btnModeBoth" onclick="setCombineMode('both')">교원 + 카드 동시 결합</button>
         </div>
       </div>
-      
       <div style="display:flex; align-items:center; gap:16px;">
         <div style="display:flex; align-items:center; gap:12px;">
             <span style="font-size:16px; color:#cbd5e1; font-weight:700;">월 최종 혜택 합산</span>
@@ -185,7 +178,6 @@
         </div>
       </div>
     </div>
-    
     <div class="sub-hd">
         <div style="display:flex; align-items:center; gap:8px; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:4px 12px; box-shadow:0 2px 4px rgba(0,0,0,0.02);">
             <div style="display:flex; align-items:center;">
@@ -208,7 +200,6 @@
             <button class="popupBtn" type="button" onclick="openKyowonPopup()">🎁 교원 안내</button>
         </div>
     </div>
-
     <div class="bd">
       <div id="yearGrid" class="yearGrid"></div>
       <div id="compareBar"></div>
@@ -240,11 +231,11 @@
                       </div>
                       <div style="display: flex; align-items: center; gap: 6px;">
                           <span style="font-size: 12px; font-weight: 800; color: #64748b;">메모장 접기/펴기</span>
-                          <button type="button" class="memo-toggle-btn" onclick="toggleMemo(this, 'memo1')">🔽 크게 보기</button>
+                          <button type="button" class="memo-toggle-btn" onclick="toggleMemo(this, 'memo1')" style="background: #e0f2fe; color: #1d4ed8; border-color: #bfdbfe;">🔼 작게 접기</button>
                       </div>
                   </div>
               </div>
-              <textarea id="memo1" placeholder="고객님의 기존 사용 카드, 월 평균 소비액, 주 사용처 등을 자유롭게 메모하세요." class="memo-pad memo-collapsed"></textarea>
+              <textarea id="memo1" placeholder="고객님의 기존 사용 카드, 월 평균 소비액, 주 사용처 등을 자유롭게 메모하세요." class="memo-pad memo-expanded"></textarea>
           </div>
 
           <div class="bd" style="padding:16px 20px; display:flex; flex-direction:column; overflow:hidden; flex:1;">
@@ -279,11 +270,11 @@
                       </div>
                       <div style="display: flex; align-items: center; gap: 6px;">
                           <span style="font-size: 12px; font-weight: 800; color: #64748b;">메모장 접기/펴기</span>
-                          <button type="button" class="memo-toggle-btn" onclick="toggleMemo(this, 'memo2')">🔽 크게 보기</button>
+                          <button type="button" class="memo-toggle-btn" onclick="toggleMemo(this, 'memo2')" style="background: #e0f2fe; color: #1d4ed8; border-color: #bfdbfe;">🔼 작게 접기</button>
                       </div>
                   </div>
               </div>
-              <textarea id="memo2" placeholder="고객님의 관심사(여행, 자녀교육 등), 가전 구매 예산 등을 자유롭게 메모하세요." class="memo-pad memo-collapsed"></textarea>
+              <textarea id="memo2" placeholder="고객님의 관심사(여행, 자녀교육 등), 가전 구매 예산 등을 자유롭게 메모하세요." class="memo-pad memo-expanded"></textarea>
           </div>
 
           <div class="bd" style="position:relative; padding: 16px; display:flex; flex-direction:column; overflow:hidden; flex:1;">
@@ -354,7 +345,6 @@
 </div>
 
 <script>
-// Iframe URL 목록
 const kyowonUrls = [
     "https://www.kyowonlife.co.kr/Service/ProductView?categoryCd=01&basiSeq=58", 
     "https://www.kyowonlife.co.kr/Service/LifeServiceList"
@@ -366,6 +356,7 @@ const kyowonUrls = [
 function toggleMemo(btn, memoId) {
     const memo = document.getElementById(memoId);
     if (memo.classList.contains('memo-collapsed')) {
+        // 펼치기
         memo.classList.remove('memo-collapsed');
         memo.classList.add('memo-expanded');
         btn.innerHTML = '🔼 작게 접기';
@@ -373,6 +364,7 @@ function toggleMemo(btn, memoId) {
         btn.style.color = '#1d4ed8';
         btn.style.borderColor = '#bfdbfe';
     } else {
+        // 접기
         memo.classList.remove('memo-expanded');
         memo.classList.add('memo-collapsed');
         btn.innerHTML = '🔽 크게 보기';
@@ -424,36 +416,26 @@ function abortTyping(elementId) {
     typeStates[elementId] = false;
 }
 
-function typeHTML(elementId, htmlString, onComplete, speed = 150) {
+function typeHTML(elementId, htmlString, onComplete, speed = 120) {
     const el = document.getElementById(elementId);
     if (!el) return;
     
     abortTyping(elementId); 
     typeStates[elementId] = true;
-    
     el.innerHTML = '';
-    let i = 0;
-    let isTag = false;
-    let text = '';
+    let i = 0; let isTag = false; let text = '';
     
     function type() {
         if (!typeStates[elementId]) return; 
-        
         if (i < htmlString.length) {
             let char = htmlString.charAt(i);
             text += char;
-            
             if (char === '<') isTag = true;
             if (char === '>') isTag = false;
-            
             el.innerHTML = text;
             i++;
-            
-            if (isTag) {
-                type(); 
-            } else {
-                typeTimers[elementId] = setTimeout(type, speed);
-            }
+            if (isTag) type(); 
+            else typeTimers[elementId] = setTimeout(type, speed);
         } else {
             if (onComplete) onComplete();
         }
@@ -464,12 +446,10 @@ function typeHTML(elementId, htmlString, onComplete, speed = 150) {
 function showResult1() {
     const btnShow = document.getElementById('btnShowResult1');
     if(btnShow) btnShow.style.display = 'none'; 
-    
     const box = document.getElementById('boxArea1');
     const resetBtn = document.getElementById('btnReset1');
     if(box) box.style.display = 'flex';
     if(resetBtn) resetBtn.style.display = 'block';
-    
     setTimeout(() => {
         if(box) box.style.opacity = 1;
         if(resetBtn) resetBtn.style.opacity = 1;
@@ -479,21 +459,16 @@ function showResult1() {
 function showResult2() {
     const btnShow = document.getElementById('btnShowResult2');
     if(btnShow) btnShow.style.display = 'none'; 
-    
     const box = document.getElementById('boxArea2');
     const btns = document.getElementById('btnArea2');
     if(box) box.style.display = 'flex';
     if(btns) btns.style.display = 'flex';
-    
     setTimeout(() => {
         if(box) box.style.opacity = 1;
         if(btns) btns.style.opacity = 1;
     }, 10);
 }
 
-// ==========================================
-// ★ 필수 계산 관련 전역 변수 및 함수 ★
-// ==========================================
 const wMan = val => {
     if(val === 0) return "0원";
     let v = val / 10000;
@@ -503,13 +478,7 @@ const w = n => Number(n||0).toLocaleString("ko-KR")+"원";
 const raw = v => Number(String(v||"").replace(/[^0-9]/g,"")||0);
 function fmtInput(v){ return v ? Number(v).toLocaleString("ko-KR") : ""; }
 
-let isStep1Editing = true;
-let isStep2Editing = true;
-let step2ViewMode = 0; 
-
-let lumpSumFee = 0; 
-let prepayFee = 0;  
-let subFee = 0;     
+let lumpSumFee = 0; let prepayFee = 0; let subFee = 0;     
 
 function getPrepayCashback(amount) {
     if (amount >= 10000000) return 1000000;
@@ -527,44 +496,19 @@ function formatPrepay(el) { el.value = fmtInput(prepayFee); }
 function updateSubFee(el) { subFee = raw(el.value); el.value = fmtInput(subFee); renderUnifiedResult(); }
 function formatSubFee(el) { el.value = fmtInput(subFee); }
 
-function setCombineMode(mode) {
-    state2.combineMode = mode;
-    document.getElementById('btnModeStep2').classList.toggle('active', mode === 'step2');
-    document.getElementById('btnModeStep1').classList.toggle('active', mode === 'step1');
-    document.getElementById('btnModeBoth').classList.toggle('active', mode === 'both');
-    renderStep1();
-    renderStep2();
-    renderUnifiedResult();
-}
-
 function resetEntireConsultation() {
-    st1.selectedCardIds = [];
-    st1.fixedTiers = {}; 
-    
-    isStep1Editing = true;
-    isStep2Editing = true;
-    step2ViewMode = 0; 
-    
+    st1.selectedCardIds = []; st1.fixedTiers = {}; 
+    isStep1Editing = true; isStep2Editing = true; step2ViewMode = 0; 
     document.getElementById('step2Results').style.display = 'none'; 
-    
-    state2.budgetTab = null; 
-    state2.cardDiscount = null; 
-    state2.comboId = '';
-    state2.combineMode = 'both'; 
-    state2.productFilter = 'p72'; 
-    
+    state2.budgetTab = null; state2.cardDiscount = null; state2.comboId = ''; state2.combineMode = 'both'; state2.productFilter = 'p72'; 
     document.getElementById('btnModeStep2').classList.remove('active');
     document.getElementById('btnModeStep1').classList.remove('active');
     document.getElementById('btnModeBoth').classList.add('active');
-
     lumpSumFee = 0; prepayFee = 0; subFee = 0;
-    const lsi = document.getElementById('lumpSumInput'); if(lsi) lsi.value = '';
-    const ppi = document.getElementById('prepayInput'); if(ppi) ppi.value = '';
-    const sfi = document.getElementById('subFeeInput'); if(sfi) sfi.value = '';
-    
-    renderStep1();
-    renderStep2();
-    renderUnifiedResult();
+    document.getElementById('lumpSumInput').value = '';
+    document.getElementById('prepayInput').value = '';
+    document.getElementById('subFeeInput').value = '';
+    renderStep1(); renderStep2(); renderUnifiedResult();
 }
 
 function completeStep1() { isStep1Editing = false; renderStep1(); renderUnifiedResult(); }
@@ -572,8 +516,16 @@ function editStep1() { isStep1Editing = true; renderStep1(); renderUnifiedResult
 function editStep2() { isStep2Editing = true; step2ViewMode = 0; renderStep2(); renderUnifiedResult(); }
 function setStep2View(mode) { step2ViewMode = mode; renderStep2(); renderUnifiedResult(); }
 
+function setCombineMode(mode) {
+    state2.combineMode = mode;
+    document.getElementById('btnModeStep2').classList.toggle('active', mode === 'step2');
+    document.getElementById('btnModeStep1').classList.toggle('active', mode === 'step1');
+    document.getElementById('btnModeBoth').classList.toggle('active', mode === 'both');
+    renderStep1(); renderStep2(); renderUnifiedResult();
+}
+
 /* =========================================
-   1단계 (소비형 할인)
+   1단계 (소비형 할인) 데이터 및 렌더링 함수
 ========================================= */
 const data1 = {
   cards:[
@@ -590,12 +542,9 @@ const st1 = { selectedCardIds:[], fixedTiers:{} };
 function setFixedTier1(cardId, value) { st1.fixedTiers[cardId] = Number(value); renderStep1(); renderUnifiedResult(); }
 function selectCard1(id){
     if (st1.selectedCardIds.includes(id)) { 
-        st1.selectedCardIds = st1.selectedCardIds.filter(x => x !== id); 
-        delete st1.fixedTiers[id]; 
+        st1.selectedCardIds = st1.selectedCardIds.filter(x => x !== id); delete st1.fixedTiers[id]; 
     } else { 
-        st1.selectedCardIds.push(id); 
-        const card = data1.cards.find(c => c.id === id);
-        st1.fixedTiers[id] = card.tiers[0].min;
+        st1.selectedCardIds.push(id); const card = data1.cards.find(c => c.id === id); st1.fixedTiers[id] = card.tiers[0].min;
     }
     renderStep1(); renderUnifiedResult();
 }
@@ -603,19 +552,15 @@ function selectCard1(id){
 function getCombinedMonthlyArr() {
     let combinedArr = [0, 0, 0, 0, 0, 0];
     if (st1.selectedCardIds.length === 0) return combinedArr;
-
     for (const cardId of st1.selectedCardIds) {
         const card = data1.cards.find(c => c.id === cardId);
         const amt = st1.fixedTiers[cardId] || 0;
         let picked = card.tiers.find(t => t.min === amt);
         const disc = picked ? picked.discount : 0;
-        
         let arr = [disc, disc, disc, disc, disc, disc]; 
         if(card.months === 60) arr[5] = 0; 
         if(card.isKB) {
-            if(amt >= 800000) arr[5] = 15000;
-            else if(amt >= 300000) arr[5] = 10000;
-            else arr[5] = 0;
+            if(amt >= 800000) arr[5] = 15000; else if(amt >= 300000) arr[5] = 10000; else arr[5] = 0;
         }
         for (let i=0; i<6; i++) combinedArr[i] += arr[i];
     }
@@ -623,24 +568,19 @@ function getCombinedMonthlyArr() {
 }
 
 function renderCards1(){
-  const grid=document.getElementById("cardGrid1"); 
-  if(!grid) return;
-  
+  const grid=document.getElementById("cardGrid1"); if(!grid) return;
   grid.innerHTML = data1.cards.map(card=>{
     const isSelected = st1.selectedCardIds.includes(card.id);
     const selectedMin = st1.fixedTiers[card.id];
     const selectedTier = isSelected ? card.tiers.find(t => t.min === selectedMin) : null;
-    
     let selectHtml = "";
     if (isSelected && selectedTier) { 
         let options = "";
         card.tiers.forEach(t => {
-            const sel = selectedMin === t.min ? "selected" : "";
-            options += `<option value="${t.min}" ${sel}>🎯 ${wMan(t.min).replace('원','')} 실적 (${wMan(t.discount)} 할인)</option>`;
+            options += `<option value="${t.min}" ${selectedMin === t.min ? "selected" : ""}>🎯 ${wMan(t.min).replace('원','')} 실적 (${wMan(t.discount)} 할인)</option>`;
         });
         selectHtml = `<div style="margin-top:6px;"><select onchange="setFixedTier1('${card.id}', this.value)" style="width:100%; padding:8px 6px; font-size:12.5px; font-weight:900; border:1px solid #fde047; border-radius:6px; background:#fef08a; color:#854d0e; outline:none; cursor:pointer;">${options}</select></div>`;
     } 
-
     return `<div class="card ${isSelected ? "selected" : ""}">
       <div class="cardTop"><span class="pill green">${card.months===72?"6년":"5년"}</span></div>
       <h3>${card.name}</h3>
@@ -655,15 +595,10 @@ function renderCards1(){
 }
 
 function renderStep1() {
-    abortTyping('typeText1'); 
-
-    renderCards1();
-    
+    abortTyping('typeText1'); renderCards1();
     const step1MonthlyArr = getCombinedMonthlyArr();
     const step1Monthly = step1MonthlyArr[0];
-    
-    let totalSpend = 0;
-    for(let id of st1.selectedCardIds) { totalSpend += (st1.fixedTiers[id] || 0) * 72; }
+    let totalSpend = 0; for(let id of st1.selectedCardIds) { totalSpend += (st1.fixedTiers[id] || 0) * 72; }
     let totalStep1Disc = step1Monthly * 72;
     let monthlySpend = totalSpend / 72;
 
@@ -672,22 +607,16 @@ function renderStep1() {
     const btn1 = document.getElementById('btnCompleteStep1');
 
     if (isStep1Editing) {
-        if(s1Edit) s1Edit.style.display = 'flex';
-        if(s1Sum) s1Sum.style.display = 'none';
+        if(s1Edit) s1Edit.style.display = 'flex'; if(s1Sum) s1Sum.style.display = 'none';
         if (btn1) btn1.style.display = (st1.selectedCardIds.length > 0) ? 'block' : 'none';
     } else {
         if(s1Edit) s1Edit.style.display = 'none';
-        
         let text1 = `월 <b style="font-size:20px;">${wMan(monthlySpend)}</b>씩 72개월 사용하여 <b style="font-size:20px;">${wMan(totalSpend)}</b>을 쓰게 되면<br>월 <b style="font-size:20px;">${wMan(step1Monthly)}</b>씩 할인되어 총 <b style="color:#2563eb; font-size:22px;">${wMan(totalStep1Disc)}</b>이 할인됩니다.`;
-
         let leftHtml = `
         <div class="slide-in" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; width:100%;">
             <h4 style="color: #475569; font-size: 24px; margin: 0 0 24px 0; width:100%; display:flex; justify-content:center; align-items:center; gap:8px;"><span style="font-size:28px;">💡</span> 매니저의 맞춤 요약</h4>
-
             <div id="typeText1" style="font-size:18px; color:#334155; line-height:1.7; word-break:keep-all; margin-bottom:40px; text-align:center; min-height:60px;"></div>
-
             <button id="btnShowResult1" onclick="showResult1()" class="selBtn" style="display:none; opacity:0; transition: opacity 0.5s; width:auto; padding: 12px 32px; font-size: 16px; background:#2563eb; color:#fff; border:none; border-radius:8px; font-weight:900; box-shadow:0 4px 12px rgba(37,99,235,0.3); margin-bottom: 20px; cursor:pointer;">👀 결과 확인하기</button>
-
             <div id="boxArea1" style="display:none; opacity:0; transition: opacity 0.6s ease-in-out; align-items:center; justify-content:center; gap:24px; width:100%;">
                 <div class="standard-box">
                     <div style="font-size:28px; font-weight:900; color:#0f172a;">${(totalSpend/10000).toLocaleString("ko-KR")}만 원 <span style="font-size:18px; font-weight:700; color:#475569;">사용</span></div>
@@ -699,26 +628,20 @@ function renderStep1() {
                     <div style="font-size:15px; color:#64748b; margin-top:12px; font-weight:700; line-height:1.4;">${w(step1Monthly)} × 72개월</div>
                 </div>
             </div>
-
             <button id="btnReset1" onclick="editStep1()" class="resetBtn" style="display:none; opacity:0; transition: opacity 0.6s ease-in-out; margin-top: 40px; padding: 12px 28px; font-size: 16px; background:#fff; border:1px solid #cbd5e1; color:#475569; border-radius:8px; font-weight:900;">🔄 카드 다시 선택</button>
-        </div>
-        `;
+        </div>`;
         if(s1Sum) {
-            s1Sum.innerHTML = leftHtml;
-            s1Sum.style.display = 'flex';
+            s1Sum.innerHTML = leftHtml; s1Sum.style.display = 'flex';
             typeHTML('typeText1', text1, () => {
                 const btn = document.getElementById('btnShowResult1');
-                if(btn) {
-                    btn.style.display = 'block';
-                    setTimeout(() => btn.style.opacity = 1, 10);
-                }
+                if(btn) { btn.style.display = 'block'; setTimeout(() => btn.style.opacity = 1, 10); }
             }, 120);
         }
     }
 }
 
 /* =========================================
-   2단계 (저축형 할인) 데이터 
+   2단계 (저축형 할인) 데이터 및 렌더링 함수
 ========================================= */
 const kyowonProducts = {
   p72:  { id: 'p72',  name: '교원 72',  deposit: 84000, depositMonths: 72, cashback: 10000, totalRefund: 5990000, desc: '72개월 납부 + 28개월 거치' },
@@ -734,13 +657,10 @@ for(let p in kyowonProducts) {
        let dep = kyowonProducts[p].deposit * u;
        let cb = kyowonProducts[p].cashback * u;
        let tabId = 1;
-       if(dep >= 300000) tabId = 4;
-       else if(dep >= 200000) tabId = 3;
-       else if(dep >= 100000) tabId = 2;
+       if(dep >= 300000) tabId = 4; else if(dep >= 200000) tabId = 3; else if(dep >= 100000) tabId = 2;
        allCombos.push({ id: `${p}_${u}`, prod: kyowonProducts[p], units: u, deposit: dep, cb: cb, tab: tabId });
    }
 }
-
 allCombos.sort((a, b) => {
     if (a.prod.id === 'p72' && b.prod.id !== 'p72') return -1;
     if (a.prod.id !== 'p72' && b.prod.id === 'p72') return 1;
@@ -750,82 +670,39 @@ allCombos.sort((a, b) => {
 const budgetTabs = [{id: 4, label: "30만원 이상"}, {id: 3, label: "20만~30만원"}, {id: 2, label: "10만~20만원"}, {id: 1, label: "10만원 미만"}];
 const state2 = { budgetTab: null, comboId: '', cardDiscount: null, combineMode: 'both', productFilter: 'p72' };
 const cardDiscounts2 = [0, 17000, 27000, 30000];
-const productFilters = [
-    {id:'p72', label:'교원 72'}, 
-    {id:'p84_prepay', label:'선납 교원 84'}, 
-    {id:'p130', label:'교원 130'}, 
-    {id:'p144', label:'교원 144'}, 
-    {id:'p216', label:'교원 216'}
-];
+const productFilters = [{id:'p72', label:'교원 72'}, {id:'p84_prepay', label:'선납 교원 84'}, {id:'p130', label:'교원 130'}, {id:'p144', label:'교원 144'}, {id:'p216', label:'교원 216'}];
 
 function renderBudgetGrid2() {
-    const grid = document.getElementById("budgetGrid");
-    if(!grid) return;
-    grid.innerHTML = budgetTabs.map(t => {
-        const isActive = state2.budgetTab === t.id ? "active" : "";
-        return `<div class="budgetBtn ${isActive}" onclick="selectBudgetTab(${t.id})"><b>${t.label}</b></div>`;
-    }).join("");
+    const grid = document.getElementById("budgetGrid"); if(!grid) return;
+    grid.innerHTML = budgetTabs.map(t => `<div class="budgetBtn ${state2.budgetTab === t.id ? "active" : ""}" onclick="selectBudgetTab(${t.id})"><b>${t.label}</b></div>`).join("");
 }
 
 function renderDiscountRow2(){
-    const grid = document.getElementById("discountRow2");
-    if(!grid) return;
+    const grid = document.getElementById("discountRow2"); if(!grid) return;
     grid.innerHTML = cardDiscounts2.map(v=>{
-      let label = v === 0 ? "선택 안 함<br><span style='font-size:11px; font-weight:normal;'>(기존 신한)</span>" : 
-                  v === 17000 ? "30만 이상<br><span style='font-size:14px;'>1.7만</span>" : 
-                  v === 27000 ? "70만 이상<br><span style='font-size:14px;'>2.7만</span>" : "130만 이상<br><span style='font-size:14px;'>3.0만</span>";
+      let label = v === 0 ? "선택 안 함<br><span style='font-size:11px; font-weight:normal;'>(기존 신한)</span>" : v === 17000 ? "30만 이상<br><span style='font-size:14px;'>1.7만</span>" : v === 27000 ? "70만 이상<br><span style='font-size:14px;'>2.7만</span>" : "130만 이상<br><span style='font-size:14px;'>3.0만</span>";
       return `<div class="discountBtn ${state2.cardDiscount===v?"active":""}" onclick="selectDiscount2(${v})">${label}</div>`
   }).join("");
 }
 
 function renderProductFilter() {
-    const wrap = document.getElementById("productFilterWrap");
-    if(!wrap) return;
-    wrap.innerHTML = productFilters.map(p => {
-        const isActive = state2.productFilter === p.id ? "active" : "";
-        return `<button class="pFilterBtn ${isActive}" onclick="setProductFilter('${p.id}')">${p.label}</button>`;
-    }).join("");
+    const wrap = document.getElementById("productFilterWrap"); if(!wrap) return;
+    wrap.innerHTML = productFilters.map(p => `<button class="pFilterBtn ${state2.productFilter === p.id ? "active" : ""}" onclick="setProductFilter('${p.id}')">${p.label}</button>`).join("");
 }
 
-function setProductFilter(pid) {
-    state2.productFilter = pid;
-    isStep2Editing = true; 
-    renderStep2(); 
-    renderUnifiedResult();
-}
-
-function selectBudgetTab(tabId) {
-    state2.budgetTab = tabId;
-    isStep2Editing = true;
-    renderStep2();
-    renderUnifiedResult();
-}
-
-function selectDiscount2(v){ 
-    state2.cardDiscount = v; 
-    isStep2Editing = true;
-    renderStep2(); 
-    renderUnifiedResult();
-}
-
-function selectCombo(comboId) { 
-    state2.comboId = comboId; 
-    isStep2Editing = false; 
-    step2ViewMode = 0; 
-    renderStep2(); 
-    renderUnifiedResult();
-}
+function setProductFilter(pid) { state2.productFilter = pid; isStep2Editing = true; renderStep2(); renderUnifiedResult(); }
+function selectBudgetTab(tabId) { state2.budgetTab = tabId; isStep2Editing = true; renderStep2(); renderUnifiedResult(); }
+function selectDiscount2(v){ state2.cardDiscount = v; isStep2Editing = true; renderStep2(); renderUnifiedResult(); }
+function selectCombo(comboId) { state2.comboId = comboId; isStep2Editing = false; step2ViewMode = 0; renderStep2(); renderUnifiedResult(); }
 
 function currentCombo() { 
     const combosForProduct = allCombos.filter(c => c.prod.id === state2.productFilter);
     let match = combosForProduct.filter(c => c.tab === state2.budgetTab);
-    
     if (match.length === 0) {
         const maxTab = Math.max(...combosForProduct.map(c => c.tab));
         const minTab = Math.min(...combosForProduct.map(c => c.tab));
         match = combosForProduct.filter(c => c.tab === (state2.budgetTab > maxTab ? maxTab : minTab));
     }
-    
     if (state2.comboId) {
         const selected = match.find(c => c.id === state2.comboId);
         if (selected) return selected;
@@ -835,106 +712,67 @@ function currentCombo() {
 
 function updateTopBenefit(){
   if(state2.budgetTab === null || state2.cardDiscount === null) return;
-  
   const combo = currentCombo();
   const step1Monthly = getCombinedMonthlyArr()[0];
-  
   const isStep1 = (state2.combineMode === 'both' || state2.combineMode === 'step1');
   const isStep2 = (state2.combineMode === 'both' || state2.combineMode === 'step2');
-
   const s1Amt = isStep1 ? step1Monthly : 0;
   const s2Cb = isStep2 && combo ? combo.cb : 0;
   const s2Card = isStep2 ? state2.cardDiscount : 0;
   const totalCombinedMonthly = s1Amt + s2Cb + s2Card;
-
-  const tbEl = document.getElementById("totalBenefit2");
-  if(tbEl) tbEl.textContent = w(totalCombinedMonthly);
+  const tbEl = document.getElementById("totalBenefit2"); if(tbEl) tbEl.textContent = w(totalCombinedMonthly);
 }
 
 function renderBenefitGrid2(){
   if(state2.budgetTab === null) return;
-
   const combosForProduct = allCombos.filter(c => c.prod.id === state2.productFilter);
   let match = combosForProduct.filter(c => c.tab === state2.budgetTab);
-  
-  if (match.length === 0) {
-      const maxTab = Math.max(...combosForProduct.map(c => c.tab));
-      const minTab = Math.min(...combosForProduct.map(c => c.tab));
-      match = combosForProduct.filter(c => c.tab === (state2.budgetTab > maxTab ? maxTab : minTab));
-  }
+  if (match.length === 0) match = combosForProduct.filter(c => c.tab === Math.min(...combosForProduct.map(x=>x.tab)));
+  if(!state2.comboId || !match.find(c => c.id === state2.comboId)) state2.comboId = match[match.length - 1].id;
 
-  if(!state2.comboId || !match.find(c => c.id === state2.comboId)) {
-      state2.comboId = match[match.length - 1].id;
-  }
-
-  const cardsHtml = match.map(c => {
+  const bgEl = document.getElementById("benefitGrid2"); if(!bgEl) return;
+  bgEl.innerHTML = match.map(c => {
     const isSelected = state2.comboId === c.id;
-    const cardDisc = state2.cardDiscount || 0;
-    
-    const s2Cb = c.cb; 
-    const s2Card = cardDisc; 
-    const cardTotalBenefit = s2Cb + s2Card; 
+    const s2Cb = c.cb; const s2Card = state2.cardDiscount || 0; 
     const refundAmt = c.prod.totalRefund * c.units;
-
     const innerBoxStyle = isSelected ? `background:#ffffff; box-shadow:0 4px 12px rgba(37,99,235,0.06);` : `background:#eff6ff;`;
     const btnStyle = isSelected ? `background:#2563eb; color:#ffffff; border-color:#2563eb; box-shadow:0 4px 10px rgba(37,99,235,0.25);` : `background:#f8fafc; color:#475569; border-color:#cbd5e1;`;
-
-    const isPrepay12 = c.prod.isPrepay12;
-    const cbLabel = isPrepay12 ? "교원 지원 캐시백 (12개월)" : "교원 지원 캐시백";
-    const sumLabel = isPrepay12 ? "월 최종 합산 (1년차)" : "월 최종 합산";
-
     return `
     <div class="benefitCard ${isSelected ? "selected" : ""}" style="cursor:pointer;" onclick="selectCombo('${c.id}')">
       <div class="benefitTop">
         <span class="pill green" style="font-size:12px;">${c.prod.name} ${c.units}구좌</span>
         ${isSelected ? '<span class="pill blue" style="font-size:11px; padding:3px 6px; background:#1d4ed8; color:#fff; border:none;">✓ 선택됨</span>' : ''}
       </div>
-      
       <h3 style="margin:12px 0 4px; font-size:18px; color:#0f172a; font-weight:900;">월 납입금액 ${w(c.deposit)}</h3>
       ${c.prod.id === 'p130' ? `<div style="font-size:11px; color:#64748b; margin-bottom:10px;">(※ 100회차 변동)</div>` : `<div style="margin-bottom:12px;"></div>`}
-      
       <div class="rows">
-        <div class="row"><div>${cbLabel}</div><div class="hi" style="color:#2563eb !important;">${w(s2Cb)}</div></div>
+        <div class="row"><div>${c.prod.isPrepay12 ? "교원 지원 캐시백 (12개월)" : "교원 지원 캐시백"}</div><div class="hi" style="color:#2563eb !important;">${w(s2Cb)}</div></div>
         <div class="row"><div>[신한] 제휴 할인</div><div class="hi">${w(s2Card)}</div></div>
         <div class="row" style="margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1;">
-            <div>${sumLabel}</div><div class="hi" style="font-size:16px; color:#dc2626">${w(s2Cb + s2Card)}</div>
+            <div>${c.prod.isPrepay12 ? "월 최종 합산 (1년차)" : "월 최종 합산"}</div><div class="hi" style="font-size:16px; color:#dc2626">${w(s2Cb + s2Card)}</div>
         </div>
       </div>
-      
       <div style="margin-top:12px; margin-bottom:12px; padding:12px; border-radius:10px; text-align:center; line-height:1.4; ${innerBoxStyle}">
         <div style="color:#1e3a8a; font-weight:800; margin-bottom:4px; font-size:12px;">${c.prod.desc}</div>
         <span style="color:#dc2626; font-weight:900; font-size:15px;">${w(refundAmt)} 100% 환급!</span>
       </div>
-      
       <button class="selBtn" style="${btnStyle}; margin-top:auto;" onclick="event.stopPropagation(); selectCombo('${c.id}')">${isSelected ? "✓ 혜택 설계 보기" : "이 상품 선택"}</button>
     </div>`;
   }).join("");
-
-  const bgEl = document.getElementById("benefitGrid2");
-  if(bgEl) bgEl.innerHTML = cardsHtml;
 }
 
 function renderStep2() {
-    abortTyping('typeText2');
-    abortTyping('typeText3');
-
+    abortTyping('typeText2'); abortTyping('typeText3');
     const currentC = currentCombo();
     const cRefundAmt = currentC ? currentC.prod.totalRefund * currentC.units : 0;
     const cDepositAmt = currentC ? currentC.deposit : 0;
     const depositMonths = currentC ? currentC.prod.depositMonths : 72;
-    
-    // ★ 거치기간 표현 변환 로직 
     let depositDescText = currentC ? currentC.prod.desc.replace(' + ', ' 후 ') + '하시면' : '';
-    
     const s2CbMonthly = currentC ? currentC.cb : 0;
     const s2CardMonthly = state2.cardDiscount || 0;
-    const totalMonthlyDisc2 = s2CbMonthly + s2CardMonthly;
-    
     const isPrepay12 = currentC ? currentC.prod.isPrepay12 : false;
     const cbMonths = isPrepay12 ? 12 : 72;
-    const totalCb = s2CbMonthly * cbMonths;
-    const totalCard = s2CardMonthly * 72;
-    const totalStep2Disc = totalCb + totalCard;
+    const totalStep2Disc = (s2CbMonthly * cbMonths) + (s2CardMonthly * 72);
     const discountText = wMan(totalStep2Disc).replace('만 원', '만');
 
     const s2Edit = document.getElementById('step2EditView');
@@ -942,54 +780,26 @@ function renderStep2() {
     const s2Res = document.getElementById('step2Results');
 
     if (isStep2Editing) {
-        if(s2Edit) s2Edit.style.display = 'flex';
-        if(s2Sum) s2Sum.style.display = 'none';
-        
-        renderBudgetGrid2();
-        renderDiscountRow2();
-        renderProductFilter();
-
+        if(s2Edit) s2Edit.style.display = 'flex'; if(s2Sum) s2Sum.style.display = 'none';
+        renderBudgetGrid2(); renderDiscountRow2(); renderProductFilter();
         if (state2.budgetTab !== null && state2.cardDiscount !== null) {
-            if(s2Res) s2Res.style.display = 'flex';
-            renderBenefitGrid2();
-            updateTopBenefit();
-        } else {
-            if(s2Res) s2Res.style.display = 'none';
-            const tbEl = document.getElementById("totalBenefit2");
-            if(tbEl) tbEl.textContent = "0원";
-        }
+            if(s2Res) s2Res.style.display = 'flex'; renderBenefitGrid2(); updateTopBenefit();
+        } else { if(s2Res) s2Res.style.display = 'none'; }
     } else {
-        if(s2Edit) s2Edit.style.display = 'none';
-        if(s2Res) s2Res.style.display = 'none'; 
-        
+        if(s2Edit) s2Edit.style.display = 'none'; if(s2Res) s2Res.style.display = 'none'; 
         let rightHtml = "";
-
         if (step2ViewMode === 0) {
-            let text2 = '';
-            if (isPrepay12) {
-                text2 = `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>을 저축하게 되면 100% 전액 환급되고,<br>교원 혜택으로 <b style="font-size:20px; color:#2563eb;">12개월간</b> 집중 할인되어 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 할인됩니다.`;
-            } else {
-                text2 = `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>을 저축하게 되면 100% 전액 환급되고,<br>월 <b style="font-size:20px;">${wMan(totalMonthlyDisc2)}</b>씩 할인되어 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 할인됩니다.`;
-            }
+            let text2 = isPrepay12 ? 
+                `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>을 저축하게 되면 100% 전액 환급되고,<br>교원 혜택으로 <b style="font-size:20px; color:#2563eb;">12개월간</b> 집중 할인되어 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 할인됩니다.` :
+                `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>을 저축하게 되면 100% 전액 환급되고,<br>월 <b style="font-size:20px;">${wMan(s2CbMonthly + s2CardMonthly)}</b>씩 할인되어 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 할인됩니다.`;
             
-            // ★ 수정: 선납 상품일 경우 카드 결합 여부에 따라 박스 내 텍스트 스마트 분기 처리 (줄바꿈 추가) ★
-            let s2CardBoxText = '';
-            if (isPrepay12) {
-                if (s2CardMonthly > 0) {
-                    s2CardBoxText = `교원 ${w(s2CbMonthly)} × ${cbMonths}개월<br>카드 ${w(s2CardMonthly)} × 72개월`;
-                } else {
-                    s2CardBoxText = `${w(s2CbMonthly)} × 12개월`;
-                }
-            } else {
-                s2CardBoxText = `${w(totalMonthlyDisc2)} × 72개월`;
-            }
+            let s2CardBoxText = s2CbMonthly > 0 && s2CardMonthly > 0 ? `교원 ${w(s2CbMonthly)} × ${cbMonths}개월<br>카드 ${w(s2CardMonthly)} × 72개월` : (s2CbMonthly > 0 ? `교원 ${w(s2CbMonthly)} × ${cbMonths}개월` : `카드 ${w(s2CardMonthly)} × 72개월`);
 
             rightHtml = `
             <div class="slide-in" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; width:100%;">
                 <h4 style="color: #047857; font-size: 24px; margin: 0 0 24px 0; width:100%; display:flex; justify-content:center; align-items:center; gap:8px;"><span style="font-size:28px;">💡</span> 매니저의 맞춤 컨설팅</h4>
                 <div id="typeText2" style="font-size:18px; color:#334155; line-height:1.7; word-break:keep-all; margin-bottom:40px; text-align:center; min-height:60px;"></div>
                 <button id="btnShowResult2" onclick="showResult2()" class="selBtn" style="display:none; opacity:0; transition: opacity 0.5s; width:auto; padding: 12px 32px; font-size: 16px; background:#047857; color:#fff; border:none; border-radius:8px; font-weight:900; box-shadow:0 4px 12px rgba(4,120,87,0.3); margin-bottom: 20px; cursor:pointer;">👀 결과 확인하기</button>
-
                 <div id="boxArea2" style="display:none; opacity:0; transition: opacity 0.6s ease-in-out; align-items:center; justify-content:center; gap:24px; width:100%;">
                     <div class="standard-box">
                         <div style="font-size:28px; font-weight:900; color:#047857;">${(cRefundAmt/10000).toLocaleString("ko-KR")}만 원 <span style="font-size:18px; font-weight:700; color:#059669;">저축</span></div>
@@ -1005,168 +815,81 @@ function renderStep2() {
                     <button onclick="setStep2View(1)" class="resetBtn" style="padding: 12px 28px; font-size: 16px; background:#1e3a8a; border:1px solid #1e3a8a; color:#fff; border-radius:8px; font-weight:900; box-shadow:0 4px 12px rgba(30,58,138,0.3); margin:0;">👉 그래서 최종 결론은?</button>
                     <button onclick="editStep2()" class="resetBtn" style="padding: 12px 28px; font-size: 16px; background:#fff; border:1px solid #cbd5e1; color:#475569; border-radius:8px; font-weight:900; margin:0;">🔄 상품 다시 선택</button>
                 </div>
-            </div>
-            `;
-            
+            </div>`;
             if(s2Sum) {
-                s2Sum.innerHTML = rightHtml;
-                s2Sum.style.display = 'flex';
+                s2Sum.innerHTML = rightHtml; s2Sum.style.display = 'flex';
                 typeHTML('typeText2', text2, () => {
-                    const btn = document.getElementById('btnShowResult2');
-                    if(btn) {
-                        btn.style.display = 'block';
-                        setTimeout(() => btn.style.opacity = 1, 10);
-                    }
+                    const btn = document.getElementById('btnShowResult2'); if(btn) { btn.style.display = 'block'; setTimeout(() => btn.style.opacity = 1, 10); }
                 }, 120);
             }
-
         } else if (step2ViewMode === 1) {
-            // ★ 수정: 활용처 리스트에 "등" 추가 적용 완료 ★
-            let text3 = `
-                <div style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">월 ${w(cDepositAmt)}씩 ${depositMonths}개월만 투자 해서</div>
+            let text3 = `<div style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">월 ${w(cDepositAmt)}씩 ${depositMonths}개월만 투자 해서</div>
                 <div style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 32px;"><span style="color:#dc2626; font-size:26px;">${discountText}</span> 총 <span style="color:#dc2626; font-size:26px;">할인</span> 받고 ${isPrepay12 ? '<span style="font-size:18px; color:#475569;">(교원 12개월 집중지원)</span>' : ''}</div>
                 <div style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 24px; line-height: 1.5;"><span style="font-size: 26px; color:#1e3a8a;">${depositDescText}</span><br>원금 <span style="font-size: 36px; font-weight: 900;">${w(cRefundAmt)}</span>으로 뭐에 쓸까? 고민하세요</div>
-                <div style="font-size: 16px; font-weight: 700; color: #475569; margin-bottom: 16px;">(자녀 대학 등록금, 유럽여행, 버킷리스트등)</div>
-            `;
-
+                <div style="font-size: 16px; font-weight: 700; color: #475569; margin-bottom: 16px;">(자녀 대학 등록금, 유럽여행, 버킷리스트등)</div>`;
             rightHtml = `
             <div class="slide-in" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; width:100%; text-align:center;">
-                
                 <div id="typeText3" style="min-height:220px; display:flex; flex-direction:column; justify-content:center;"></div>
-                
                 <div id="boxArea3" style="opacity:0; transition: opacity 0.6s ease-in-out; display:flex; flex-direction:column; align-items:center;">
-                    
                     <div style="display:flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; justify-content: center;">
-                        <a href="https://www.kyowonlife.co.kr/Service/LifeServiceList" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; border:1px solid #22c55e; color:#15803d; padding:12px 20px; border-radius:12px; font-size:15px; font-weight:900; text-decoration:none; box-shadow:0 4px 10px rgba(34,197,94,0.15); transition:0.2s;">
-                            ✈️ 교원 라이프케어 전환 서비스 확인하기 ↗
-                        </a>
-                        
-                        <a href="https://www.lgcaresolutionkyowon.co.kr:3443/LGCARE/easycti/jsp/main/best_login.jsp" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:#1e3a8a; border:1px solid #1e3a8a; color:#fff; padding:12px 20px; border-radius:12px; font-size:15px; font-weight:900; text-decoration:none; box-shadow:0 4px 10px rgba(30,58,138,0.2); transition:0.2s;">
-                            📝 고객 상담 신청하기 ↗
-                        </a>
+                        <a href="https://www.kyowonlife.co.kr/Service/LifeServiceList" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:#f0fdf4; border:1px solid #22c55e; color:#15803d; padding:12px 20px; border-radius:12px; font-size:15px; font-weight:900; text-decoration:none; box-shadow:0 4px 10px rgba(34,197,94,0.15); transition:0.2s;">✈️ 교원 라이프케어 전환 서비스 확인하기 ↗</a>
+                        <a href="https://www.lgcaresolutionkyowon.co.kr:3443/LGCARE/easycti/jsp/main/best_login.jsp" target="_blank" style="display:inline-flex; align-items:center; gap:6px; background:#1e3a8a; border:1px solid #1e3a8a; color:#fff; padding:12px 20px; border-radius:12px; font-size:15px; font-weight:900; text-decoration:none; box-shadow:0 4px 10px rgba(30,58,138,0.2); transition:0.2s;">📝 고객 상담 신청하기 ↗</a>
                     </div>
-
                     <div style="display:flex; gap:12px; margin-top: 10px; flex-shrink:0;">
                         <button onclick="setStep2View(0)" class="resetBtn" style="padding: 10px 24px; font-size: 14px; background:#fff; border:1px solid #cbd5e1; color:#475569; border-radius:8px; font-weight:900; margin:0;">🔙 이전으로</button>
                         <button onclick="editStep2()" class="resetBtn" style="padding: 10px 24px; font-size: 14px; background:#f8fafc; border:1px solid #cbd5e1; color:#475569; border-radius:8px; font-weight:900; margin:0;">🔄 상품 다시 선택</button>
                     </div>
                 </div>
-            </div>
-            `;
-            
-            if(s2Sum) {
-                s2Sum.innerHTML = rightHtml;
-                s2Sum.style.display = 'flex';
-                typeHTML('typeText3', text3, () => {
-                    document.getElementById('boxArea3').style.opacity = 1;
-                }, 100);
-            }
+            </div>`;
+            if(s2Sum) { s2Sum.innerHTML = rightHtml; s2Sum.style.display = 'flex'; typeHTML('typeText3', text3, () => { document.getElementById('boxArea3').style.opacity = 1; }, 100); }
         }
-        
         updateTopBenefit();
     }
 }
 
 /* =========================================
-   ★ 하단 통합 결과 (6년 리포트) - 12개월 선납 분기처리 ★
+   ★ 하단 통합 결과 (6년 리포트) ★
 ========================================= */
 function renderUnifiedResult() {
-  const years = document.getElementById("yearGrid");
-  const compareBar = document.getElementById("compareBar");
-  
-  if(!years || !compareBar) return;
-
-  const isStep1 = state2.combineMode === 'both' || state2.combineMode === 'step1';
-  const isStep2 = state2.combineMode === 'both' || state2.combineMode === 'step2';
-  
+  const years = document.getElementById("yearGrid"); const compareBar = document.getElementById("compareBar"); if(!years || !compareBar) return;
+  const isStep1 = state2.combineMode === 'both' || state2.combineMode === 'step1'; const isStep2 = state2.combineMode === 'both' || state2.combineMode === 'step2';
   const step1Arr = isStep1 ? getCombinedMonthlyArr() : [0,0,0,0,0,0];
-  
-  let combo = null;
-  if (isStep2 && state2.budgetTab !== null && state2.cardDiscount !== null) {
-      combo = currentCombo();
-  }
-  
+  let combo = isStep2 && state2.budgetTab !== null && state2.cardDiscount !== null ? currentCombo() : null;
   const appliedSubFee = isStep2 ? subFee : 0;
-  
-  let grandTotalDisc = 0; 
-  let totalSubPayment = 0; 
-  let boxes = "";
+  let grandTotalDisc = 0; let totalSubPayment = 0; let boxes = "";
   
   for(let year=1; year<=6; year++){
-      let currentS2Cb = 0;
-      let currentS2Card = 0;
-      
+      let currentS2Cb = 0; let currentS2Card = 0;
       if (isStep2 && combo) {
           currentS2Cb = (combo.prod.isPrepay12 && year > 1) ? 0 : combo.cb;
           currentS2Card = state2.cardDiscount !== null ? state2.cardDiscount : 0;
       }
-      
       const totalDiscForThisYear = step1Arr[year-1] + currentS2Cb + currentS2Card;
       grandTotalDisc += (totalDiscForThisYear * 12);
-      
       if(appliedSubFee > 0) {
-          const finalPayment = Math.max(0, appliedSubFee - totalDiscForThisYear);
-          totalSubPayment += (finalPayment * 12); 
-
-          boxes += `<div class="yearBox">
-                      <b>${year}년차</b>
-                      <div class="ori-fee">${w(appliedSubFee)}</div>
-                      <div class="disc-amt">혜택 -${w(totalDiscForThisYear)}</div>
-                      <div class="final-amt">${w(finalPayment)}/월</div>
-                    </div>`;
+          const finalPayment = Math.max(0, appliedSubFee - totalDiscForThisYear); totalSubPayment += (finalPayment * 12); 
+          boxes += `<div class="yearBox"><b>${year}년차</b><div class="ori-fee">${w(appliedSubFee)}</div><div class="disc-amt">혜택 -${w(totalDiscForThisYear)}</div><div class="final-amt">${w(finalPayment)}/월</div></div>`;
       } else {
-          let displayTxt = totalDiscForThisYear > 0 ? w(totalDiscForThisYear)+"/월" : "0원";
-          boxes += `<div class="yearBox">
-                      <b>${year}년차</b>
-                      <span class="pure-disc">${displayTxt}</span>
-                    </div>`;
+          boxes += `<div class="yearBox"><b>${year}년차</b><span class="pure-disc">${totalDiscForThisYear > 0 ? w(totalDiscForThisYear)+"/월" : "0원"}</span></div>`;
       }
   }
-
   if (isStep2 && combo && combo.prod.id === 'p130') {
-      const diff = (combo.prod.cashback - combo.prod.lastMonthCb) * combo.units;
-      grandTotalDisc -= diff;
-      if (appliedSubFee > 0) totalSubPayment += diff; 
+      const diff = (combo.prod.cashback - combo.prod.lastMonthCb) * combo.units; grandTotalDisc -= diff; if (appliedSubFee > 0) totalSubPayment += diff; 
   }
-  
-  let totalLabel = "최종 결합 6년 누적 혜택";
-  boxes += `<div class="yearBox total">
-              <b>${totalLabel}</b>
-              <span>${w(grandTotalDisc)}</span>
-            </div>`;
-  years.innerHTML = boxes;
+  boxes += `<div class="yearBox total"><b>최종 결합 6년 누적 혜택</b><span>${w(grandTotalDisc)}</span></div>`; years.innerHTML = boxes;
 
-  let compareHtml = "";
-  const appliedPrepay = isStep2 ? prepayFee : 0;
-  const prepayCb = isStep2 ? getPrepayCashback(appliedPrepay) : 0;
-  
+  let compareHtml = ""; const appliedPrepay = isStep2 ? prepayFee : 0; const prepayCb = isStep2 ? getPrepayCashback(appliedPrepay) : 0;
   if (appliedSubFee > 0 || appliedPrepay > 0) {
       let totalSubCost = appliedPrepay + totalSubPayment - prepayCb;
       let promoBadge = prepayCb > 0 ? `<div style="background:#dc2626; color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:900; margin-bottom:6px; display:inline-block;">🎉 선납 제휴카드 결제 시 ${w(prepayCb)} 추가 캐시백 확정!</div><br>` : "";
-      
       if (lumpSumFee > 0) {
-          let saveAmt = lumpSumFee - totalSubCost;
-          let saveText = saveAmt >= 0 ? `<span style="color:#dc2626; font-weight:1000;">${w(saveAmt)} 더 저렴합니다!</span>` : `<span style="color:#2563eb; font-weight:1000;">${w(Math.abs(saveAmt))} 초과</span>`;
-          
-          compareHtml = promoBadge + `
-          <div style="margin-top:4px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg, #fffbeb, #fef3c7); border:1px solid #fde047; padding:8px 16px; border-radius:10px;">
-              <div style="font-size:13px; font-weight:900; color:#475569;">일시불가 <span style="text-decoration:line-through; font-size:14px; margin-left:4px;">${w(lumpSumFee)}</span></div>
-              <div style="font-size:13px; font-weight:900; color:#94a3b8;">VS</div>
-              <div style="font-size:14px; font-weight:900; color:#1e3a8a;">구독 6년 총비용 <span style="font-size:18px; color:#1d4ed8; margin-left:6px;">${w(totalSubCost)}</span></div>
-              <div style="font-size:13px; font-weight:900;"><span style="background:#fff; padding:4px 12px; border-radius:6px; border:1px solid #facc15; box-shadow:0 1px 3px rgba(0,0,0,0.05);">일시불 대비 ${saveText}</span></div>
-          </div>`;
+          let saveText = (lumpSumFee - totalSubCost) >= 0 ? `<span style="color:#dc2626; font-weight:1000;">${w(lumpSumFee - totalSubCost)} 더 저렴합니다!</span>` : `<span style="color:#2563eb; font-weight:1000;">${w(Math.abs(lumpSumFee - totalSubCost))} 초과</span>`;
+          compareHtml = promoBadge + `<div style="margin-top:4px; display:flex; justify-content:space-between; align-items:center; background:linear-gradient(90deg, #fffbeb, #fef3c7); border:1px solid #fde047; padding:8px 16px; border-radius:10px;"><div style="font-size:13px; font-weight:900; color:#475569;">일시불가 <span style="text-decoration:line-through; font-size:14px; margin-left:4px;">${w(lumpSumFee)}</span></div><div style="font-size:13px; font-weight:900; color:#94a3b8;">VS</div><div style="font-size:14px; font-weight:900; color:#1e3a8a;">구독 6년 총비용 <span style="font-size:18px; color:#1d4ed8; margin-left:6px;">${w(totalSubCost)}</span></div><div style="font-size:13px; font-weight:900;"><span style="background:#fff; padding:4px 12px; border-radius:6px; border:1px solid #facc15; box-shadow:0 1px 3px rgba(0,0,0,0.05);">일시불 대비 ${saveText}</span></div></div>`;
       } else {
-          compareHtml = promoBadge + `
-          <div style="margin-top:4px; display:flex; justify-content:flex-end; align-items:center; background:#eff6ff; border:1px solid #bfdbfe; padding:8px 16px; border-radius:10px;">
-              <div style="font-size:14px; font-weight:900; color:#1e3a8a;">구독 시 6년 총비용 : <span style="font-size:20px; color:#1d4ed8; margin-left:8px;">${w(totalSubCost)}</span></div>
-          </div>`;
+          compareHtml = promoBadge + `<div style="margin-top:4px; display:flex; justify-content:flex-end; align-items:center; background:#eff6ff; border:1px solid #bfdbfe; padding:8px 16px; border-radius:10px;"><div style="font-size:14px; font-weight:900; color:#1e3a8a;">구독 시 6년 총비용 : <span style="font-size:20px; color:#1d4ed8; margin-left:8px;">${w(totalSubCost)}</span></div></div>`;
       }
   } else if (lumpSumFee > 0 && isStep1) {
-      let finalLumpSum = lumpSumFee - grandTotalDisc;
-      compareHtml = `
-      <div style="margin-top:4px; display:flex; justify-content:flex-end; align-items:center; background:#f8fafc; border:1px solid #cbd5e1; padding:8px 16px; border-radius:10px;">
-          <div style="font-size:14px; font-weight:900; color:#475569;">일시불 체감가 : <span style="font-size:20px; color:#0f172a; margin-left:8px;">${w(finalLumpSum)}</span></div>
-      </div>`;
+      compareHtml = `<div style="margin-top:4px; display:flex; justify-content:flex-end; align-items:center; background:#f8fafc; border:1px solid #cbd5e1; padding:8px 16px; border-radius:10px;"><div style="font-size:14px; font-weight:900; color:#475569;">일시불 체감가 : <span style="font-size:20px; color:#0f172a; margin-left:8px;">${w(lumpSumFee - grandTotalDisc)}</span></div></div>`;
   }
   compareBar.innerHTML = compareHtml;
 }
@@ -1174,7 +897,6 @@ function renderUnifiedResult() {
 function openKyowonPopup(){ document.getElementById("kyowonPopup").classList.add("show"); document.body.style.overflow="hidden"; }
 function closeKyowonPopup(){ document.getElementById("kyowonPopup").classList.remove("show"); document.body.style.overflow=""; }
 
-// 프로그램 시작 시 초기화
 resetEntireConsultation();
 </script>
 </body>
