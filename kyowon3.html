@@ -164,7 +164,7 @@
   <div class="top-result-panel" id="topResultPanel">
     <div class="hd">
       <div style="display:flex; align-items:center; gap:20px;">
-        <h2 id="resultTitle" style="font-size: 20px; color: #facc15; font-weight: 900; margin:0;">💡 최종 결합 할인 결과 리포트</h2>
+        <h2 id="resultTitle" style="font-size: 20px; color: #facc15; font-weight: 900; margin:0;">💡 최종 결합 혜택 결과 리포트</h2>
         <div class="tWrap" id="modeToggles">
             <button class="tBtn" id="btnModeStep1" onclick="setCombineMode('step1')">제휴카드 단독</button>
             <button class="tBtn" id="btnModeStep2" onclick="setCombineMode('step2')">교원 단독</button>
@@ -285,7 +285,7 @@
                           <div id="budgetGrid" class="budgetGrid"></div>
                       </div>
                       <div class="optionCol">
-                          <div class="optionTitle"><span class="num">2</span> 교원 전용 카드 할인</div>
+                          <div class="optionTitle"><span class="num">2</span> 교원 전용 카드 혜택</div>
                           <div class="discountRow" id="discountRow2"></div>
                       </div>
                   </div>
@@ -421,7 +421,7 @@ function abortTyping(elementId) {
     typeStates[elementId] = false;
 }
 
-function typeHTML(elementId, htmlString, onComplete, speed = 120) {
+function typeHTML(elementId, htmlString, onComplete, speed = 60) {
     const el = document.getElementById(elementId);
     if (!el) return;
     
@@ -629,7 +629,7 @@ function renderStep1() {
                 </div>
                 <div style="font-size:28px; color:#94a3b8; font-weight:900;">➔</div>
                 <div class="standard-box highlight-blue">
-                    <div style="font-size:28px; font-weight:900; color:#2563eb;">${(totalStep1Disc/10000).toLocaleString("ko-KR")}만 원 <span style="font-size:18px; font-weight:700; color:#3b82f6;">할인</span></div>
+                    <div style="font-size:28px; font-weight:900; color:#2563eb;">${(totalStep1Disc/10000).toLocaleString("ko-KR")}만 원 <span style="font-size:18px; font-weight:700; color:#3b82f6;">혜택</span></div>
                     <div style="font-size:15px; color:#64748b; margin-top:12px; font-weight:700; line-height:1.4;">${w(step1Monthly)} × 72개월</div>
                 </div>
             </div>
@@ -640,13 +640,13 @@ function renderStep1() {
             typeHTML('typeText1', text1, () => {
                 const btn = document.getElementById('btnShowResult1');
                 if(btn) { btn.style.display = 'block'; setTimeout(() => btn.style.opacity = 1, 10); }
-            }, 120);
+            }, 60);
         }
     }
 }
 
 /* =========================================
-   2단계 (저축형 할인) 데이터 및 렌더링 함수
+   2단계 (상조결합형 혜택) 데이터 및 렌더링 함수
 ========================================= */
 const kyowonProducts = {
   p72:  { id: 'p72',  name: '교원 72',  deposit: 84000, depositMonths: 72, cashback: 10000, totalRefund: 5990000, desc: '72개월 납부 후 28개월 거치' },
@@ -748,11 +748,11 @@ function renderBenefitGrid2(){
         <span class="pill green" style="font-size:12px;">${c.prod.name} ${c.units}구좌</span>
         ${isSelected ? '<span class="pill blue" style="font-size:11px; padding:3px 6px; background:#1d4ed8; color:#fff; border:none;">✓ 선택됨</span>' : ''}
       </div>
-      <h3 style="margin:12px 0 4px; font-size:18px; color:#0f172a; font-weight:900;">월 납입금액 ${w(c.deposit)}</h3>
+      <h3 style="margin:12px 0 4px; font-size:18px; color:#0f172a; font-weight:900;">월 납부금액 ${w(c.deposit)}</h3>
       ${c.prod.id === 'p130' ? `<div style="font-size:11px; color:#64748b; margin-bottom:10px;">(※ 100회차 변동)</div>` : `<div style="margin-bottom:12px;"></div>`}
       <div class="rows">
         <div class="row"><div>${c.prod.isPrepay12 ? "교원 지원 캐시백 (12개월)" : "교원 지원 캐시백"}</div><div class="hi" style="color:#2563eb !important;">${w(s2Cb)}</div></div>
-        <div class="row"><div>[신한] 제휴 할인</div><div class="hi">${w(s2Card)}</div></div>
+        <div class="row"><div>[신한] 제휴 혜택</div><div class="hi">${w(s2Card)}</div></div>
         <div class="row" style="margin-top:8px; padding-top:8px; border-top:1px dashed #cbd5e1;">
             <div>${c.prod.isPrepay12 ? "월 최종 합산 (1년차)" : "월 최종 합산"}</div><div class="hi" style="font-size:16px; color:#dc2626">${w(s2Cb + s2Card)}</div>
         </div>
@@ -792,10 +792,10 @@ function renderStep2() {
         } else { if(s2Res) s2Res.style.display = 'none'; }
     } else {
         if(s2Edit) s2Edit.style.display = 'none'; if(s2Res) s2Res.style.display = 'none'; 
-        // 텍스트 비유적 표현으로 수정
+        
         let text2 = isPrepay12 ? 
-            `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 마치 저축처럼 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>의 목돈을 마련하시게 되면 만기 시 100% 전액 환급되고,<br>교원 혜택으로 <b style="font-size:20px; color:#2563eb;">12개월간</b> 집중 지원받아 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 혜택으로 제공됩니다.<br><span style="font-size:15px; color:#64748b;">(마치 저축의 이자처럼 가전 구독료를 선지원 받는 효과입니다)</span>` :
-            `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 마치 저축처럼 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>의 목돈을 마련하시게 되면 만기 시 100% 전액 환급되고,<br>월 <b style="font-size:20px;">${wMan(s2CbMonthly + s2CardMonthly)}</b>씩 혜택을 받아 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 혜택으로 제공됩니다.<br><span style="font-size:15px; color:#64748b;">(마치 저축의 이자처럼 가전 구독료를 선지원 받는 효과입니다)</span>`;
+            `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>의 목돈을 마련하시게 되면 만기 시 100% 전액 환급되고,<br>교원 혜택으로 <b style="font-size:20px; color:#2563eb;">12개월간</b> 집중 지원받아 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 혜택으로 제공됩니다.<br><span style="font-size:15px; color:#64748b;">(가전 구독료를 매월 선지원 받는 혜택입니다)</span>` :
+            `월 <b style="font-size:20px;">${wMan(cDepositAmt)}</b>씩 ${depositMonths}개월 납부하여 <b style="font-size:20px;">${wMan(cRefundAmt)}</b>의 목돈을 마련하시게 되면 만기 시 100% 전액 환급되고,<br>월 <b style="font-size:20px;">${wMan(s2CbMonthly + s2CardMonthly)}</b>씩 혜택을 받아 총 <b style="color:#dc2626; font-size:22px;">${wMan(totalStep2Disc)}</b>이 혜택으로 제공됩니다.<br><span style="font-size:15px; color:#64748b;">(가전 구독료를 매월 선지원 받는 혜택입니다)</span>`;
         
         let s2CardBoxText = s2CbMonthly > 0 && s2CardMonthly > 0 ? `교원 ${w(s2CbMonthly)} × ${cbMonths}개월<br>카드 ${w(s2CardMonthly)} × 72개월` : (s2CbMonthly > 0 ? `교원 ${w(s2CbMonthly)} × ${cbMonths}개월` : `카드 ${w(s2CardMonthly)} × 72개월`);
 
@@ -825,7 +825,7 @@ function renderStep2() {
                 s2Sum.innerHTML = rightHtml; s2Sum.style.display = 'flex';
                 typeHTML('typeText2', text2, () => {
                     const btn = document.getElementById('btnShowResult2'); if(btn) { btn.style.display = 'block'; setTimeout(() => btn.style.opacity = 1, 10); }
-                }, 120);
+                }, 60);
             }
         } else if (step2ViewMode === 1) {
             let text3 = `<div style="font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 16px;">월 ${w(cDepositAmt)}씩 ${depositMonths}개월만 납입 하시면</div>
@@ -846,7 +846,7 @@ function renderStep2() {
                     </div>
                 </div>
             </div>`;
-            if(s2Sum) { s2Sum.innerHTML = rightHtml; s2Sum.style.display = 'flex'; typeHTML('typeText3', text3, () => { document.getElementById('boxArea3').style.opacity = 1; }, 100); }
+            if(s2Sum) { s2Sum.innerHTML = rightHtml; s2Sum.style.display = 'flex'; typeHTML('typeText3', text3, () => { document.getElementById('boxArea3').style.opacity = 1; }, 50); }
         }
         updateTopBenefit();
     }
