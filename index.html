@@ -845,7 +845,7 @@
         <div id="bassAirSimPanel" style="background: #f0f7ff; border: 1px solid #cce5ff; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px;">
             <div style="font-weight: bold; color: #0056b3; font-size: 14px; margin-bottom: 8px;">
                 ✨ 바스에어(M-X0120BASV) 6월 결합 혜택 시뮬레이터 
-                <span style="font-size:11px; color:#666; font-weight:normal;">(선택된 GAP 기준안 바탕으로 표 우측에 열이 새롭게 추가됩니다)</span>
+                <span style="font-size:11px; color:#666; font-weight:normal;">(가장 마지막 안을 기준으로 표 우측에 바스에어 결합안 열이 새롭게 추가됩니다)</span>
             </div>
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; font-size: 13px;">
                 <label style="display: flex; align-items: center; gap: 5px;">
@@ -1365,7 +1365,7 @@
     };
 
     const APP_CONFIG = {
-        version: 'v3.0', 
+        version: 'v4.0', 
         expiryDate: '2026-06-30', 
         notice: '내부전용 / 지점배포용'
     };
@@ -2143,7 +2143,6 @@
         
         results.forEach((item, idx) => {
             const dominantClass = item.subscriptionDominant ? 'subscription-dominant-header' : '';
-            // 바스에어 결합안(가장 마지막 열)일 경우 특별 강조 표시
             const headerText = item.header.includes('바스에어') ? `🌟 ${item.header}` : item.header;
             headerHtml += `<th class="${dominantClass}">${headerText}</th>`;
         });
@@ -2644,7 +2643,7 @@
         applyModelRowVisibility();
     }
 
-    // 🌟 표 안에 새로운 열(Column)을 동적으로 자동 생성하는 스마트 시뮬레이터
+    // 🌟 표 안에 새로운 열(Column)을 동적으로 자동 생성하는 스마트 시뮬레이터 (마지막 안 복제)
     function calculateBassAir() {
         if (!parsedModels || parsedModels.length === 0) {
             alert("먼저 엑셀 Data를 붙여넣고 '견적 산출하기'를 실행해 주세요.");
@@ -2702,8 +2701,8 @@
         const afterPoint = getPointByTier(newSubAmount);
         const gainedPoint = afterPoint - beforePoint;
 
-        // 3. 기존 'GAP 기준안' 데이터를 복제하여 새로운 '안(열)' 생성
-        const baseIdx = gapBaseIndex;
+        // 3. 🚨 변경점: '가장 마지막 안' 데이터를 복제하여 새로운 '안(열)' 생성
+        const baseIdx = optionCount - 1; // 표의 맨 마지막 인덱스
         const newIdx = optionCount; 
         
         // 모델명 복제 및 바스에어 문자열 추가
@@ -2748,7 +2747,7 @@
 
         optionCount++; // 전체 안(열) 개수 1 증가
         
-        // 4. 표 다시 그리기 (자동으로 3안/4안 렌더링)
+        // 4. 표 다시 그리기 (자동으로 우측에 안 렌더링)
         calculateAndRender();
 
         // 5. 결과 알림창 렌더링 (업셀링 멘트 포함)
@@ -2772,7 +2771,7 @@
         
         resultDiv.innerHTML = `
             <div style="color: #333; line-height: 1.6;">
-                ✅ <b>표 우측에 새로운 바스에어 결합안(${optionCount}안)이 성공적으로 추가되었습니다!</b><br>
+                ✅ <b>마지막 대안(${baseIdx + 1}안)을 기준으로 우측에 새로운 바스에어 결합안(${optionCount}안)이 성공적으로 추가되었습니다!</b><br>
                 ✅ <b>캐시백 혜택 증가:</b> +${fn(gainedCashback)}원 (총 ${newItems}품목 달성)<br>
                 ✅ <b>더블 포인트 증가:</b> +${fn(gainedPoint)}P (구독 인정액 ${fn(newSubAmount)}원 도달)<br>
             </div>
