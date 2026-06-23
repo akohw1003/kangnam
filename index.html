@@ -844,11 +844,12 @@
 
         <div id="bassAirSimPanel" style="background: #f0f7ff; border: 1px solid #cce5ff; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px;">
             <div style="font-weight: bold; color: #0056b3; font-size: 14px; margin-bottom: 8px;">
-                ✨ 바스에어(M-X0120BASV) 6월 결합 혜택 시뮬레이터 <span style="font-size:11px; color:#888;">(정상가 합산 기준)</span>
+                ✨ 바스에어(M-X0120BASV) 6월 결합 혜택 시뮬레이터 
+                <span style="font-size:11px; color:#666; font-weight:normal;">(선택된 GAP 기준안 바탕으로 표 우측에 열이 새롭게 추가됩니다)</span>
             </div>
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; font-size: 13px;">
                 <label style="display: flex; align-items: center; gap: 5px;">
-                    <b>다품목 갯수(기존):</b>
+                    <b>다품목 갯수(기준안):</b>
                     <select id="simMultiItem" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
                         <option value="0">해당 없음 (0품목)</option>
                         <option value="1">1품목 (기존 혜택 없음)</option>
@@ -861,23 +862,22 @@
                 </label>
                 
                 <label style="display: flex; align-items: center; gap: 5px;">
-                    <b>구독 총액(기존):</b>
+                    <b>구독 정상가 총액(기준안):</b>
                     <input type="text" id="simSubAmountInput" placeholder="예: 4,500,000" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; width: 120px; text-align:right;" onkeyup="this.value=fn(cleanNumber(this.value))"> 원
                 </label>
 
                 <label style="display: flex; align-items: center; gap: 5px;">
-                    <b>제휴카드 매칭(추가):</b>
+                    <b>제휴카드(추가 발급):</b>
                     <select id="simCardDiscount" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
                         <option value="0">적용 안함</option>
-                        <option value="17000">신한카드 (30만 실적 / -1.7만)</option>
-                        <option value="17000">국민카드 (30만 실적 / -1.7만)</option>
-                        <option value="18000">우리카드 (30만 실적 / -1.8만)</option>
-                        <option value="20000">롯데카드 (40만 실적 / -2.0만)</option>
+                        <option value="17000">신한/국민카드 (-1.7만)</option>
+                        <option value="18000">우리카드 (-1.8만)</option>
+                        <option value="20000">롯데카드 (-2.0만)</option>
                     </select>
                 </label>
 
                 <button type="button" onclick="calculateBassAir()" style="background: #d32f2f; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s;">
-                    월 체감가 확인
+                    견적표에 바스에어 결합안 추가
                 </button>
             </div>
             
@@ -1365,7 +1365,7 @@
     };
 
     const APP_CONFIG = {
-        version: 'v2.0', 
+        version: 'v3.0', 
         expiryDate: '2026-06-30', 
         notice: '내부전용 / 지점배포용'
     };
@@ -2143,7 +2143,9 @@
         
         results.forEach((item, idx) => {
             const dominantClass = item.subscriptionDominant ? 'subscription-dominant-header' : '';
-            headerHtml += `<th class="${dominantClass}">${item.header}</th>`;
+            // 바스에어 결합안(가장 마지막 열)일 경우 특별 강조 표시
+            const headerText = item.header.includes('바스에어') ? `🌟 ${item.header}` : item.header;
+            headerHtml += `<th class="${dominantClass}">${headerText}</th>`;
         });
         
         headerRow.innerHTML = headerHtml;
@@ -2642,17 +2644,23 @@
         applyModelRowVisibility();
     }
 
-    // 🌟 스마트 업셀링 기능이 탑재된 바스에어 시뮬레이터 로직
+    // 🌟 표 안에 새로운 열(Column)을 동적으로 자동 생성하는 스마트 시뮬레이터
     function calculateBassAir() {
-        const BASS_AIR_MONTHLY = 25500; // 구독 단독 및 중복 결합 5% 기본 적용 요금
-        const BASS_AIR_RECOGNIZED_AMT = 1090000; // [수정됨] 금액대 포인트 인정 금액 = 정상가 109만 원
+        if (!parsedModels || parsedModels.length === 0) {
+            alert("먼저 엑셀 Data를 붙여넣고 '견적 산출하기'를 실행해 주세요.");
+            return;
+        }
+
+        const BASS_AIR_MONTHLY = 25500; 
+        const BASS_AIR_RECOGNIZED_AMT = 1090000; 
+        const BASS_AIR_NORMAL_PRICE = 1090000;
 
         const currentItems = parseInt(document.getElementById('simMultiItem').value);
         const currentSubAmountStr = document.getElementById('simSubAmountInput').value;
         const currentSubAmount = currentSubAmountStr ? cleanNumber(currentSubAmountStr) : 0;
         const cardMonthlyDiscount = parseInt(document.getElementById('simCardDiscount').value);
 
-        // 1. 다품목 캐시백 증가 단가 테이블 매칭
+        // 1. 다품목 캐시백 증가 단가 테이블 파싱
         function getCashbackAmt(items) {
             if (items >= 12) return items * 250000;
             if (items >= 9) return items * 200000;
@@ -2667,7 +2675,7 @@
         const afterCashback = getCashbackAmt(newItems);
         const gainedCashback = afterCashback - beforeCashback;
 
-        // 2. 금액대별 더블 포인트 마일스톤 매칭 배열
+        // 2. 금액대별 포인트 테이블 매칭
         const pointTiers = [
             { limit: 30000000, point: 1400000 },
             { limit: 27000000, point: 1200000 },
@@ -2694,13 +2702,61 @@
         const afterPoint = getPointByTier(newSubAmount);
         const gainedPoint = afterPoint - beforePoint;
 
-        // 3. 🔥 스마트 업셀링 (다음 구간 도달 금액 계산)
+        // 3. 기존 'GAP 기준안' 데이터를 복제하여 새로운 '안(열)' 생성
+        const baseIdx = gapBaseIndex;
+        const newIdx = optionCount; 
+        
+        // 모델명 복제 및 바스에어 문자열 추가
+        const baseModel = parsedModels[baseIdx] || '-';
+        parsedModels.push(baseModel + '\n바스에어(M-X0120BASV) [구독]');
+
+        // 데이터 매트릭스 복제 및 바스에어 증감액 적용
+        for (const key in parsedData) {
+            if (parsedData.hasOwnProperty(key)) {
+                // 자동 계산되는 항목들은 복제하지 않음 (메인 로직이 동적 재계산 하도록 유도)
+                if (['결제금액', '혜택합계', '최종혜택금액', '체감구독료(월)'].includes(key)) {
+                    continue; 
+                }
+                
+                let baseVal = parsedData[key][baseIdx] !== undefined ? parsedData[key][baseIdx] : 0;
+                
+                if (key === '정상가') baseVal += BASS_AIR_NORMAL_PRICE;
+                else if (key === '정상구독료(월)') baseVal += BASS_AIR_MONTHLY;
+                else if (key === '캐시백') baseVal += gainedCashback;
+                else if (key === '멤버십') baseVal += gainedPoint;
+                else if (key === '제휴카드(월)') baseVal += cardMonthlyDiscount;
+                
+                if (!parsedData[key]) parsedData[key] = Array(newIdx).fill(0);
+                parsedData[key][newIdx] = baseVal;
+            }
+        }
+        
+        // 원본 엑셀에 특정 행(예: 제휴카드)이 아예 없었더라도 강제 생성
+        const essentialKeys = ['정상가', '정상구독료(월)', '캐시백', '멤버십', '제휴카드(월)'];
+        essentialKeys.forEach(key => {
+            if (!parsedData[key]) parsedData[key] = Array(newIdx).fill(0);
+            if (parsedData[key][newIdx] === undefined) {
+                let baseVal = 0;
+                if (key === '정상가') baseVal = BASS_AIR_NORMAL_PRICE;
+                if (key === '정상구독료(월)') baseVal = BASS_AIR_MONTHLY;
+                if (key === '캐시백') baseVal = gainedCashback;
+                if (key === '멤버십') baseVal = gainedPoint;
+                if (key === '제휴카드(월)') baseVal = cardMonthlyDiscount;
+                parsedData[key][newIdx] = baseVal;
+            }
+        });
+
+        optionCount++; // 전체 안(열) 개수 1 증가
+        
+        // 4. 표 다시 그리기 (자동으로 3안/4안 렌더링)
+        calculateAndRender();
+
+        // 5. 결과 알림창 렌더링 (업셀링 멘트 포함)
         let upsellingMsg = '';
-        for (let i = pointTiers.length - 2; i >= 0; i--) { // 300만 이상부터 위로 체크
+        for (let i = pointTiers.length - 2; i >= 0; i--) { 
             if (newSubAmount < pointTiers[i].limit) {
                 const shortAmt = pointTiers[i].limit - newSubAmount;
-                const nextPoint = pointTiers[i].point;
-                const potentialGain = nextPoint - afterPoint;
+                const potentialGain = pointTiers[i].point - afterPoint;
                 
                 upsellingMsg = `
                 <div style="margin-top: 12px; padding: 12px; background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; color: #d84315; font-size: 14px; font-weight: bold; line-height: 1.5;">
@@ -2711,23 +2767,14 @@
             }
         }
 
-        // 4. 실질 월 체감가 연산 (72개월 분할)
-        const totalBenefits = gainedCashback + gainedPoint;
-        const monthlyBenefit = Math.floor(totalBenefits / 72);
-        const realMonthlyCost = BASS_AIR_MONTHLY - monthlyBenefit - cardMonthlyDiscount;
-
         const resultDiv = document.getElementById('simResultMsg');
         resultDiv.style.display = 'block';
         
         resultDiv.innerHTML = `
             <div style="color: #333; line-height: 1.6;">
+                ✅ <b>표 우측에 새로운 바스에어 결합안(${optionCount}안)이 성공적으로 추가되었습니다!</b><br>
                 ✅ <b>캐시백 혜택 증가:</b> +${fn(gainedCashback)}원 (총 ${newItems}품목 달성)<br>
                 ✅ <b>더블 포인트 증가:</b> +${fn(gainedPoint)}P (구독 인정액 ${fn(newSubAmount)}원 도달)<br>
-                ✅ <b>제휴카드 할인 반영:</b> -월 ${fn(cardMonthlyDiscount)}원
-            </div>
-            <div style="margin-top: 8px; border-top: 1px solid #ccc; padding-top: 8px; color: #d32f2f; font-size: 16px; font-weight: bold;">
-                🎉 바스에어 결합 시 실질 월 추가 부담금: <span style="text-decoration: underline;">월 ${fn(realMonthlyCost)}원!</span>
-                <span style="font-size: 12px; color: #666; font-weight: normal;">(총 혜택 세이브 총액: ${fn(totalBenefits)}원)</span>
             </div>
             ${upsellingMsg}
         `;
