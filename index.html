@@ -1338,7 +1338,7 @@
 
     const APP_CONFIG = {
         version: 'v1.9', 
-        expiryDate: '2026-07-19', 
+        expiryDate: '2026-07-20', 
         notice: '내부전용 / 지점배포용'
     };
 
@@ -1731,7 +1731,8 @@
         if (norm.includes('제휴카드월') || norm.includes('제휴카드할인') || norm.includes('카드할인월') || (norm.includes('제휴카드') && norm.includes('월'))) return '제휴카드(월)';
         if (norm.includes('제휴카드')) return '제휴카드';
         if (norm.includes('선납금액')) return '선납금액';
-        if (norm.includes('선납시카드') || norm.includes('선납카드')) return '선납시카드혜택';
+        // '선납 캐시백' 파싱 규칙 수정 완료
+        if (norm.includes('선납캐시백') || norm.includes('선납시캐시백') || norm.includes('선납시카드') || norm.includes('선납카드')) return '선납캐시백';
         
         if (norm.includes('정상가') || norm.includes('정상판매가') || norm.includes('정상가격')) return '정상가';
         if (norm.includes('행사가') || norm.includes('행사판매가') || (norm.includes('판매가') && !norm.includes('정상'))) return '행사가';
@@ -1741,7 +1742,6 @@
         if (norm.includes('상품권')) return '상품권';
         if (norm.includes('멤버십') || norm.includes('멤버쉽') || norm.includes('포인트')) return '멤버십';
         
-        // 추가된 로직: 특별혜택 파싱
         if (norm.includes('특별혜택')) return '특별혜택';
         
         if (norm.includes('최종혜택금액') || norm.includes('최종혜택가') || norm.includes('최종혜택')) return '최종혜택금액';
@@ -1879,7 +1879,7 @@
             '정상가','행사가','특별할인','결제금액','캐시백','상품권','멤버십',
             '특별혜택','제휴카드','선택결제카드','선택결제카드명','선택결제카드설명',
             '혜택합계','최종혜택금액','정상구독료(월)','프로모션할인(월)','결합할인(월)',
-            '선납할인(월)','제휴카드(월)','선납금액','선납시카드혜택','체감구독료(월)'
+            '선납할인(월)','제휴카드(월)','선납금액','선납캐시백','체감구독료(월)' // '선납캐시백'으로 수정 완료
         ];
         const key = getKnownKey(String(text || ''));
         return !!key && known.includes(key);
@@ -2049,7 +2049,7 @@
             let preDc = getVal('선납할인(월)', i);
             let cardDcMonthly = getVal('제휴카드(월)', i);
             let preAmt = getVal('선납금액', i);
-            let preCard = getVal('선납시카드혜택', i);
+            let preCard = getVal('선납캐시백', i); // 변수값 할당 키워드 수정 완료
             const contractMonth = getVal('계약개월수', i) || 72;
 
             const payRaw = getVal('결제금액', i);
@@ -2157,7 +2157,7 @@
             { label: '선납할인(월)', key: 'preDc' },
             { label: '제휴카드(월)', key: 'cardDcMonthly' },
             { label: '선납금액', key: 'preAmt' },
-            { label: '선납 시 카드 혜택', key: 'preCard' },
+            { label: '선납 캐시백', key: 'preCard' }, // 화면 출력 라벨 수정 완료
             { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
             { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' },
             { label: gapLabel, key: 'gap', rowClass: 'gap-row' }
