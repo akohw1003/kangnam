@@ -9,610 +9,111 @@
         /* =========================================================
            💻 화면(스크린) 레이아웃
            ========================================================= */
-        body {
-            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-            font-size: 14px;
-        }
-        .container {
-            display: flex;
-            gap: 20px;
-            max-width: 1900px;
-            margin: 0 auto;
-            align-items: flex-start;
-        }
-        .right-column {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            position: sticky;
-            top: 20px;
-        }
-        .panel {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .left-panel {
-            flex: 1.3;
-            overflow-x: auto;
-        }
-        .right-panel {
-            flex: unset;
-            position: static;
-        }
-        h2 {
-            border-bottom: 2px solid #2c3e50;
-            padding-bottom: 10px;
-            color: #2c3e50;
-            margin-top: 0;
-            font-size: 18px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            text-align: center;
-            table-layout: fixed;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            font-size: 13px;
-            word-break: break-all;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-            color: #333;
-        }
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; color: #333; font-size: 14px; }
+        .container { display: flex; gap: 20px; max-width: 1900px; margin: 0 auto; align-items: flex-start; }
+        .right-column { flex: 1; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 20px; }
+        .panel { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .left-panel { flex: 1.3; overflow-x: auto; }
+        .right-panel { flex: unset; position: static; }
+        h2 { border-bottom: 2px solid #2c3e50; padding-bottom: 10px; color: #2c3e50; margin-top: 0; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: center; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 8px; font-size: 13px; word-break: break-all; }
+        th { background-color: #f8f9fa; font-weight: bold; color: #333; }
         
-        #quoteTable tr.highlight-dark td {
-            background-color: #475569 !important; 
-            color: #ffffff !important;
-            font-weight: 700 !important;
-        }
-        #quoteTable tr.highlight-dark td.label-cell {
-            background-color: #334155 !important;
-            color: #ffffff !important;
-        }
-        #quoteTable tr.highlight-dark td.base-col-cell {
-            background-color: #1e293b !important;
-            color: #ffffff !important;
-        }
+        #quoteTable tr.highlight-dark td { background-color: #475569 !important; color: #ffffff !important; font-weight: 700 !important; }
+        #quoteTable tr.highlight-dark td.label-cell { background-color: #334155 !important; color: #ffffff !important; }
+        #quoteTable tr.highlight-dark td.base-col-cell { background-color: #1e293b !important; color: #ffffff !important; }
 
-        .highlight-yellow {
-            background-color: #fff200;
-            font-weight: bold;
-            color: #d32f2f;
-            font-size: 15px;
-        }
-        .gap-row {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .label-cell {
-            font-weight: bold;
-            background: #fafafa;
-            color: #333;
-            text-align: center;
-            position: sticky;
-            left: 0;
-            z-index: 2;
-        }
-        .highlight-yellow .label-cell {
-            background-color: #fff200 !important;
-            color: #d32f2f !important;
-        }
-        .model-cell {
-            white-space: pre; 
-            word-break: normal; 
-            text-align: left;
-            padding-left: 15px;
-            font-size: 12px;
-            line-height: 1.6;
-            color: #0056b3;
-            font-weight: bold;
-            vertical-align: middle;
-        }
-        .number-cell {
-            text-align: right;
-            padding-right: 10px;
-        }
-        .paste-area-container {
-            background: #eef2f5;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px dashed #0056b3;
-            margin-bottom: 20px;
-        }
-        .paste-area-container p {
-            margin-top: 0;
-            font-weight: bold;
-            color: #0056b3;
-            margin-bottom: 10px;
-        }
-
-        .excel-paste-shell {
-            border: 1px solid #c9d3df;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #ffffff;
-            height: 260px;
-        }
-        .excel-paste-header {
-            display: grid;
-            grid-template-columns: 44px repeat(8, 1fr);
-            background: #e9edf3;
-            border-bottom: 1px solid #c9d3df;
-            font-size: 12px;
-            color: #4b5563;
-            user-select: none;
-        }
-        .excel-paste-header div {
-            padding: 6px 0;
-            text-align: center;
-            border-right: 1px solid #d6dee8;
-            font-weight: bold;
-        }
-        .excel-paste-header div:last-child {
-            border-right: none;
-        }
-        .excel-paste-body {
-            display: grid;
-            grid-template-columns: 44px 1fr;
-            height: 224px;
-            background: #fff;
-        }
-        .excel-row-head {
-            overflow: hidden;
-            background:
-                repeating-linear-gradient(
-                    to bottom,
-                    #eef2f6 0px,
-                    #eef2f6 31px,
-                    #dfe6ee 31px,
-                    #dfe6ee 32px
-                );
-            border-right: 1px solid #c9d3df;
-        }
-        .excel-grid-wrap {
-            position: relative;
-            overflow: auto;
-            background:
-                repeating-linear-gradient(
-                    to right,
-                    rgba(201, 211, 223, 0.9) 0px,
-                    rgba(201, 211, 223, 0.9) 1px,
-                    transparent 1px,
-                    transparent 120px
-                ),
-                repeating-linear-gradient(
-                    to bottom,
-                    rgba(201, 211, 223, 0.9) 0px,
-                    rgba(201, 211, 223, 0.9) 1px,
-                    transparent 1px,
-                    transparent 32px
-                ),
-                #fff;
-        }
-        .excel-hint {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            color: #6b7280;
-            font-size: 12px;
-            pointer-events: none;
-            z-index: 1;
-        }
-        #rawPasteArea {
-            position: relative;
-            z-index: 2;
-            width: 1400px;
-            min-width: 100%;
-            height: 100%;
-            min-height: 224px;
-            padding: 10px 12px;
-            border: none;
-            border-radius: 0;
-            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
-            font-size: 12px;
-            resize: none;
-            box-sizing: border-box;
-            background: transparent;
-            line-height: 20px;
-            overflow: auto;
-            white-space: pre;
-        }
-        #rawPasteArea:focus {
-            outline: 2px solid #8bb8ff;
-            outline-offset: -2px;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        .btn-calc, .btn-clear {
-            color: white;
-            border: none;            
-            padding: 12px 20px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            width: 100%;
-            font-size: 15px;
-            transition: 0.2s;
-        }
-        .btn-calc { background-color: #0056b3; }
-        .btn-calc:hover { background-color: #004494; }
-        .btn-clear { background-color: #6c757d; }
-        .btn-clear:hover { background-color: #5a6268; }
+        .highlight-yellow { background-color: #fff200; font-weight: bold; color: #d32f2f; font-size: 15px; }
+        .gap-row { background-color: #f8f9fa; font-weight: bold; }
+        .label-cell { font-weight: bold; background: #fafafa; color: #333; text-align: center; position: sticky; left: 0; z-index: 2; }
+        .highlight-yellow .label-cell { background-color: #fff200 !important; color: #d32f2f !important; }
+        .model-cell { white-space: pre; word-break: normal; text-align: left; padding-left: 15px; font-size: 12px; line-height: 1.6; color: #0056b3; font-weight: bold; vertical-align: middle; }
+        .number-cell { text-align: right; padding-right: 10px; }
         
-        .care-summary {
-            background-color: #eef2f5;
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-            border: 1px solid #dce3e9;
-        }
-        .care-summary-left {
-            flex: 1;
-            min-width: 0;
-        }
-        .summary-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-        .selected-items-list {
-            font-size: 14px;
-            line-height: 1.7;
-            color: #2c3e50;            
-            white-space: pre-wrap;
-        }
-        .care-summary-right {
-            text-align: right;
-            font-size: 16px;
-            font-weight: bold;
-            color: #2c3e50;
-            min-width: 190px;
-        }
-        .care-summary-right span {
-            color: #d32f2f;
-            font-size: 20px;
-        }
-        .btn-clear-select {
-            background-color: #fff;
-            color: #0056b3;
-            border: 1px solid #0056b3;
-            padding: 7px 12px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .btn-clear-select:hover {
-            background-color: #eef5ff;
-        }
-        .print-selected-care-wrap {
-            display: none;
-            margin-top: 12px;
-        }
-        
-        .tab-container {
-            margin-bottom: 10px;
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-        }
-        .tab-btn {
-            flex: 1 1 calc(16% - 4px);
-            min-width: 95px;
-            padding: 8px 4px;
-            cursor: pointer;
-            border: 1px solid #0056b3;
-            background: #fff;
-            color: #0056b3;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 11px;
-            transition: 0.2s;
-            text-align: center;
-        }
-        .tab-btn.active {
-            background: #0056b3;
-            color: #fff;
-        }
-        .video-btn:hover {
-            background-color: #eef5ff;
-        }
-
-        .care-table th { background-color: #eef2f5; }
-        .checkbox-cell { text-align: center; }
-        .text-left { text-align: left; }
-        .text-right { text-align: right; }
-        .disabled-row { opacity: 0.5; }
-        .table-scroll {
-            max-height: 650px;
-            overflow-y: auto;
-        }
-        #quoteTableWrap { overflow-x: auto; }
-        #quoteTable { min-width: 900px; }
-        
-        .warning-red-header-unused {
-            background-color: #ffcccc !important;
-            color: #d32f2f !important;
-            border: 2px solid #d32f2f !important;
-        }
-
-        @media (max-width: 1200px) {
-            .container { flex-direction: column; }
-            .right-column { position: static; }
-        }
-        
-        .print-toolbar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .btn-print {
-            background-color: #2c3e50;
-            color: #fff;
-            border: none;            
-            padding: 10px 14px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
-        }
-        .btn-print-secondary { background-color: #5f6b77; }
-        
-        .btn-proposal { background-color: #0056b3; }
-        .btn-proposal:hover { background-color: #004494; }
-        
-        .btn-planner { background-color: #0f766e; }
-        .btn-planner:hover { background-color: #0d5c56; }
-        
-        .app-meta {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #111827;
-            text-align: right;
-            font-weight: bold;
-        }
-        .security-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .security-card {
-            width: 100%;
-            max-width: 420px;
-            background: #fff;
-            border-radius: 10px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .security-card h3 { margin: 0 0 10px 0; font-size: 20px; color: #2c3e50; }
-        .security-card p { margin: 0 0 12px 0; color: #555; line-height: 1.5; }
-        .security-input {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            border: 1px solid #cfd8dc;
-            border-radius: 6px;
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
-        .security-actions { display: flex; gap: 8px; }
-        .btn-security {
-            flex: 1;
-            border: none;
-            border-radius: 6px;
-            padding: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .btn-security-primary { background: #0056b3; color: #fff; }
-        .btn-security-secondary { background: #e9eef3; color: #2c3e50; }
-        .security-error {
-            color: #d32f2f;
-            font-size: 13px;
-            min-height: 18px;
-            margin-bottom: 8px;
-        }
-        .print-footer { display: none; }
-        
-        .gap-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-            flex-wrap: wrap;
-        }
-        .gap-select {
-            min-width: 120px;
-            padding: 8px 10px;
-            border: 1px solid #cfd8dc;
-            border-radius: 4px;
-            font-size: 14px;
-            background: #fff;
-        }
-    
-        .parse-status-panel {
-            background: #f8fbff;
-            border: 1px solid #cfe0f3;
-            border-radius: 6px;
-            padding: 10px 12px;
-            margin-bottom: 14px;
-            font-size: 12px;
-            color: #2c3e50;
-            line-height: 1.6;
-        }
-        .parse-status-title {
-            font-weight: bold;
-            color: #0056b3;
-            margin-bottom: 4px;
-        }
-        .base-col-header { box-shadow: inset 0 0 0 2px #0056b3; }
-        .base-col-cell { background-color: #eef5ff !important; }
-        .base-badge {
-            display: inline-block;
-            margin-left: 6px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 10px;
-            background: #0056b3;
-            color: #fff;
-            vertical-align: middle;
-        }
-
-        .excel-preview-host {
-            position: absolute;
-            inset: 0;
-            z-index: 3;
-            overflow: auto;
-            background: rgba(255,255,255,0.96);
-        }
-        .excel-preview-host.hidden {
-            display: none;
-        }
-        .excel-preview-table {
-            border-collapse: collapse;
-            width: 100%;
-            background: #fff;
-            table-layout: fixed;
-        }
-        .excel-preview-table td {
-            border: 1px solid #c9d3df;
-            min-width: 110px;
-            height: 30px;
-            padding: 4px 6px;            
-            font-size: 12px;
-            color: #1f2937;
-            vertical-align: top;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-        .excel-preview-table tr:nth-child(odd) td {
-            background: #fff;
-        }
-
-        .base-col-header,
-        .base-col-cell {
-            background: transparent !important;
-            background-color: transparent !important;
-            color: inherit !important;
-            font-weight: inherit !important;
-            border: 1px solid #d9d9d9 !important;
-            box-shadow: none !important;
-        }
-
-        #quoteTable td.base-col-cell,
-        #quoteTable th.base-col-header,
-        #quoteTable td.base-col-cell *,
-        #quoteTable th.base-col-header * {
-            background: transparent !important;
-            background-color: transparent !important;
-            color: inherit !important;
-            font-weight: inherit !important;
-            box-shadow: none !important;
-        }
-
-        body { color: #111827 !important; }
-        #quoteTable, #quoteTable td, #quoteTable th {
-            color: #111827 !important;
-            font-size: 14px !important;
-        }
-        #quoteTable th { font-weight: 700 !important; }
-        #quoteTable td { font-weight: 500 !important; line-height: 1.45 !important; }
-        #quoteTable td.number-cell, #quoteTable td[class*="number"] {
-            font-size: 15px !important;
-            font-weight: 600 !important;
-            color: #111827 !important;
-        }
-        
-        #quoteTable .model-cell, #quoteTable td.model-cell, #quoteTable td.model-cell * {
-            font-size: 13.5px !important; 
-            font-weight: 600 !important;
-            color: #0f172a !important;
-            line-height: 1.55 !important;
-            white-space: pre !important; 
-            word-break: normal !important; 
-            letter-spacing: -0.3px !important; 
-        }
-
+        .paste-area-container { background: #eef2f5; padding: 15px; border-radius: 5px; border: 1px dashed #0056b3; margin-bottom: 20px; }
+        .paste-area-container p { margin-top: 0; font-weight: bold; color: #0056b3; margin-bottom: 10px; }
         .sheet-shell{ border:1px solid #c9d3df; border-radius:8px; overflow:hidden; background:#fff; }
-        .sheet-toolbar{
-            display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px;            
-            background:#f7f9fc; border-bottom:1px solid #d7dfeb; font-size:12px; color:#4b5563;
-        }
+        .sheet-toolbar{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; background:#f7f9fc; border-bottom:1px solid #d7dfeb; font-size:12px; color:#4b5563; }
         .sheet-scroll{ max-height:260px; overflow:auto; background:#fff; }
         .sheet-table{ border-collapse:collapse; width:max-content; min-width:100%; table-layout:fixed; font-size:12px; }
         .sheet-table th, .sheet-table td{ border:1px solid #d7dfeb; }
-        .sheet-table thead th{
-            position:sticky; top:0; z-index:3; background:#eef2f7; color:#334155; font-weight:700; text-align:center;            
-            height:30px; min-width:120px;
-        }
+        .sheet-table thead th{ position:sticky; top:0; z-index:3; background:#eef2f7; color:#334155; font-weight:700; text-align:center; height:30px; min-width:120px; }
         .sheet-table thead th.corner{ left:0; z-index:4; min-width:42px; width:42px; }
-        .sheet-table tbody th{
-            position:sticky; left:0; z-index:2; background:#eef2f7; color:#475569; width:42px; min-width:42px; text-align:center; font-weight:700;
-        }
-        .sheet-table td{
-            min-width:120px; width:120px; height:30px; padding:4px 6px; white-space:pre-wrap; word-break:break-word;
-            vertical-align:top; background:#fff; color:#111827; cursor:text;
-        }
+        .sheet-table tbody th{ position:sticky; left:0; z-index:2; background:#eef2f7; color:#475569; width:42px; min-width:42px; text-align:center; font-weight:700; }
+        .sheet-table td{ min-width:120px; width:120px; height:30px; padding:4px 6px; white-space:pre-wrap; word-break:break-word; vertical-align:top; background:#fff; color:#111827; cursor:text; }
         .sheet-table td.active-cell{ outline:2px solid #4f8cff; outline-offset:-2px; background:#f8fbff; }
         .hidden-raw{ display:none !important; }
+
+        .btn-row { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-calc, .btn-clear { color: white; border: none; padding: 12px 20px; cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%; font-size: 15px; transition: 0.2s; }
+        .btn-calc { background-color: #0056b3; } .btn-calc:hover { background-color: #004494; }
+        .btn-clear { background-color: #6c757d; } .btn-clear:hover { background-color: #5a6268; }
+
+        .care-summary { background-color: #eef2f5; padding: 15px 20px; border-radius: 6px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border: 1px solid #dce3e9; }
+        .care-summary-left { flex: 1; min-width: 0; }
+        .summary-title { font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
+        .selected-items-list { font-size: 14px; line-height: 1.7; color: #2c3e50; white-space: pre-wrap; }
+        .care-summary-right { text-align: right; font-size: 16px; font-weight: bold; color: #2c3e50; min-width: 190px; }
+        .care-summary-right span { color: #d32f2f; font-size: 20px; }
+        .btn-clear-select { background-color: #fff; color: #0056b3; border: 1px solid #0056b3; padding: 7px 12px; border-radius: 4px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; }
+        .btn-clear-select:hover { background-color: #eef5ff; }
+        .print-selected-care-wrap { display: none; margin-top: 12px; }
+
+        .tab-container { margin-bottom: 10px; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-start; }
+        .tab-btn { flex: 1 1 calc(16% - 4px); min-width: 95px; padding: 8px 4px; cursor: pointer; border: 1px solid #0056b3; background: #fff; color: #0056b3; border-radius: 4px; font-weight: bold; font-size: 11px; transition: 0.2s; text-align: center; }
+        .tab-btn.active { background: #0056b3; color: #fff; } .video-btn:hover { background-color: #eef5ff; }
+        .care-table th { background-color: #eef2f5; } .checkbox-cell { text-align: center; } .text-left { text-align: left; } .text-right { text-align: right; } .disabled-row { opacity: 0.5; }
+        .table-scroll { max-height: 650px; overflow-y: auto; } #quoteTableWrap { overflow-x: auto; } #quoteTable { min-width: 900px; }
+        
+        .print-toolbar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .btn-print { background-color: #2c3e50; color: #fff; border: none; padding: 10px 14px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .btn-print-secondary { background-color: #5f6b77; } .btn-proposal { background-color: #0056b3; } .btn-proposal:hover { background-color: #004494; } .btn-planner { background-color: #0f766e; } .btn-planner:hover { background-color: #0d5c56; }
+        
+        .app-meta { margin-top: 10px; font-size: 12px; color: #111827; text-align: right; font-weight: bold; }
+        .security-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .security-card { width: 100%; max-width: 420px; background: #fff; border-radius: 10px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .security-card h3 { margin: 0 0 10px 0; font-size: 20px; color: #2c3e50; } .security-card p { margin: 0 0 12px 0; color: #555; line-height: 1.5; }
+        .security-input { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #cfd8dc; border-radius: 6px; font-size: 15px; margin-bottom: 10px; }
+        .security-actions { display: flex; gap: 8px; } .btn-security { flex: 1; border: none; border-radius: 6px; padding: 12px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-security-primary { background: #0056b3; color: #fff; } .btn-security-secondary { background: #e9eef3; color: #2c3e50; }
+        .security-error { color: #d32f2f; font-size: 13px; min-height: 18px; margin-bottom: 8px; } .print-footer { display: none; }
+        
+        .gap-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .gap-select { min-width: 120px; padding: 8px 10px; border: 1px solid #cfd8dc; border-radius: 4px; font-size: 14px; background: #fff; }
+
+        .base-col-header, .base-col-cell { background: transparent !important; background-color: transparent !important; color: inherit !important; font-weight: inherit !important; border: 1px solid #d9d9d9 !important; box-shadow: none !important; }
+        #quoteTable td.base-col-cell, #quoteTable th.base-col-header, #quoteTable td.base-col-cell *, #quoteTable th.base-col-header * { background: transparent !important; background-color: transparent !important; color: inherit !important; font-weight: inherit !important; box-shadow: none !important; }
+
+        body { color: #111827 !important; }
+        #quoteTable, #quoteTable td, #quoteTable th { color: #111827 !important; font-size: 14px !important; }
+        #quoteTable th { font-weight: 700 !important; } #quoteTable td { font-weight: 500 !important; line-height: 1.45 !important; }
+        #quoteTable td.number-cell, #quoteTable td[class*="number"] { font-size: 15px !important; font-weight: 600 !important; color: #111827 !important; }
+        #quoteTable .model-cell, #quoteTable td.model-cell, #quoteTable td.model-cell * { font-size: 13.5px !important; font-weight: 600 !important; color: #0f172a !important; line-height: 1.55 !important; white-space: pre !important; word-break: normal !important; letter-spacing: -0.3px !important; }
+        
         .print-subscription-notice { display: none; }
+        .result-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin: 8px 0 10px 0; }
+        .btn-toggle-model { background: #ffffff; color: #0056b3; border: 1px solid #0056b3; border-radius: 6px; padding: 8px 12px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .btn-toggle-model:hover { background: #eef5ff; }
+        #quoteTable.hide-model-row tr.model-row { display: none !important; }
+        
+        .subscription-dominant-header { background-color: #dff3df !important; color: #1f6b2a !important; font-weight: 700 !important; }
+        .subscription-dominant-cell { background-color: #eaf7ea !important; }
+        .highlight-dark td.subscription-dominant-cell { background-color: #2f6f3b !important; color: #ffffff !important; }
+        .highlight-yellow td.subscription-dominant-cell { background-color: #d9f0d9 !important; color: #1f6b2a !important; }
+        .gap-row td.subscription-dominant-cell { background-color: #eaf7ea !important; color: #1f6b2a !important; }
 
         /* =========================================================
            ✨ [웨딩 패키지 AI 진단 배너] 전용 스타일
            ========================================================= */
-        .wedding-toggle-label {
-            margin-left: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-            background: #fff0f3; border: 1px solid #a50034; color: #a50034; padding: 6px 12px;
-            border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.2s; user-select: none;
-        }
+        .wedding-toggle-label { margin-left: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: #fff0f3; border: 1px solid #a50034; color: #a50034; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.2s; user-select: none; }
         .wedding-toggle-label:hover { background: #ffe3e8; }
         .wedding-toggle-label input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: #a50034; }
         
         #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row.only-wedding { display: none !important; }
-
-        #quoteTable.show-wedding-banner .wedding-target {
-            background-color: #ffe3e8; color: #a50034; padding: 2px 6px; border-radius: 4px;
-            font-weight: 800; display: inline-block; margin-bottom: 2px; box-shadow: 0 0 0 1px #ffc1cf inset;
-        }
-
-        .wedding-banner-row td {
-            padding: 10px 8px !important; vertical-align: middle !important; text-align: center !important;
-            line-height: 1.4 !important; font-size: 12.5px !important; border-bottom: 2px solid #2c3e50 !important; box-shadow: none !important;
-        }
-        .wedding-banner-row td.label-cell {
-            background-color: #8f002e !important; color: #ffffff !important; font-size: 13.5px !important;
-            font-weight: 800 !important; letter-spacing: -0.5px;
-        }
+        #quoteTable.show-wedding-banner .wedding-target { background-color: #ffe3e8; color: #a50034; padding: 2px 6px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 2px; box-shadow: 0 0 0 1px #ffc1cf inset; }
+        .wedding-banner-row td { padding: 10px 8px !important; vertical-align: middle !important; text-align: center !important; line-height: 1.4 !important; font-size: 12.5px !important; border-bottom: 2px solid #2c3e50 !important; box-shadow: none !important; }
+        .wedding-banner-row td.label-cell { background-color: #8f002e !important; color: #ffffff !important; font-size: 13.5px !important; font-weight: 800 !important; letter-spacing: -0.5px; }
         .banner-title { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; display: block; }
         .banner-desc { font-size: 11.5px; line-height: 1.35; font-weight: 600; }
         .banner-success { background-color: #d1e7dd !important; color: #0f5132 !important; border: 2px solid #198754 !important; }
@@ -621,33 +122,23 @@
         .banner-normal { background-color: #f8f9fa !important; color: #6c757d !important; border: 1px solid #dee2e6 !important; }
 
         /* =========================================================
-           🎁 [라이프스타일 패키지 AI 진단] 전용 스타일
+           🎁 [라이프스타일 패키지 AI 진단] 전용 디자인 CSS 복원
            ========================================================= */
-        .lifestyle-toggle-label {
-            margin-left: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
-            background: #eef2f5; border: 1px solid #0056b3; color: #0056b3; padding: 6px 12px;
-            border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.2s; user-select: none;
-        }
+        .lifestyle-toggle-label { margin-left: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: #eef2f5; border: 1px solid #0056b3; color: #0056b3; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.2s; user-select: none; }
         .lifestyle-toggle-label:hover { background: #e2eaf3; }
         .lifestyle-toggle-label input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: #0056b3; }
-
+        
         #quoteTable:not(.show-lifestyle-banner) tr.lifestyle-banner-row { display: none !important; }
 
-        /* ✨ 파스텔 블루/남색 하이라이트 (시인성 극대화) */
-        #quoteTable.show-lifestyle-banner .lifestyle-target {
-            background-color: #e0e7ff; 
-            color: #3730a3; 
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-weight: 900;
-            display: inline-block;
-            margin-bottom: 2px;
-            box-shadow: 0 0 0 1.5px #a5b4fc inset;
-        }
+        #quoteTable.show-lifestyle-banner .lifestyle-target { background-color: #e0e7ff; color: #3730a3; padding: 3px 6px; border-radius: 4px; font-weight: 900; display: inline-block; margin-bottom: 2px; box-shadow: 0 0 0 1.5px #a5b4fc inset; }
+        
+        /* 🚨 빠져있던 뱃지 핵심 디자인 코드 */
+        .lifestyle-badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-weight: 800; font-size: 13px; margin-bottom: 4px; }
+        .lifestyle-badge.ok { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .lifestyle-badge.near { background-color: #cff4fc; color: #055160; border: 1px solid #b6effb; }
+        .lifestyle-badge.coral { background-color: #fff3cd; color: #664d03; border: 1px solid #ffecb5; }
+        .lifestyle-tip { font-size: 11.5px; font-weight: 600; line-height: 1.3; color: #444; }
 
-        /* =========================================================
-           🖨️ [인쇄 전용 스타일]
-           ========================================================= */
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .print-toolbar, .paste-area-container, .tab-container, .btn-calc, .btn-clear, .btn-clear-select, #videoPanel, #installGuidePanel, #qrPanel, #cardQrModalOverlay, .security-overlay, .gap-toolbar, .app-meta { display: none !important; }
@@ -668,23 +159,8 @@
             body.print-all .right-column { page-break-before: always !important; break-before: page !important; }
             .print-footer { display: block !important; position: fixed !important; bottom: 0 !important; width: 100% !important; padding-top: 8px; border-top: 1px solid #ddd; font-size: 9pt; color: #333; text-align: right; background: #fff; z-index: 9999; }
             .print-subscription-notice { display: block !important; margin-top: 20px; margin-bottom: 15px; padding: 12px 15px; border: 1px solid #999; border-radius: 6px; background-color: #f8f9fa !important; page-break-inside: avoid; }
-            .print-subscription-notice h4 { margin: 0 0 6px 0; font-size: 12px; color: #2c3e50 !important; font-weight: bold; }
-            .print-subscription-notice ul { margin: 0; padding-left: 18px; }
-            .print-subscription-notice li { font-size: 11px; color: #444 !important; line-height: 1.4; margin-bottom: 4px; }
-            .print-subscription-notice li:last-child { margin-bottom: 0; }
+            #quoteTable.hide-model-row tr.model-row { display: none !important; }
         }
-    
-        .result-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin: 8px 0 10px 0; }
-        .btn-toggle-model { background: #ffffff; color: #0056b3; border: 1px solid #0056b3; border-radius: 6px; padding: 8px 12px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .btn-toggle-model:hover { background: #eef5ff; }
-        #quoteTable.hide-model-row tr.model-row { display: none !important; }
-        @media print { #quoteTable.hide-model-row tr.model-row { display: none !important; } }
-        .subscription-dominant-header { background-color: #dff3df !important; color: #1f6b2a !important; font-weight: 700 !important; }
-        .subscription-dominant-cell { background-color: #eaf7ea !important; }
-        .highlight-dark td.subscription-dominant-cell { background-color: #2f6f3b !important; color: #ffffff !important; }
-        .highlight-yellow td.subscription-dominant-cell { background-color: #d9f0d9 !important; color: #1f6b2a !important; }
-        .gap-row td.subscription-dominant-cell { background-color: #eaf7ea !important; color: #1f6b2a !important; }
-    
     </style>
 </head>
 <body>
@@ -890,9 +366,6 @@
 </div>
 
 <script>
-    // =========================================================
-    // 🚨 사번 및 생년월일 데이터 (기존과 100% 동일)
-    // =========================================================
     const MANAGER_DATA = {
         "13415": { branch: "문래점", name: "정진욱", birth: "690723" },
         "13077": { branch: "문래점", name: "김선일", birth: "840126" },
@@ -1215,9 +688,6 @@
         notice: '내부전용 / 지점배포용 / 웨딩 및 라이프스타일 진단 탑재'
     };
 
-    // =========================================================
-    // 💒 [웨딩 패키지 정책 데이터 및 진단 엔진]
-    // =========================================================
     const WEDDING_POLICY = {
         fixedPlans: [
             { id: "wedding-115", name: "웨딩 115 플랜", rate: "3.9%", items: ["OLED83C6Q", "M876GBB181", "WA2525TAP6Z"] },
@@ -1235,7 +705,7 @@
         if (!rawLine || rawLine === '-') return false;
         if (!rawLine.includes('[구독]')) return false; 
         
-        const checkStr = rawLine.toUpperCase().replace(/\s+/g, '');
+        const checkStr = rawLine.toUpperCase().split('.')[0].replace(/\s+/g, '');
         
         for (const plan of WEDDING_POLICY.fixedPlans) {
             if (plan.items.some(target => checkStr.includes(target.toUpperCase()))) return true;
@@ -1250,9 +720,19 @@
         if (!modelText || modelText === '-') return { type: 'normal', title: '-', desc: '일반 상담 견적' };
 
         const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
-        const parsedList = rawLines.map(raw => ({
+        const mergedLines = [];
+        
+        for (const line of rawLines) {
+            if (line.includes('[구독]') && line.replace(/\[구독\]/g, '').trim() === '') {
+                if (mergedLines.length > 0) mergedLines[mergedLines.length - 1] += ' [구독]';
+            } else {
+                mergedLines.push(line);
+            }
+        }
+
+        const parsedList = mergedLines.map(raw => ({
             raw,
-            checkStr: raw.toUpperCase().replace(/\s+/g, ''),
+            checkStr: raw.toUpperCase().split('.')[0].replace(/\s+/g, ''),
             isSub: raw.includes('[구독]')
         }));
 
@@ -1270,26 +750,14 @@
 
             if (matchedCount === 3) {
                 if (subMatchedCount === 3) {
-                    return {
-                        type: 'success',
-                        title: `🎉 ${plan.name} 달성!`,
-                        desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>`
-                    };
+                    return { type: 'success', title: `🎉 ${plan.name} 달성!`, desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>` };
                 } else {
                     const needSub = 3 - subMatchedCount;
-                    return {
-                        type: 'tip-sub',
-                        title: `💡 ${plan.name} 임박!`,
-                        desc: `일반 구매 <b>${needSub}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!`
-                    };
+                    return { type: 'tip-sub', title: `💡 ${plan.name} 임박!`, desc: `일반 구매 <b>${needSub}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!` };
                 }
             } else if (matchedCount === 2) {
                 const missing = plan.items.find(target => !parsedList.some(m => m.checkStr.includes(target.toUpperCase())));
-                return {
-                    type: 'tip-model',
-                    title: `💡 ${plan.name} 추천`,
-                    desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!`
-                };
+                return { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!` };
             }
         }
 
@@ -1299,22 +767,13 @@
 
         if (tvMatch && fridgeMatch && washerMatch) {
             if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) {
-                return {
-                    type: 'success',
-                    title: `🎉 웨딩 BEST-PICK 달성!`,
-                    desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>`
-                };
+                return { type: 'success', title: `🎉 웨딩 BEST-PICK 달성!`, desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>` };
             } else {
                 let needSubCount = 0;
                 if (!tvMatch.isSub) needSubCount++;
                 if (!fridgeMatch.isSub) needSubCount++;
                 if (!washerMatch.isSub) needSubCount++;
-                
-                return {
-                    type: 'tip-sub',
-                    title: `💡 BEST-PICK 달성 임박!`,
-                    desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!`
-                };
+                return { type: 'tip-sub', title: `💡 BEST-PICK 달성 임박!`, desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!` };
             }
         }
 
@@ -1322,90 +781,51 @@
     }
 
     function toggleWeddingBanner() {
-        const cb = document.getElementById('weddingToggleCb');
-        const table = document.getElementById('quoteTable');
+        const cb = document.getElementById('weddingToggleCb'); const table = document.getElementById('quoteTable');
         if (!cb || !table) return;
-        if (cb.checked) table.classList.add('show-wedding-banner');
-        else table.classList.remove('show-wedding-banner');
+        if (cb.checked) table.classList.add('show-wedding-banner'); else table.classList.remove('show-wedding-banner');
     }
 
     function toggleLifestyleBanner() {
-        const cb = document.getElementById('lifestyleToggleCb');
-        const table = document.getElementById('quoteTable');
+        const cb = document.getElementById('lifestyleToggleCb'); const table = document.getElementById('quoteTable');
         if (!cb || !table) return;
-        if (cb.checked) table.classList.add('show-lifestyle-banner');
-        else table.classList.remove('show-lifestyle-banner');
+        if (cb.checked) table.classList.add('show-lifestyle-banner'); else table.classList.remove('show-lifestyle-banner');
     }
 
     function getTodayYmd() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
+        const now = new Date(); const y = now.getFullYear(); const m = String(now.getMonth() + 1).padStart(2, '0'); const d = String(now.getDate()).padStart(2, '0');
         return `${y}-${m}-${d}`;
     }
 
     function getNowStamp() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
+        const now = new Date(); const y = now.getFullYear(); const m = String(now.getMonth() + 1).padStart(2, '0'); const d = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0'); const mm = String(now.getMinutes()).padStart(2, '0');
         return `${y}-${m}-${d} ${hh}:${mm}`;
     }
 
     function updateAppMeta() {
         const savedId = sessionStorage.getItem('planner_emp_id');
         const mgr = savedId && typeof MANAGER_DATA !== 'undefined' ? MANAGER_DATA[savedId] : null;
-
         let mgrString = mgr ? `[${mgr.branch}] ${savedId} ${mgr.name} 플래너` : '';
-
         const metaText = `${APP_CONFIG.notice} / 버전 ${APP_CONFIG.version} / 사용 만료일 ${APP_CONFIG.expiryDate}${mgrString ? ' / ' + mgrString : ''}`;
         const printText = `출력일시: ${getNowStamp()}${mgrString ? ' / 소속: ' + mgr.branch + ' / 사번: ' + savedId + ' / 담당자: ' + mgr.name : ''}`;
-
-        const meta = document.getElementById('appMeta');
-        const footer = document.getElementById('printFooter');
-        if (meta) meta.innerText = metaText;
-        if (footer) footer.innerText = printText;
+        const meta = document.getElementById('appMeta'); const footer = document.getElementById('printFooter');
+        if (meta) meta.innerText = metaText; if (footer) footer.innerText = printText;
     }
 
-    function isExpired() {
-        return getTodayYmd() > APP_CONFIG.expiryDate;
-    }
+    function isExpired() { return getTodayYmd() > APP_CONFIG.expiryDate; }
 
     function validateAccess() {
-        const idInput = document.getElementById('empIdInput');
-        const birthInput = document.getElementById('empBirthInput');
-        const error = document.getElementById('securityError');
-        const guide = document.getElementById('securityGuide');
-
-        if (isExpired()) {
-            guide.innerText = '사용 만료일이 지나 프로그램을 열 수 없습니다. 최신 버전을 다시 배포받아 주세요.';
-            error.innerText = '만료된 버전입니다.';
-            return;
-        }
-
-        const empId = idInput.value.trim();
-        const empBirth = birthInput.value.trim();
-
+        const idInput = document.getElementById('empIdInput'); const birthInput = document.getElementById('empBirthInput');
+        const error = document.getElementById('securityError'); const guide = document.getElementById('securityGuide');
+        if (isExpired()) { guide.innerText = '사용 만료일이 지나 프로그램을 열 수 없습니다. 최신 버전을 다시 배포받아 주세요.'; error.innerText = '만료된 버전입니다.'; return; }
+        const empId = idInput.value.trim(); const empBirth = birthInput.value.trim();
         if (typeof MANAGER_DATA !== 'undefined' && MANAGER_DATA[empId]) {
             if (MANAGER_DATA[empId].birth === empBirth || (MANAGER_DATA[empId].birth === "000000" && empBirth === "000000")) {
-                document.getElementById('securityOverlay').style.display = 'none';
-                document.getElementById('mainAppContainer').style.display = 'flex'; 
-                sessionStorage.setItem('planner_emp_id', empId); 
-                error.innerText = '';
-                updateAppMeta(); 
-            } else {
-                error.innerText = '생년월일이 일치하지 않습니다.';
-                birthInput.focus();
-                birthInput.select();
-            }
-        } else {
-            error.innerText = '등록되지 않은 사번입니다.';
-            idInput.focus();
-            idInput.select();
-        }
+                document.getElementById('securityOverlay').style.display = 'none'; document.getElementById('mainAppContainer').style.display = 'flex'; 
+                sessionStorage.setItem('planner_emp_id', empId); error.innerText = ''; updateAppMeta(); 
+            } else { error.innerText = '생년월일이 일치하지 않습니다.'; birthInput.focus(); birthInput.select(); }
+        } else { error.innerText = '등록되지 않은 사번입니다.'; idInput.focus(); idInput.select(); }
     }
 
     function closeWindowApp() { window.close(); }
@@ -1413,34 +833,16 @@
     function initSecurity() {
         const savedId = sessionStorage.getItem('planner_emp_id');
         if (savedId && typeof MANAGER_DATA !== 'undefined' && MANAGER_DATA[savedId] && !isExpired()) {
-            document.getElementById('securityOverlay').style.display = 'none';
-            document.getElementById('mainAppContainer').style.display = 'flex'; 
-            updateAppMeta();
-            return;
+            document.getElementById('securityOverlay').style.display = 'none'; document.getElementById('mainAppContainer').style.display = 'flex'; updateAppMeta(); return;
         }
-
         updateAppMeta(); 
-        const overlay = document.getElementById('securityOverlay');
-        const guide = document.getElementById('securityGuide');
-        const error = document.getElementById('securityError');
-        const idInput = document.getElementById('empIdInput');
-        const birthInput = document.getElementById('empBirthInput');
-
+        const overlay = document.getElementById('securityOverlay'); const guide = document.getElementById('securityGuide');
+        const error = document.getElementById('securityError'); const idInput = document.getElementById('empIdInput'); const birthInput = document.getElementById('empBirthInput');
         if (isExpired()) {
-            overlay.style.display = 'flex';
-            guide.innerText = '사용 만료일이 지나 프로그램을 열 수 없습니다. 최신 버전을 다시 배포받아 주세요.';
-            error.innerText = '만료된 버전입니다.';
-            idInput.disabled = true;
-            birthInput.disabled = true;
-            return;
+            overlay.style.display = 'flex'; guide.innerText = '사용 만료일이 지나 프로그램을 열 수 없습니다. 최신 버전을 다시 배포받아 주세요.';
+            error.innerText = '만료된 버전입니다.'; idInput.disabled = true; birthInput.disabled = true; return;
         }
-
-        overlay.style.display = 'flex';
-        idInput.disabled = false;
-        birthInput.disabled = false;
-        idInput.value = '';
-        birthInput.value = '';
-        idInput.focus();
+        overlay.style.display = 'flex'; idInput.disabled = false; birthInput.disabled = false; idInput.value = ''; birthInput.value = ''; idInput.focus();
     }
 
     function fn(num) {
@@ -1462,8 +864,7 @@
             let char = text[i];
             if (inQuotes) {
                 if (char === '"' && text[i + 1] === '"') { currentCell += '"'; i++; }
-                else if (char === '"') inQuotes = false;
-                else currentCell += char;
+                else if (char === '"') inQuotes = false; else currentCell += char;
             } else {
                 if (char === '"') inQuotes = true;
                 else if (char === '\t') { currentRow.push(currentCell.trim()); currentCell = ''; }
@@ -1478,8 +879,7 @@
     function extractTextFromHtml(htmlString) {
         if (!htmlString) return '';
         let processedHtml = String(htmlString).replace(/<br\s*[\/]?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<\/div>/gi, '\n').replace(/<\/li>/gi, '\n').replace(/<li[^>]*>/gi, '\n');                 
-        let tempDiv = document.createElement('div');
-        tempDiv.innerHTML = processedHtml;
+        let tempDiv = document.createElement('div'); tempDiv.innerHTML = processedHtml;
         let text = tempDiv.innerText || tempDiv.textContent || '';
         return text.replace(/[ \t]*\n[ \t]*/g, '\n').replace(/\n{2,}/g, '\n').trim();
     }
@@ -1489,15 +889,12 @@
             const doc = new DOMParser().parseFromString(htmlText, 'text/html');
             const table = doc.querySelector('table');
             if (table) {
-                const rows = Array.from(table.querySelectorAll('tr')).map(tr =>
-                    Array.from(tr.querySelectorAll('th,td')).map(td => extractTextFromHtml(td.innerHTML))
-                ).filter(r => r.some(v => v));
+                const rows = Array.from(table.querySelectorAll('tr')).map(tr => Array.from(tr.querySelectorAll('th,td')).map(td => extractTextFromHtml(td.innerHTML))).filter(r => r.some(v => v));
                 if (rows.length) return rows;
             }
             const bodyText = extractTextFromHtml(doc.body.innerHTML);
             if (bodyText) return parseTextToMatrix(bodyText);
-        } catch (e) {}
-        return [];
+        } catch (e) {} return [];
     }
 
     function parseClipboardHtmlTable(htmlText) {
@@ -1505,18 +902,13 @@
             const doc = new DOMParser().parseFromString(htmlText, 'text/html');
             const table = doc.querySelector('table');
             if (!table) return [];
-            return Array.from(table.querySelectorAll('tr')).map(tr =>
-                Array.from(tr.querySelectorAll('th,td')).map(td => extractTextFromHtml(td.innerHTML))
-            ).filter(row => row.some(v => v !== ''));
+            return Array.from(table.querySelectorAll('tr')).map(tr => Array.from(tr.querySelectorAll('th,td')).map(td => extractTextFromHtml(td.innerHTML))).filter(row => row.some(v => v !== ''));
         } catch (e) { return []; }
     }
 
     function parseTextToMatrix(text) {
         const lines = String(text || '').replace(/\r/g, '').split('\n');
-        return lines.map(line => {
-            if (line.includes('\t')) return line.split('\t').map(v => v.trim());
-            return [line.trim()];
-        }).filter(row => row.some(v => v !== ''));
+        return lines.map(line => { if (line.includes('\t')) return line.split('\t').map(v => v.trim()); return [line.trim()]; }).filter(row => row.some(v => v !== ''));
     }
 
     function parseClipboardTextToMatrix(text) {
@@ -1532,14 +924,12 @@
     }
 
     function initInputSheet() {
-        const head = document.getElementById('inputSheetHead');
-        const body = document.getElementById('inputSheetBody');
+        const head = document.getElementById('inputSheetHead'); const body = document.getElementById('inputSheetBody');
         if (!head || !body) return;
 
         let headHtml = '<tr><th class="corner"></th>';
         for (let c = 0; c < SHEET_COLS; c++) headHtml += `<th>${colLabel(c)}</th>`;
-        headHtml += '</tr>';
-        head.innerHTML = headHtml;
+        headHtml += '</tr>'; head.innerHTML = headHtml;
 
         let bodyHtml = '';
         for (let r = 0; r < SHEET_ROWS; r++) {
@@ -1573,8 +963,7 @@
         if (!matrix.length) return;
 
         e.preventDefault();
-        const startRow = activeSheetCell.row || 0;
-        const startCol = activeSheetCell.col || 0;
+        const startRow = activeSheetCell.row || 0; const startCol = activeSheetCell.col || 0;
 
         matrix.forEach((row, rIdx) => {
             row.forEach((val, cIdx) => {
@@ -1586,18 +975,14 @@
     }
 
     function syncRawFromSheet() {
-        const raw = document.getElementById('rawPasteArea');
-        if (!raw) return;
-
+        const raw = document.getElementById('rawPasteArea'); if (!raw) return;
         const lines = [];
         for (let r = 0; r < SHEET_ROWS; r++) {
             const rowVals = []; let lastUsed = -1;
             for (let c = 0; c < SHEET_COLS; c++) {
                 const cell = getSheetCell(r, c);
                 let val = cell ? (cell.innerText || cell.textContent).replace(/\u00a0/g, ' ').trim() : '';
-                if (val.includes('\n') || val.includes('\r') || val.includes('"') || val.includes('\t')) {
-                    val = '"' + val.replace(/"/g, '""') + '"';
-                }
+                if (val.includes('\n') || val.includes('\r') || val.includes('"') || val.includes('\t')) val = '"' + val.replace(/"/g, '""') + '"';
                 rowVals.push(val);
                 if (val !== '' && val !== '""') lastUsed = c;
             }
@@ -1613,8 +998,7 @@
                 if (cell) { cell.innerText = ''; cell.classList.remove('active-cell'); }
             }
         }
-        const raw = document.getElementById('rawPasteArea');
-        if (raw) raw.value = '';
+        const raw = document.getElementById('rawPasteArea'); if (raw) raw.value = '';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -1631,8 +1015,7 @@
                             if (val.includes('\n') || val.includes('\r') || val.includes('"') || val.includes('\t')) return '"' + val.replace(/"/g, '""') + '"';
                             return val;
                         }).join('\t')).join('\n');
-                        const start = this.selectionStart;
-                        const end = this.selectionEnd;
+                        const start = this.selectionStart; const end = this.selectionEnd;
                         this.value = this.value.substring(0, start) + tsv + this.value.substring(end);
                         this.selectionStart = this.selectionEnd = start + tsv.length;
                     }
@@ -1644,8 +1027,7 @@
     let parsedData = {}; let parsedModels = []; let optionCount = 0; let optionLabels = []; let gapBaseIndex = 0; let latestResults = [];
 
     function getKnownKey(text) {
-        const norm = String(text).replace(/\s+/g, '');
-        if (!norm) return null;
+        const norm = String(text).replace(/\s+/g, ''); if (!norm) return null;
         if (norm.includes('체감구독료')) return '체감구독료(월)';
         if (norm.includes('정상구독료') || norm.includes('월구독료')) return '정상구독료(월)';
         if (norm.includes('프로모션할인')) return '프로모션할인(월)';
@@ -1670,29 +1052,22 @@
     }
 
     function populateGapBaseOptions() {
-        const select = document.getElementById('gapBaseSelect');
-        if (!select) return;
+        const select = document.getElementById('gapBaseSelect'); if (!select) return;
         select.innerHTML = Array.from({ length: optionCount }, (_, idx) => `<option value="${idx}" ${idx === gapBaseIndex ? 'selected' : ''}>${idx + 1}안</option>`).join('');
         select.value = String(gapBaseIndex);
     }
 
     function handleGapBaseChange() {
-        const select = document.getElementById('gapBaseSelect');
-        if (!select) return;
-        gapBaseIndex = Number(select.value) || 0;
-        gapBaseIndex = Math.min(gapBaseIndex, Math.max(0, optionCount - 1));
-        populateGapBaseOptions();
-        calculateAndRender();
+        const select = document.getElementById('gapBaseSelect'); if (!select) return;
+        gapBaseIndex = Number(select.value) || 0; gapBaseIndex = Math.min(gapBaseIndex, Math.max(0, optionCount - 1));
+        populateGapBaseOptions(); calculateAndRender();
     }
 
-    function normalizeModelLine(text) {
-        return String(text || '').replace(/\s+/g, ' ').replace(/\s*\[구독\]/gi, ' [구독]').trim();
-    }
+    function normalizeModelLine(text) { return String(text || '').replace(/\s+/g, ' ').replace(/\s*\[구독\]/gi, ' [구독]').trim(); }
 
     function formatModelCellBlock(text) {
         if (!text) return '-';
-        const lines = String(text).split(/\r?\n/);
-        const processed = lines.map(normalizeModelLine).filter(Boolean);
+        const lines = String(text).split(/\r?\n/); const processed = lines.map(normalizeModelLine).filter(Boolean);
         return processed.length > 0 ? processed.join('\n') : '-';
     }
 
@@ -1707,16 +1082,14 @@
             result[0] = cleaned.slice(0, firstSubIdx).join('\n');
             const rest = cleaned.slice(firstSubIdx);
             if (optionCount === 2) { result[1] = rest.join('\n'); return result; }
-            const a = rest[0] || ''; const b = rest[1] || '';
-            const starts = [0];
+            const a = rest[0] || ''; const b = rest[1] || ''; const starts = [0];
             for (let i = 1; i < rest.length - 1; i++) {
                 if (starts.length >= optionCount - 1) break;
                 if (rest[i] === a && rest[i + 1] === b) starts.push(i);
             }
             if (starts.length === optionCount - 1) {
                 for (let i = 0; i < optionCount - 1; i++) {
-                    const s = starts[i];
-                    const e = i + 1 < starts.length ? starts[i + 1] : rest.length;
+                    const s = starts[i]; const e = i + 1 < starts.length ? starts[i + 1] : rest.length;
                     result[i + 1] = rest.slice(s, e).join('\n');
                 }
                 return result;
@@ -1728,38 +1101,32 @@
             }
             if (starts2.length === optionCount - 1) {
                 for (let i = 0; i < optionCount - 1; i++) {
-                    const s = starts2[i];
-                    const e = i + 1 < starts2.length ? starts2[i + 1] : rest.length;
+                    const s = starts2[i]; const e = i + 1 < starts2.length ? starts2[i + 1] : rest.length;
                     result[i + 1] = rest.slice(s, e).join('\n');
                 }
                 return result;
             }
             let cursor = 0;
             for (let i = 1; i < optionCount; i++) {
-                const remainingLines = rest.length - cursor;
-                const remainingGroups = optionCount - i;
+                const remainingLines = rest.length - cursor; const remainingGroups = optionCount - i;
                 const take = Math.max(1, Math.ceil(remainingLines / remainingGroups));
-                result[i] = rest.slice(cursor, cursor + take).join('\n');
-                cursor += take;
+                result[i] = rest.slice(cursor, cursor + take).join('\n'); cursor += take;
             }
             return result;
         }
 
-        const a = cleaned[0] || ''; const b = cleaned[1] || '';
-        const starts = [0];
+        const a = cleaned[0] || ''; const b = cleaned[1] || ''; const starts = [0];
         for (let i = 1; i < cleaned.length - 1; i++) {
             if (starts.length >= optionCount) break;
             if (cleaned[i] === a && cleaned[i + 1] === b) starts.push(i);
         }
         if (starts.length === optionCount) {
             for (let i = 0; i < optionCount; i++) {
-                const s = starts[i];
-                const e = i + 1 < starts.length ? starts[i + 1] : cleaned.length;
+                const s = starts[i]; const e = i + 1 < starts.length ? starts[i + 1] : cleaned.length;
                 result[i] = cleaned.slice(s, e).join('\n');
             }
             return result;
         }
-
         const chunk = Math.ceil(cleaned.length / optionCount);
         for (let i = 0; i < cleaned.length; i++) {
             const idx = Math.min(optionCount - 1, Math.floor(i / chunk));
@@ -1771,8 +1138,7 @@
 
     function isKnownValueRow(text) {
         const known = ['정상가','행사가','특별할인','결제금액','캐시백','상품권','멤버십','특별혜택','제휴카드','선택결제카드','선택결제카드명','선택결제카드설명','혜택합계','최종혜택금액','정상구독료(월)','프로모션할인(월)','결합할인(월)','선납할인(월)','제휴카드(월)','선납금액','선납캐시백','체감구독료(월)'];
-        const key = getKnownKey(String(text || ''));
-        return !!key && known.includes(key);
+        const key = getKnownKey(String(text || '')); return !!key && known.includes(key);
     }
 
     function parseExcelData() {
@@ -1795,16 +1161,11 @@
         let modelStart = -1; let modelEnd = -1; let modelRowIndex = -1; let detectedLastValueCol = 0;
 
         for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const rowText = row.join(' ').trim().replace(/\s+/g, '');
-            const firstCellNorm = String(row[0] || '').trim().replace(/\s+/g, '');
-            if (rowText.includes('선택모델') || rowText.includes('모델명') || firstCellNorm.includes('선택모델')) {
-                modelRowIndex = i; modelStart = i + 1; continue;
-            }
+            const row = rows[i]; const rowText = row.join(' ').trim().replace(/\s+/g, ''); const firstCellNorm = String(row[0] || '').trim().replace(/\s+/g, '');
+            if (rowText.includes('선택모델') || rowText.includes('모델명') || firstCellNorm.includes('선택모델')) { modelRowIndex = i; modelStart = i + 1; continue; }
             const identifiedKey = getKnownKey(String(row[0] || '').trim()) || getKnownKey(rowText);
             if (identifiedKey && row.length > 1) {
-                let lastUsed = 0;
-                row.slice(1).forEach((v, idx) => { if (String(v || '').trim() !== '') lastUsed = idx + 1; });
+                let lastUsed = 0; row.slice(1).forEach((v, idx) => { if (String(v || '').trim() !== '') lastUsed = idx + 1; });
                 detectedLastValueCol = Math.max(detectedLastValueCol, lastUsed);
             }
             if (modelStart !== -1 && rowText && isKnownValueRow(rows[i][0] || rowText)) { modelEnd = i; break; }
@@ -1817,8 +1178,7 @@
         parsedModels = Array.from({ length: optionCount }, () => '-');
 
         if (modelRowIndex !== -1) {
-            const modelRow = rows[modelRowIndex] || [];
-            let directMapped = 0;
+            const modelRow = rows[modelRowIndex] || []; let directMapped = 0;
             if (modelRow.length > 1) {
                 for (let c = 1; c <= optionCount; c++) {
                     const v = String(modelRow[c] || '').trim();
@@ -1829,15 +1189,11 @@
                 if (modelEnd === -1) modelEnd = rows.length;
                 const modelLines = [];
                 for (let i = modelStart; i < modelEnd; i++) {
-                    const row = rows[i];
-                    const nonEmpty = row.map(v => String(v || '').trim()).filter(Boolean);
+                    const row = rows[i]; const nonEmpty = row.map(v => String(v || '').trim()).filter(Boolean);
                     if (row.length >= optionCount + 1) {
                         for (let c = 1; c <= optionCount; c++) {
                             const v = String(row[c] || '').trim();
-                            if (v) {
-                                const merged = parsedModels[c - 1] === '-' ? v : (parsedModels[c - 1] + '\n' + v);
-                                parsedModels[c - 1] = formatModelCellBlock(merged);
-                            }
+                            if (v) { const merged = parsedModels[c - 1] === '-' ? v : (parsedModels[c - 1] + '\n' + v); parsedModels[c - 1] = formatModelCellBlock(merged); }
                         }
                     } else if (nonEmpty.length) { modelLines.push(...nonEmpty); }
                 }
@@ -1848,28 +1204,18 @@
 
         const valueStart = modelEnd !== -1 ? modelEnd : 0;
         for (let i = valueStart; i < rows.length; i++) {
-            const row = rows[i];
-            const firstCell = String(row[0] || '').trim();
-            const rowText = row.join(' ').trim();
+            const row = rows[i]; const firstCell = String(row[0] || '').trim(); const rowText = row.join(' ').trim();
             if (!rowText) continue;
-
             const identifiedKey = getKnownKey(firstCell) || getKnownKey(rowText);
             if (!identifiedKey) continue;
-
             let nums = [];
-            if (row.length > 1) {
-                nums = row.slice(1, optionCount + 1).map(v => cleanNumber(v));
-            } else {
-                const pureText = rowText.replace(firstCell, '').trim();
-                const extracted = pureText.match(/-?\d{1,3}(?:,\d{3})*(?:\.\d+)?/g) || [];
-                nums = extracted.map(v => cleanNumber(v)).slice(0, optionCount);
-            }
+            if (row.length > 1) { nums = row.slice(1, optionCount + 1).map(v => cleanNumber(v)); } 
+            else { const pureText = rowText.replace(firstCell, '').trim(); const extracted = pureText.match(/-?\d{1,3}(?:,\d{3})*(?:\.\d+)?/g) || []; nums = extracted.map(v => cleanNumber(v)).slice(0, optionCount); }
             parsedData[identifiedKey] = nums;
         }
 
         gapBaseIndex = Math.min(gapBaseIndex, Math.max(0, optionCount - 1));
-        populateGapBaseOptions();
-        calculateAndRender();
+        populateGapBaseOptions(); calculateAndRender();
     }
 
     function getVal(key, idx) { return parsedData[key] && parsedData[key][idx] !== undefined ? parsedData[key][idx] : 0; }
@@ -1881,44 +1227,25 @@
             const modelText = String(parsedModels[i] || '').trim();
             const modelHasSubscriptionTag = /\[구독\]/.test(modelText);
 
-            const normalPrice = getVal('정상가', i);
-            const eventPrice = getVal('행사가', i);
-            const specialDc = getVal('특별할인', i);
-            const cashback = getVal('캐시백', i);
-            const voucher = getVal('상품권', i);
-            const membership = getVal('멤버십', i);
-            const specialBenefit = getVal('특별혜택', i);
-            const cardBenefit = getVal('제휴카드', i);
+            const normalPrice = getVal('정상가', i); const eventPrice = getVal('행사가', i); const specialDc = getVal('특별할인', i);
+            const cashback = getVal('캐시백', i); const voucher = getVal('상품권', i); const membership = getVal('멤버십', i);
+            const specialBenefit = getVal('특별혜택', i); const cardBenefit = getVal('제휴카드', i);
 
-            let subFee = getVal('정상구독료(월)', i);
-            let promoDc = getVal('프로모션할인(월)', i);
-            let comboDc = getVal('결합할인(월)', i);
-            let preDc = getVal('선납할인(월)', i);
-            let cardDcMonthly = getVal('제휴카드(월)', i);
-            let preAmt = getVal('선납금액', i);
-            let preCard = getVal('선납캐시백', i);
-            const contractMonth = getVal('계약개월수', i) || 72;
+            let subFee = getVal('정상구독료(월)', i); let promoDc = getVal('프로모션할인(월)', i); let comboDc = getVal('결합할인(월)', i);
+            let preDc = getVal('선납할인(월)', i); let cardDcMonthly = getVal('제휴카드(월)', i); let preAmt = getVal('선납금액', i);
+            let preCard = getVal('선납캐시백', i); const contractMonth = getVal('계약개월수', i) || 72;
 
-            const payRaw = getVal('결제금액', i);
-            const pay = hasVal('결제금액', i) ? payRaw : Math.max(0, eventPrice - specialDc);
+            const payRaw = getVal('결제금액', i); const pay = hasVal('결제금액', i) ? payRaw : Math.max(0, eventPrice - specialDc);
+            const benefitSumRaw = getVal('혜택합계', i); const benefitSum = hasVal('혜택합계', i) ? benefitSumRaw : (cashback + voucher + membership + specialBenefit + cardBenefit);
+            const finalBenefitRaw = getVal('최종혜택금액', i); const finalBenefit = hasVal('최종혜택금액', i) ? finalBenefitRaw : Math.max(0, pay - benefitSum);
 
-            const benefitSumRaw = getVal('혜택합계', i);
-            const benefitSum = hasVal('혜택합계', i) ? benefitSumRaw : (cashback + voucher + membership + specialBenefit + cardBenefit);
+            let realSubRaw = getVal('체감구독료(월)', i); const realSub = hasVal('체감구독료(월)', i) ? realSubRaw : Math.max(0, subFee - promoDc - comboDc - preDc - cardDcMonthly);
 
-            const finalBenefitRaw = getVal('최종혜택금액', i);
-            const finalBenefit = hasVal('최종혜택금액', i) ? finalBenefitRaw : Math.max(0, pay - benefitSum);
-
-            let realSubRaw = getVal('체감구독료(월)', i);
-            const realSub = hasVal('체감구독료(월)', i) ? realSubRaw : Math.max(0, subFee - promoDc - comboDc - preDc - cardDcMonthly);
-
-            const sourceHasContent = (modelText && modelText !== '-') || 
-                [normalPrice, eventPrice, specialDc, payRaw, cashback, voucher, membership, specialBenefit, cardBenefit, benefitSumRaw, finalBenefitRaw, subFee, promoDc, comboDc, preDc, cardDcMonthly, preAmt, preCard, realSubRaw].some(v => v !== 0);
+            const sourceHasContent = (modelText && modelText !== '-') || [normalPrice, eventPrice, specialDc, payRaw, cashback, voucher, membership, specialBenefit, cardBenefit, benefitSumRaw, finalBenefitRaw, subFee, promoDc, comboDc, preDc, cardDcMonthly, preAmt, preCard, realSubRaw].some(v => v !== 0);
 
             if (!modelHasSubscriptionTag) { subFee = 0; promoDc = 0; comboDc = 0; preDc = 0; cardDcMonthly = 0; preAmt = 0; preCard = 0; realSubRaw = 0; }
 
-            const hasSubscription = modelHasSubscriptionTag && 
-                (subFee > 0 || promoDc > 0 || comboDc > 0 || preDc > 0 || cardDcMonthly > 0 || preAmt > 0 || preCard > 0 || realSub > 0 || realSub < 0);
-
+            const hasSubscription = modelHasSubscriptionTag && (subFee > 0 || promoDc > 0 || comboDc > 0 || preDc > 0 || cardDcMonthly > 0 || preAmt > 0 || preCard > 0 || realSub > 0 || realSub < 0);
             const subscriptionAmount = hasSubscription ? Math.max(0, preAmt - preCard + (realSub * contractMonth)) : 0;
             const total = hasSubscription ? finalBenefit + subscriptionAmount : finalBenefit;
             const subscriptionShare = total > 0 ? (subscriptionAmount / total) : 0;
@@ -1939,21 +1266,15 @@
             }];
         }
 
-        optionCount = results.length;
-        optionLabels = results.map((_, idx) => `${idx + 1}안`);
+        optionCount = results.length; optionLabels = results.map((_, idx) => `${idx + 1}안`);
         results = results.map((item, idx) => ({ ...item, header: optionLabels[idx] }));
 
         if (gapBaseIndex >= optionCount) gapBaseIndex = 0;
-        populateGapBaseOptions();
-        latestResults = results;
-        renderQuoteTable(results);
-        applyModelRowVisibility();
+        populateGapBaseOptions(); latestResults = results; renderQuoteTable(results); applyModelRowVisibility();
     }
 
     function renderQuoteTable(results) {
-        const thead = document.getElementById('quoteThead');
-        const tbody = document.getElementById('quoteTbody');
-
+        const thead = document.getElementById('quoteThead'); const tbody = document.getElementById('quoteTbody');
         thead.innerHTML = ''; tbody.innerHTML = '';
 
         // 💒 1. 웨딩 패키지 AI 진단 배너 행
@@ -1976,24 +1297,30 @@
         weddingBannerRow.innerHTML = weddingBannerHtml;
         thead.appendChild(weddingBannerRow);
 
-        // 🎁 2. 라이프스타일 패키지 AI 진단 배너 행 (웨딩과 완벽히 동일한 포맷)
+        // 🎁 2. 라이프스타일 패키지 AI 진단 배너 행 (오류 방어 완벽 적용)
         const lsBannerRow = document.createElement('tr');
         lsBannerRow.className = 'lifestyle-banner-row wedding-banner-row'; 
         let lsBannerHtml = `<td class="label-cell" style="width:180px; background-color:#1e3a8a !important; color:#fff !important;">🎁 패키지<br>추가 혜택</td>`;
         
         results.forEach((item) => {
-            const diagnosis = typeof analyzeLifestyleOption === 'function' 
-                            ? analyzeLifestyleOption(item.model) 
-                            : { type: 'normal', title: '-', desc: '데이터 연결 안됨' };
+            let diagnosisHtml = '<span style="color:#999; font-size:12px;">분석 대기중</span>';
+            try {
+                if (typeof analyzeLifestyleOption === 'function') {
+                    const diag = analyzeLifestyleOption(item.model);
+                    if (diag && diag.html) {
+                        diagnosisHtml = diag.html;
+                    } else {
+                        diagnosisHtml = '<span style="color:red; font-size:12px;">결과값 없음</span>';
+                    }
+                } else {
+                    diagnosisHtml = '<span style="color:red; font-size:12px;">엔진 연결 실패</span>';
+                }
+            } catch (e) {
+                diagnosisHtml = `<span style="color:red; font-size:12px;">오류 발생</span>`;
+            }
             
-            let cellClass = 'banner-normal';
-            if (diagnosis.type === 'success') cellClass = 'banner-success';
-            else if (diagnosis.type === 'tip-sub') cellClass = 'banner-tip-sub';
-            else if (diagnosis.type === 'tip-model') cellClass = 'banner-tip-model';
-
-            lsBannerHtml += `<td class="${cellClass}">
-                <span class="banner-title">${diagnosis.title}</span>
-                <span class="banner-desc">${diagnosis.desc}</span>
+            lsBannerHtml += `<td class="banner-normal" style="padding: 10px 8px;">
+                ${diagnosisHtml}
             </td>`;
         });
         lsBannerRow.innerHTML = lsBannerHtml;
@@ -2013,14 +1340,10 @@
         const gapLabel = 'GAP (vs 기준안)';
         const subscriptionKeys = ['subFee', 'promoDc', 'comboDc', 'preDc', 'cardDcMonthly', 'preAmt', 'preCard', 'realSub'];
         const rowDefs = [
-            { label: '선택 모델', key: 'model', type: 'model' },
-            { label: '정상가', key: 'normalPrice' }, { label: '행사가', key: 'eventPrice' }, { label: '특별할인', key: 'specialDc' },
-            { label: '결제금액', key: 'pay' }, { label: '캐시백', key: 'cashback' }, { label: '상품권', key: 'voucher' },
-            { label: '멤버십', key: 'membership' }, { label: '특별혜택', key: 'specialBenefit' }, { label: '제휴카드', key: 'cardBenefit' },
-            { label: '혜택합계', key: 'benefitSum' }, { label: '최종혜택금액', key: 'finalBenefit', rowClass: 'highlight-dark' },
-            { label: '정상구독료(월)', key: 'subFee' }, { label: '프로모션할인(월)', key: 'promoDc' }, { label: '결합할인(월)', key: 'comboDc' },
-            { label: '선납할인(월)', key: 'preDc' }, { label: '제휴카드(월)', key: 'cardDcMonthly' }, { label: '선납금액', key: 'preAmt' },
-            { label: '선납 캐시백', key: 'preCard' }, { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
+            { label: '선택 모델', key: 'model', type: 'model' }, { label: '정상가', key: 'normalPrice' }, { label: '행사가', key: 'eventPrice' }, { label: '특별할인', key: 'specialDc' },
+            { label: '결제금액', key: 'pay' }, { label: '캐시백', key: 'cashback' }, { label: '상품권', key: 'voucher' }, { label: '멤버십', key: 'membership' }, { label: '특별혜택', key: 'specialBenefit' }, { label: '제휴카드', key: 'cardBenefit' },
+            { label: '혜택합계', key: 'benefitSum' }, { label: '최종혜택금액', key: 'finalBenefit', rowClass: 'highlight-dark' }, { label: '정상구독료(월)', key: 'subFee' }, { label: '프로모션할인(월)', key: 'promoDc' }, { label: '결합할인(월)', key: 'comboDc' },
+            { label: '선납할인(월)', key: 'preDc' }, { label: '제휴카드(월)', key: 'cardDcMonthly' }, { label: '선납금액', key: 'preAmt' }, { label: '선납 캐시백', key: 'preCard' }, { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
             { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' }, { label: gapLabel, key: 'gap', rowClass: 'gap-row' }
         ];
 
@@ -2048,7 +1371,6 @@
                     const formattedLines = modelLines.map(line => {
                         let res = line;
                         if (line !== '-' && isWeddingTarget(line)) res = `<span class="wedding-target">${res}</span>`;
-                        // ✨ 꼬리표 무시 기능이 적용된 외부 데이터 판별
                         if (line !== '-' && typeof isLifestyleTarget === 'function' && isLifestyleTarget(line)) {
                             res = `<span class="lifestyle-target">${res}</span>`;
                         }
