@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>고객맞춤플래너 통합 대시보드 v2.0 (웨딩 AI 진단 탑재)</title>
+    <title>고객맞춤플래너 통합 대시보드 v2.1 (웨딩 버튼 탑재)</title>
     <style>
         /* =========================================================
            💻 화면(스크린) 레이아웃
@@ -448,6 +448,7 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         .gap-select {
             min-width: 120px;
@@ -658,8 +659,38 @@
         .print-subscription-notice { display: none; }
 
         /* =========================================================
-           ✨ [웨딩 패키지 AI 진단 배너] 최상단 표기 전용 스타일
+           ✨ [웨딩 패키지 AI 진단 배너 & 버튼] 전용 스타일
            ========================================================= */
+        .wedding-toggle-label {
+            margin-left: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff0f3;
+            border: 1px solid #a50034;
+            color: #a50034;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.2s;
+            user-select: none;
+        }
+        .wedding-toggle-label:hover {
+            background: #ffe3e8;
+        }
+        .wedding-toggle-label input[type="checkbox"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #a50034;
+        }
+        /* 웨딩 체크박스가 꺼져있으면 배너를 완전히 숨김 */
+        #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row {
+            display: none !important;
+        }
+
         .wedding-banner-row td {
             padding: 10px 8px !important;
             vertical-align: middle !important;
@@ -670,7 +701,7 @@
             box-shadow: none !important;
         }
         .wedding-banner-row td.label-cell {
-            background-color: #1e293b !important;
+            background-color: #8f002e !important;
             color: #ffffff !important;
             font-size: 13.5px !important;
             font-weight: 800 !important;
@@ -870,6 +901,12 @@
         <div class="gap-toolbar">
             <label for="gapBaseSelect"><b>GAP 기준안</b></label>
             <select id="gapBaseSelect" class="gap-select" onchange="handleGapBaseChange()"></select>
+            
+            <!-- ✨ 혼수/웨딩 대상 견적 토글 체크박스 -->
+            <label class="wedding-toggle-label">
+                <input type="checkbox" id="weddingToggleCb" onchange="toggleWeddingBanner()">
+                💒 혼수/웨딩 견적 진단 켜기
+            </label>
         </div>
 
         <div class="paste-area-container">
@@ -1388,9 +1425,9 @@
     };
 
     const APP_CONFIG = {
-        version: 'v2.0', 
+        version: 'v2.1', 
         expiryDate: '2026-07-20', 
-        notice: '내부전용 / 지점배포용 / 웨딩진단탑재'
+        notice: '내부전용 / 지점배포용 / 웨딩진단 탑재'
     };
 
     // =========================================================
@@ -1480,6 +1517,19 @@
         }
 
         return { type: 'normal', title: '-', desc: '일반 상담 견적' };
+    }
+
+    // ✨ 웨딩 토글 체크박스 동작 함수
+    function toggleWeddingBanner() {
+        const cb = document.getElementById('weddingToggleCb');
+        const table = document.getElementById('quoteTable');
+        if (!cb || !table) return;
+
+        if (cb.checked) {
+            table.classList.add('show-wedding-banner');
+        } else {
+            table.classList.remove('show-wedding-banner');
+        }
     }
 
     function getTodayYmd() {
@@ -2260,7 +2310,7 @@
         thead.innerHTML = '';
         tbody.innerHTML = '';
 
-        // ✨ 1. 최상단 웨딩 패키지 AI 진단 배너 행 (Thead Top Row)
+        // ✨ 1. 최상단 웨딩 패키지 AI 진단 배너 행
         const bannerRow = document.createElement('tr');
         bannerRow.className = 'wedding-banner-row';
         let bannerHtml = `<td class="label-cell" style="width:180px;">✨ 웨딩 패키지<br>AI 진단</td>`;
@@ -2280,7 +2330,7 @@
         bannerRow.innerHTML = bannerHtml;
         thead.appendChild(bannerRow);
 
-        // 2. 표 헤더 행 (구분 / 1안 / 2안...)
+        // 2. 표 헤더 행
         const headerRow = document.createElement('tr');
         let headerHtml = `<th style="width:180px;">구분</th>`;
         
