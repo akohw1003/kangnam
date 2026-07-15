@@ -659,7 +659,7 @@
         .print-subscription-notice { display: none; }
 
         /* =========================================================
-           ✨ [웨딩 패키지 AI 진단 배너 & 버튼 & 음영] 전용 스타일
+           ✨ [웨딩 패키지 AI 진단 배너 & 버튼] 전용 스타일
            ========================================================= */
         .wedding-toggle-label {
             margin-left: 10px;
@@ -686,7 +686,7 @@
             height: 16px;
             accent-color: #a50034;
         }
-
+        
         /* 웨딩 체크박스가 꺼져있으면 배너를 완전히 숨김 */
         #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row {
             display: none !important;
@@ -1439,7 +1439,7 @@
     const APP_CONFIG = {
         version: 'v2.1', 
         expiryDate: '2026-07-20', 
-        notice: '내부전용 / 지점배포용 / 웨딩진단 탑재'
+        notice: '내부전용 / 지점배포용 / 웨딩진단 탑재 (구독필수)'
     };
 
     // =========================================================
@@ -1458,10 +1458,14 @@
         }
     };
 
-    // ✨ 개별 모델명이 웨딩 정책 모델에 해당하는지 판별하는 함수 (원본 훼손 X)
+    // ✨ 개별 모델명이 웨딩 정책 모델에 해당하는지 판별하는 함수 (무조건 구독일 때만 true 반환)
     function isWeddingTarget(rawLine) {
         if (!rawLine || rawLine === '-') return false;
-        const checkStr = rawLine.toUpperCase().replace(/\s+/g, ''); // 공백만 제거하고 대조
+        
+        // 🚨 웨딩 대상 모델이라도 [구독]이 아니면 하이라이트를 주지 않음 (일반 모델과 명확히 구분)
+        if (!rawLine.includes('[구독]')) return false; 
+        
+        const checkStr = rawLine.toUpperCase().replace(/\s+/g, ''); // 공백 제거
         
         for (const plan of WEDDING_POLICY.fixedPlans) {
             if (plan.items.some(target => checkStr.includes(target.toUpperCase()))) return true;
@@ -1472,39 +1476,46 @@
         return false;
     }
 
+    // ✨ AI 진단 메인 로직 (무조건 3개 모델 모두 [구독]일 때만 달성)
     function analyzeWeddingOption(modelText) {
         if (!modelText || modelText === '-') return { type: 'normal', title: '-', desc: '일반 상담 견적' };
 
         const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
         const parsedList = rawLines.map(raw => ({
             raw,
-            checkStr: raw.toUpperCase().replace(/\s+/g, ''), // 공백만 제거, [구독] 유지
+            checkStr: raw.toUpperCase().replace(/\s+/g, ''),
             isSub: raw.includes('[구독]')
         }));
-
-        let subCount = parsedList.filter(m => m.isSub).length;
 
         // 1. 고정형 플랜 대조
         for (const plan of WEDDING_POLICY.fixedPlans) {
             let matchedCount = 0;
+            let subMatchedCount = 0;
+            
             plan.items.forEach(target => {
-                if (parsedList.some(m => m.checkStr.includes(target.toUpperCase()))) {
+                const found = parsedList.find(m => m.checkStr.includes(target.toUpperCase()));
+                if (found) {
                     matchedCount++;
+                    if (found.isSub) subMatchedCount++;
                 }
             });
 
+            // 제품 조합이 3개 완성된 경우
             if (matchedCount === 3) {
-                if (subCount >= 1) {
+                if (subMatchedCount === 3) {
+                    // 🚨 3개 모두 구독일 때 비로소 달성
                     return {
                         type: 'success',
                         title: `🎉 ${plan.name} 달성!`,
                         desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>`
                     };
                 } else {
+                    // 🚨 3개 조합은 맞으나 일부가 일반 구매일 경우 전환 유도
+                    const needSub = 3 - subMatchedCount;
                     return {
                         type: 'tip-sub',
                         title: `💡 ${plan.name} 임박!`,
-                        desc: `3개 제품 중 <b>1개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!`
+                        desc: `패키지 구성 완료! 일반 구매 <b>${needSub}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!`
                     };
                 }
             } else if (matchedCount === 2) {
@@ -1512,28 +1523,35 @@
                 return {
                     type: 'tip-model',
                     title: `💡 ${plan.name} 추천`,
-                    desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>변경 시 추가할인 <b>${plan.rate}</b> 적용!`
+                    desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가/변경 시 추가할인 <b>${plan.rate}</b> 적용!`
                 };
             }
         }
 
         // 2. 가변형 (BEST-PICK) 플랜 대조
-        const hasTv = parsedList.some(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
-        const hasFridge = parsedList.some(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
-        const hasWasher = parsedList.some(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
+        const tvMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
+        const fridgeMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
+        const washerMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
 
-        if (hasTv && hasFridge && hasWasher) {
-            if (subCount >= 1) {
+        if (tvMatch && fridgeMatch && washerMatch) {
+            if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) {
+                 // 🚨 3개 카테고리 모두 대상 모델이면서 전부 구독일 때 달성
                 return {
                     type: 'success',
                     title: `🎉 웨딩 BEST-PICK 달성!`,
                     desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>`
                 };
             } else {
+                 // 🚨 조합은 맞으나 일부가 일반 구매일 경우
+                let needSubCount = 0;
+                if (!tvMatch.isSub) needSubCount++;
+                if (!fridgeMatch.isSub) needSubCount++;
+                if (!washerMatch.isSub) needSubCount++;
+                
                 return {
                     type: 'tip-sub',
                     title: `💡 BEST-PICK 달성 임박!`,
-                    desc: `BEST 5 조합 완성! <b>1개 제품을<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!`
+                    desc: `BEST 조합 완성! 일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!`
                 };
             }
         }
@@ -2418,7 +2436,7 @@
                 html += results.map((item, idx) => {
                     const dominantClass = item.subscriptionDominant ? ' subscription-dominant-cell' : '';
                     
-                    // ✨ 모델명 개별 라인 파싱 및 하이라이트 적용
+                    // ✨ 모델명 개별 라인 파싱 및 하이라이트 적용 (구독 대상 모델만)
                     const modelLines = (item.model || '-').split('\n');
                     const formattedLines = modelLines.map(line => {
                         if (line !== '-' && isWeddingTarget(line)) {
