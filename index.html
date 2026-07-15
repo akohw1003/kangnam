@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>고객맞춤플래너 통합 대시보드</title>
+    <title>고객맞춤플래너 통합 대시보드 v2.2 (라이프스타일 상시진단)</title>
+    <script src="lifestyle_data.js"></script>
     <style>
         /* =========================================================
            💻 화면(스크린) 레이아웃
@@ -448,6 +449,7 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 12px;
+            flex-wrap: wrap;
         }
         .gap-select {
             min-width: 120px;
@@ -538,32 +540,20 @@
             box-shadow: none !important;
         }
 
-        body {
-            color: #111827 !important;
-        }
-        #quoteTable,
-        #quoteTable td,
-        #quoteTable th {
+        body { color: #111827 !important; }
+        #quoteTable, #quoteTable td, #quoteTable th {
             color: #111827 !important;
             font-size: 14px !important;
         }
-        #quoteTable th {
-            font-weight: 700 !important;
-        }
-        #quoteTable td {
-            font-weight: 500 !important;
-            line-height: 1.45 !important;
-        }
-        #quoteTable td.number-cell,
-        #quoteTable td[class*="number"] {
+        #quoteTable th { font-weight: 700 !important; }
+        #quoteTable td { font-weight: 500 !important; line-height: 1.45 !important; }
+        #quoteTable td.number-cell, #quoteTable td[class*="number"] {
             font-size: 15px !important;
             font-weight: 600 !important;
             color: #111827 !important;
         }
         
-        #quoteTable .model-cell,
-        #quoteTable td.model-cell,
-        #quoteTable td.model-cell * {
+        #quoteTable .model-cell, #quoteTable td.model-cell, #quoteTable td.model-cell * {
             font-size: 13.5px !important; 
             font-weight: 600 !important;
             color: #0f172a !important;
@@ -573,103 +563,94 @@
             letter-spacing: -0.3px !important; 
         }
 
-        .sheet-shell{
-            border:1px solid #c9d3df;
-            border-radius:8px;
-            overflow:hidden;
-            background:#fff;
-        }
+        .sheet-shell{ border:1px solid #c9d3df; border-radius:8px; overflow:hidden; background:#fff; }
         .sheet-toolbar{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:8px;
-            padding:8px 10px;            
-            background:#f7f9fc;
-            border-bottom:1px solid #d7dfeb;
-            font-size:12px;
-            color:#4b5563;
+            display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px;            
+            background:#f7f9fc; border-bottom:1px solid #d7dfeb; font-size:12px; color:#4b5563;
         }
-        .sheet-scroll{
-            max-height:260px;
-            overflow:auto;
-            background:#fff;
-        }
-        .sheet-table{
-            border-collapse:collapse;
-            width:max-content;
-            min-width:100%;
-            table-layout:fixed;
-            font-size:12px;
-        }
-        .sheet-table th,
-        .sheet-table td{
-            border:1px solid #d7dfeb;
-        }
+        .sheet-scroll{ max-height:260px; overflow:auto; background:#fff; }
+        .sheet-table{ border-collapse:collapse; width:max-content; min-width:100%; table-layout:fixed; font-size:12px; }
+        .sheet-table th, .sheet-table td{ border:1px solid #d7dfeb; }
         .sheet-table thead th{
-            position:sticky;
-            top:0;
-            z-index:3;
-            background:#eef2f7;
-            color:#334155;
-            font-weight:700;
-            text-align:center;            
-            height:30px;
-            min-width:120px;
+            position:sticky; top:0; z-index:3; background:#eef2f7; color:#334155; font-weight:700; text-align:center;            
+            height:30px; min-width:120px;
         }
-        .sheet-table thead th.corner{
-            left:0;
-            z-index:4;
-            min-width:42px;
-            width:42px;
-        }
+        .sheet-table thead th.corner{ left:0; z-index:4; min-width:42px; width:42px; }
         .sheet-table tbody th{
-            position:sticky;
-            left:0;
-            z-index:2;
-            background:#eef2f7;
-            color:#475569;
-            width:42px;
-            min-width:42px;
-            text-align:center;
-            font-weight:700;
+            position:sticky; left:0; z-index:2; background:#eef2f7; color:#475569; width:42px; min-width:42px; text-align:center; font-weight:700;
         }
         .sheet-table td{
-            min-width:120px;
-            width:120px;
-            height:30px;
-            padding:4px 6px;
-            white-space:pre-wrap;
-            word-break:break-word;
-            vertical-align:top;
-            background:#fff;
-            color:#111827;
-            cursor:text;
+            min-width:120px; width:120px; height:30px; padding:4px 6px; white-space:pre-wrap; word-break:break-word;
+            vertical-align:top; background:#fff; color:#111827; cursor:text;
         }
-        .sheet-table td.active-cell{
-            outline:2px solid #4f8cff;
-            outline-offset:-2px;
-            background:#f8fbff;
-        }
-        .hidden-raw{
-            display:none !important;
-        }
-        
+        .sheet-table td.active-cell{ outline:2px solid #4f8cff; outline-offset:-2px; background:#f8fbff; }
+        .hidden-raw{ display:none !important; }
         .print-subscription-notice { display: none; }
 
         /* =========================================================
-           🖨️ [인쇄 전용 스타일] - 화면 형태 완전 동일 출력 + 전체 출력 시 분리
+           ✨ [웨딩 패키지 AI 진단 배너] 전용 스타일
+           ========================================================= */
+        .wedding-toggle-label {
+            margin-left: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            background: #fff0f3; border: 1px solid #a50034; color: #a50034; padding: 6px 12px;
+            border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.2s; user-select: none;
+        }
+        .wedding-toggle-label:hover { background: #ffe3e8; }
+        .wedding-toggle-label input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: #a50034; }
+        
+        #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row.only-wedding { display: none !important; }
+
+        #quoteTable.show-wedding-banner .wedding-target {
+            background-color: #ffe3e8; color: #a50034; padding: 2px 6px; border-radius: 4px;
+            font-weight: 800; display: inline-block; margin-bottom: 2px; box-shadow: 0 0 0 1px #ffc1cf inset;
+        }
+
+        .wedding-banner-row td {
+            padding: 10px 8px !important; vertical-align: middle !important; text-align: center !important;
+            line-height: 1.4 !important; font-size: 12.5px !important; border-bottom: 2px solid #2c3e50 !important; box-shadow: none !important;
+        }
+        .wedding-banner-row td.label-cell {
+            background-color: #8f002e !important; color: #ffffff !important; font-size: 13.5px !important;
+            font-weight: 800 !important; letter-spacing: -0.5px;
+        }
+        .banner-title { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; display: block; }
+        .banner-desc { font-size: 11.5px; line-height: 1.35; font-weight: 600; }
+        .banner-success { background-color: #d1e7dd !important; color: #0f5132 !important; border: 2px solid #198754 !important; }
+        .banner-tip-sub { background-color: #cff4fc !important; color: #055160 !important; border: 2px solid #0dcaf0 !important; }
+        .banner-tip-model { background-color: #fff3cd !important; color: #664d03 !important; border: 2px solid #ffc107 !important; }
+        .banner-normal { background-color: #f8f9fa !important; color: #6c757d !important; border: 1px solid #dee2e6 !important; }
+
+        /* =========================================================
+           🎁 [라이프스타일 패키지 AI 진단] 전용 스타일
+           ========================================================= */
+        .lifestyle-toggle-label {
+            margin-left: 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            background: #eef2f5; border: 1px solid #0056b3; color: #0056b3; padding: 6px 12px;
+            border-radius: 6px; font-weight: bold; font-size: 13px; transition: 0.2s; user-select: none;
+        }
+        .lifestyle-toggle-label:hover { background: #e2eaf3; }
+        .lifestyle-toggle-label input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; accent-color: #0056b3; }
+
+        #quoteTable:not(.show-lifestyle-banner) tr.lifestyle-banner-row { display: none !important; }
+
+        /* ✨ 파스텔 블루/남색 하이라이트 (시인성 극대화) */
+        #quoteTable.show-lifestyle-banner .lifestyle-target {
+            background-color: #e0e7ff; 
+            color: #3730a3; 
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: 900;
+            display: inline-block;
+            margin-bottom: 2px;
+            box-shadow: 0 0 0 1.5px #a5b4fc inset;
+        }
+
+        /* =========================================================
+           🖨️ [인쇄 전용 스타일]
            ========================================================= */
         @media print {
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-
-            .print-toolbar, .paste-area-container, .tab-container, .btn-calc, .btn-clear, .btn-clear-select, #videoPanel, #installGuidePanel, #qrPanel, #cardQrModalOverlay, .security-overlay, .gap-toolbar, .app-meta {
-                display: none !important;
-            }
-
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .print-toolbar, .paste-area-container, .tab-container, .btn-calc, .btn-clear, .btn-clear-select, #videoPanel, #installGuidePanel, #qrPanel, #cardQrModalOverlay, .security-overlay, .gap-toolbar, .app-meta { display: none !important; }
             body { padding: 0; margin: 0; padding-bottom: 40px !important; }
             .container { display: block !important; max-width: none; margin: 0; } 
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 20px; page-break-inside: avoid; }
@@ -677,128 +658,32 @@
             .table-scroll, #quoteTableWrap { max-height: none !important; overflow: visible !important; }
             #quoteTable { min-width: 0 !important; }
             .care-summary { break-inside: avoid; }
-
-            .warning-red-header {
-                background-color: #f8f9fa !important;
-                color: #333 !important;             
-                border: 1px solid #ddd !important;  
-            }
-
+            .warning-red-header { background-color: #f8f9fa !important; color: #333 !important; border: 1px solid #ddd !important; }
             .print-selected-care-wrap { display: none !important; }
-            body.print-care .print-selected-care-wrap,
-            body.print-all .print-selected-care-wrap { display: block !important; }
-            
-            body.print-estimate #carePanel,
-            body.print-estimate .right-column { display: none !important; }
-            body.print-care #estimatePanel,
-            body.print-care .right-panel h2,
-            body.print-care .table-scroll,
-            body.print-care .tab-container { display: none !important; }
-            body.print-care .right-column,
-            body.print-care .right-panel { display: block !important; position: static !important; top: auto !important; }
-            
-            body.print-all .tab-container,
-            body.print-all .table-scroll { display: none !important; }
-
-            body.print-all .right-column {
-                page-break-before: always !important;
-                break-before: page !important;
-            }
-
-            .print-footer {
-                display: block !important;
-                position: fixed !important;
-                bottom: 0 !important;
-                width: 100% !important;
-                padding-top: 8px;
-                border-top: 1px solid #ddd;
-                font-size: 9pt;
-                color: #333;
-                text-align: right;
-                background: #fff;
-                z-index: 9999;
-            }
-
-            .print-subscription-notice {
-                display: block !important;
-                margin-top: 20px;
-                margin-bottom: 15px;
-                padding: 12px 15px;
-                border: 1px solid #999;
-                border-radius: 6px;
-                background-color: #f8f9fa !important;
-                page-break-inside: avoid;
-            }
-            .print-subscription-notice h4 {
-                margin: 0 0 6px 0;
-                font-size: 12px;
-                color: #2c3e50 !important;
-                font-weight: bold;
-            }
-            .print-subscription-notice ul {
-                margin: 0;
-                padding-left: 18px;
-            }
-            .print-subscription-notice li {
-                font-size: 11px;
-                color: #444 !important;
-                line-height: 1.4;
-                margin-bottom: 4px;
-            }
-            .print-subscription-notice li:last-child {
-                margin-bottom: 0;
-            }
+            body.print-care .print-selected-care-wrap, body.print-all .print-selected-care-wrap { display: block !important; }
+            body.print-estimate #carePanel, body.print-estimate .right-column { display: none !important; }
+            body.print-care #estimatePanel, body.print-care .right-panel h2, body.print-care .table-scroll, body.print-care .tab-container { display: none !important; }
+            body.print-care .right-column, body.print-care .right-panel { display: block !important; position: static !important; top: auto !important; }
+            body.print-all .tab-container, body.print-all .table-scroll { display: none !important; }
+            body.print-all .right-column { page-break-before: always !important; break-before: page !important; }
+            .print-footer { display: block !important; position: fixed !important; bottom: 0 !important; width: 100% !important; padding-top: 8px; border-top: 1px solid #ddd; font-size: 9pt; color: #333; text-align: right; background: #fff; z-index: 9999; }
+            .print-subscription-notice { display: block !important; margin-top: 20px; margin-bottom: 15px; padding: 12px 15px; border: 1px solid #999; border-radius: 6px; background-color: #f8f9fa !important; page-break-inside: avoid; }
+            .print-subscription-notice h4 { margin: 0 0 6px 0; font-size: 12px; color: #2c3e50 !important; font-weight: bold; }
+            .print-subscription-notice ul { margin: 0; padding-left: 18px; }
+            .print-subscription-notice li { font-size: 11px; color: #444 !important; line-height: 1.4; margin-bottom: 4px; }
+            .print-subscription-notice li:last-child { margin-bottom: 0; }
         }
     
-        .result-toolbar {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin: 8px 0 10px 0;
-        }
-        .btn-toggle-model {
-            background: #ffffff;
-            color: #0056b3;
-            border: 1px solid #0056b3;
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .btn-toggle-model:hover {
-            background: #eef5ff;
-        }
-        #quoteTable.hide-model-row tr.model-row {
-            display: none !important;
-        }
-        @media print {
-            #quoteTable.hide-model-row tr.model-row {
-                display: none !important;
-            }
-        }
-
-        .subscription-dominant-header {
-            background-color: #dff3df !important;
-            color: #1f6b2a !important;
-            font-weight: 700 !important;
-        }
-        .subscription-dominant-cell {
-            background-color: #eaf7ea !important;
-        }
-        .highlight-dark td.subscription-dominant-cell {
-            background-color: #2f6f3b !important;
-            color: #ffffff !important;
-        }
-        .highlight-yellow td.subscription-dominant-cell {
-            background-color: #d9f0d9 !important;
-            color: #1f6b2a !important;
-        }
-        .gap-row td.subscription-dominant-cell {
-            background-color: #eaf7ea !important;
-            color: #1f6b2a !important;
-        }
+        .result-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin: 8px 0 10px 0; }
+        .btn-toggle-model { background: #ffffff; color: #0056b3; border: 1px solid #0056b3; border-radius: 6px; padding: 8px 12px; font-size: 12px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .btn-toggle-model:hover { background: #eef5ff; }
+        #quoteTable.hide-model-row tr.model-row { display: none !important; }
+        @media print { #quoteTable.hide-model-row tr.model-row { display: none !important; } }
+        .subscription-dominant-header { background-color: #dff3df !important; color: #1f6b2a !important; font-weight: 700 !important; }
+        .subscription-dominant-cell { background-color: #eaf7ea !important; }
+        .highlight-dark td.subscription-dominant-cell { background-color: #2f6f3b !important; color: #ffffff !important; }
+        .highlight-yellow td.subscription-dominant-cell { background-color: #d9f0d9 !important; color: #1f6b2a !important; }
+        .gap-row td.subscription-dominant-cell { background-color: #eaf7ea !important; color: #1f6b2a !important; }
     
     </style>
 </head>
@@ -819,6 +704,16 @@
         <div class="gap-toolbar">
             <label for="gapBaseSelect"><b>GAP 기준안</b></label>
             <select id="gapBaseSelect" class="gap-select" onchange="handleGapBaseChange()"></select>
+            
+            <label class="wedding-toggle-label">
+                <input type="checkbox" id="weddingToggleCb" onchange="toggleWeddingBanner()">
+                💒 혼수/웨딩 견적 진단 켜기
+            </label>
+
+            <label class="lifestyle-toggle-label">
+                <input type="checkbox" id="lifestyleToggleCb" onchange="toggleLifestyleBanner()" checked>
+                🎁 라이프스타일 패키지 진단 켜기
+            </label>
         </div>
 
         <div class="paste-area-container">
@@ -846,7 +741,7 @@
             <button type="button" class="btn-toggle-model" id="toggleModelBtn" onclick="toggleModelRowVisibility()">모델명 숨기기</button>
         </div>
         <div id="quoteTableWrap">
-            <table id="quoteTable">
+            <table id="quoteTable" class="show-lifestyle-banner">
                 <thead id="quoteThead"></thead>
                 <tbody id="quoteTbody"></tbody>
             </table>
@@ -878,22 +773,12 @@
                 <button class="tab-btn" onclick="changeTab('styler', '스타일러', this)">스타일러</button>
                 <button class="tab-btn" onclick="changeTab('massageChair', '안마의자', this)">안마의자</button>
             </div>
-
             <div class="table-scroll">
                 <table class="care-table">
-                    <thead>
-                        <tr>
-                            <th width="10%">선택</th>
-                            <th width="28%">케어서비스</th>
-                            <th width="20%">방문주기</th>
-                            <th width="17%">총액</th>
-                            <th width="25%">추정 기준</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th width="10%">선택</th><th width="28%">케어서비스</th><th width="20%">방문주기</th><th width="17%">총액</th><th width="25%">추정 기준</th></tr></thead>
                     <tbody id="careTableBody"></tbody>
                 </table>
             </div>
-
             <div class="care-summary print-care-summary">
                 <div class="care-summary-left">
                     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:8px;">
@@ -907,20 +792,10 @@
                     <div>약 <span id="totalValue">0</span>원</div>
                 </div>
             </div>
-
             <div class="print-selected-care-wrap">
                 <table class="care-table print-selected-care-table">
-                    <thead>
-                        <tr>
-                            <th width="28%">제품/케어서비스</th>
-                            <th width="20%">방문주기</th>
-                            <th width="17%">총액</th>
-                            <th width="35%">추정 기준</th>
-                        </tr>
-                    </thead>
-                    <tbody id="printSelectedCareBody">
-                        <tr><td colspan="4" style="text-align:center;">선택된 항목 없음</td></tr>
-                    </tbody>
+                    <thead><tr><th width="28%">제품/케어서비스</th><th width="20%">방문주기</th><th width="17%">총액</th><th width="35%">추정 기준</th></tr></thead>
+                    <tbody id="printSelectedCareBody"><tr><td colspan="4" style="text-align:center;">선택된 항목 없음</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -978,10 +853,10 @@
 <div class="print-subscription-notice" id="printSubscriptionNotice">
     <h4>★구독 유의사항★</h4>
     <ul>
-        <li><b>[제휴카드 자동이체]</b> 제휴카드 할인 혜택은 <b>자동이체 등록이 완료</b>되어야 적용됩니다. 카드 발급 <b>및 계약 제품 배송 완료 후</b> LG전자 홈페이지, ThinQ 앱 또는 콜센터(1544-7777)를 통해 결제 수단을 변경해 주시기 바랍니다. (※ 카드사별 전월 실적 제외 항목을 반드시 확인해 주세요.)</li>
-        <li><b>[멤버십 포인트 차감]</b> 보유하신 멤버십 포인트로 월 구독료 차감이 가능합니다. (월 5천 원 단위, 최대 4만 원 / LGE.COM 마이페이지에서 신청) 단, <b>포인트로 구독료 전액 차감을 신청하실 경우 제휴카드 할인 혜택은 적용되지 않습니다.</b></li>
-        <li><b>[계약 및 해지]</b> 구독 계약은 상품 인도/설치 후 성립되며, 계약 성립 후 고객의 임의 해지 시 해약금이 부과됩니다.</li>
-        <li><b>[결합 할인]</b> 결합상품 할인은 두 제품 이상 사용 시 적용되며, 제품의 일부 해지(명의변경, 만기 등 포함) 등으로 한 제품만 남을 경우 결합할인이 적용되지 않은 정상 요금이 차월부터 청구됩니다.</li>
+        <li><b>[제휴카드 자동이체]</b> 제휴카드 할인 혜택은 자동이체 등록이 완료되어야 적용됩니다.</li>
+        <li><b>[멤버십 포인트 차감]</b> 포인트로 구독료 전액 차감을 신청하실 경우 제휴카드 할인 혜택은 적용되지 않습니다.</li>
+        <li><b>[계약 및 해지]</b> 임의 해지 시 해약금이 부과됩니다.</li>
+        <li><b>[결합 할인]</b> 결합상품 할인은 두 제품 이상 사용 시 적용됩니다.</li>
     </ul>
 </div>
 <div class="app-meta" id="appMeta"></div>
@@ -991,10 +866,8 @@
     <div class="security-card" style="text-align: center; max-width: 320px;" onclick="event.stopPropagation()">
         <h3 id="cardQrModalTitle" style="margin-bottom: 5px; color: #2c3e50;">카드 발급</h3>
         <p id="cardQrModalPhone" style="font-weight: bold; font-size: 18px; color: #0056b3; margin-top: 0;"></p>
-        <img id="cardQrImage" src="" alt="QR Code" style="margin: 15px auto; width: 160px; height: 160px; border: 1px solid #ddd; border-radius: 8px; display: block; box-shadow: 0 4px 12px rgba(0,0,0,0.05);" />
-        
+        <img id="cardQrImage" src="" alt="QR Code" style="margin: 15px auto; width: 160px; height: 160px; border: 1px solid #ddd; border-radius: 8px; display: block;" />
         <div id="cardQrModalBenefits" style="margin: 15px 0; background: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 14px; color: #333; line-height: 1.6; text-align: left; border: 1px solid #e9edf3; font-weight: bold;"></div>
-        
         <p style="font-size: 13px; color: #555; margin-bottom: 5px;">스마트폰 카메라로 스캔하세요.</p>
         <div class="security-actions" style="margin-top:20px;">
             <button type="button" class="btn-security btn-security-secondary" onclick="closeCardQrModal()">닫기</button>
@@ -1018,7 +891,7 @@
 
 <script>
     // =========================================================
-    // 🚨 사번 및 생년월일 데이터 (인원 현황 전체 업데이트 완료)
+    // 🚨 사번 및 생년월일 데이터 (기존과 100% 동일)
     // =========================================================
     const MANAGER_DATA = {
         "13415": { branch: "문래점", name: "정진욱", birth: "690723" },
@@ -1337,10 +1210,132 @@
     };
 
     const APP_CONFIG = {
-        version: 'v1.9', 
+        version: 'v2.2', 
         expiryDate: '2026-07-20', 
-        notice: '내부전용 / 지점배포용'
+        notice: '내부전용 / 지점배포용 / 웨딩 및 라이프스타일 진단 탑재'
     };
+
+    // =========================================================
+    // 💒 [웨딩 패키지 정책 데이터 및 진단 엔진]
+    // =========================================================
+    const WEDDING_POLICY = {
+        fixedPlans: [
+            { id: "wedding-115", name: "웨딩 115 플랜", rate: "3.9%", items: ["OLED83C6Q", "M876GBB181", "WA2525TAP6Z"] },
+            { id: "wedding-95", name: "웨딩 95 플랜", rate: "3.6%", items: ["OLED77C6Q", "G646GBB031", "WA2525TAP6Z"] },
+            { id: "wedding-80", name: "웨딩 80 플랜", rate: "3.2%", items: ["75QNED86B", "H876GBB111", "FC2521TX6C"] }
+        ],
+        bestPickModels: {
+            tv: ["OLED77C6Q", "OLED65C6S", "75QNED86BK", "86QNED86BK", "OLED83C6Q", "75QNED86B"],
+            fridge: ["G646GBB031", "M876GBB231", "G646GBB091", "H876GBB111", "M876GBB181"],
+            washer: ["WA2525TAP6Z", "WA2525EGP6Z", "WA2525UUP6G", "FC2521UX6C", "FC2521TX6C"]
+        }
+    };
+
+    function isWeddingTarget(rawLine) {
+        if (!rawLine || rawLine === '-') return false;
+        if (!rawLine.includes('[구독]')) return false; 
+        
+        const checkStr = rawLine.toUpperCase().replace(/\s+/g, '');
+        
+        for (const plan of WEDDING_POLICY.fixedPlans) {
+            if (plan.items.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        }
+        if (WEDDING_POLICY.bestPickModels.tv.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        if (WEDDING_POLICY.bestPickModels.fridge.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        if (WEDDING_POLICY.bestPickModels.washer.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        return false;
+    }
+
+    function analyzeWeddingOption(modelText) {
+        if (!modelText || modelText === '-') return { type: 'normal', title: '-', desc: '일반 상담 견적' };
+
+        const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
+        const parsedList = rawLines.map(raw => ({
+            raw,
+            checkStr: raw.toUpperCase().replace(/\s+/g, ''),
+            isSub: raw.includes('[구독]')
+        }));
+
+        for (const plan of WEDDING_POLICY.fixedPlans) {
+            let matchedCount = 0;
+            let subMatchedCount = 0;
+            
+            plan.items.forEach(target => {
+                const found = parsedList.find(m => m.checkStr.includes(target.toUpperCase()));
+                if (found) {
+                    matchedCount++;
+                    if (found.isSub) subMatchedCount++;
+                }
+            });
+
+            if (matchedCount === 3) {
+                if (subMatchedCount === 3) {
+                    return {
+                        type: 'success',
+                        title: `🎉 ${plan.name} 달성!`,
+                        desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>`
+                    };
+                } else {
+                    const needSub = 3 - subMatchedCount;
+                    return {
+                        type: 'tip-sub',
+                        title: `💡 ${plan.name} 임박!`,
+                        desc: `일반 구매 <b>${needSub}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!`
+                    };
+                }
+            } else if (matchedCount === 2) {
+                const missing = plan.items.find(target => !parsedList.some(m => m.checkStr.includes(target.toUpperCase())));
+                return {
+                    type: 'tip-model',
+                    title: `💡 ${plan.name} 추천`,
+                    desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!`
+                };
+            }
+        }
+
+        const tvMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
+        const fridgeMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
+        const washerMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
+
+        if (tvMatch && fridgeMatch && washerMatch) {
+            if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) {
+                return {
+                    type: 'success',
+                    title: `🎉 웨딩 BEST-PICK 달성!`,
+                    desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>`
+                };
+            } else {
+                let needSubCount = 0;
+                if (!tvMatch.isSub) needSubCount++;
+                if (!fridgeMatch.isSub) needSubCount++;
+                if (!washerMatch.isSub) needSubCount++;
+                
+                return {
+                    type: 'tip-sub',
+                    title: `💡 BEST-PICK 달성 임박!`,
+                    desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!`
+                };
+            }
+        }
+
+        return { type: 'normal', title: '-', desc: '일반 상담 견적' };
+    }
+
+    function toggleWeddingBanner() {
+        const cb = document.getElementById('weddingToggleCb');
+        const table = document.getElementById('quoteTable');
+        if (!cb || !table) return;
+        if (cb.checked) table.classList.add('show-wedding-banner');
+        else table.classList.remove('show-wedding-banner');
+    }
+
+    function toggleLifestyleBanner() {
+        const cb = document.getElementById('lifestyleToggleCb');
+        const table = document.getElementById('quoteTable');
+        if (!cb || !table) return;
+        if (cb.checked) table.classList.add('show-lifestyle-banner');
+        else table.classList.remove('show-lifestyle-banner');
+    }
 
     function getTodayYmd() {
         const now = new Date();
@@ -1413,13 +1408,10 @@
         }
     }
 
-    function closeWindowApp() {
-        window.close();
-    }
+    function closeWindowApp() { window.close(); }
 
     function initSecurity() {
         const savedId = sessionStorage.getItem('planner_emp_id');
-        
         if (savedId && typeof MANAGER_DATA !== 'undefined' && MANAGER_DATA[savedId] && !isExpired()) {
             document.getElementById('securityOverlay').style.display = 'none';
             document.getElementById('mainAppContainer').style.display = 'flex'; 
@@ -1465,58 +1457,27 @@
     }
 
     function parseExcelTSV(text) {
-        let rows = [];
-        let currentRow = [];
-        let currentCell = '';
-        let inQuotes = false;
-
+        let rows = []; let currentRow = []; let currentCell = ''; let inQuotes = false;
         for (let i = 0; i < text.length; i++) {
             let char = text[i];
-
             if (inQuotes) {
-                if (char === '"' && text[i + 1] === '"') {
-                    currentCell += '"';
-                    i++;
-                } else if (char === '"') {
-                    inQuotes = false;
-                } else {
-                    currentCell += char;
-                }
+                if (char === '"' && text[i + 1] === '"') { currentCell += '"'; i++; }
+                else if (char === '"') inQuotes = false;
+                else currentCell += char;
             } else {
-                if (char === '"') {
-                    inQuotes = true;
-                } else if (char === '\t') {
-                    currentRow.push(currentCell.trim());
-                    currentCell = '';
-                } else if (char === '\n') {
-                    currentRow.push(currentCell.trim());
-                    rows.push(currentRow);
-                    currentRow = [];
-                    currentCell = '';
-                } else if (char === '\r') {
-                } else {
-                    currentCell += char;
-                }
+                if (char === '"') inQuotes = true;
+                else if (char === '\t') { currentRow.push(currentCell.trim()); currentCell = ''; }
+                else if (char === '\n') { currentRow.push(currentCell.trim()); rows.push(currentRow); currentRow = []; currentCell = ''; }
+                else if (char !== '\r') currentCell += char;
             }
         }
-
-        if (currentCell || currentRow.length > 0) {
-            currentRow.push(currentCell.trim());
-            rows.push(currentRow);
-        }
-
+        if (currentCell || currentRow.length > 0) { currentRow.push(currentCell.trim()); rows.push(currentRow); }
         return rows;
     }
 
     function extractTextFromHtml(htmlString) {
         if (!htmlString) return '';
-        let processedHtml = String(htmlString)
-            .replace(/<br\s*[\/]?>/gi, '\n')                  
-            .replace(/<\/p>/gi, '\n')                      
-            .replace(/<\/div>/gi, '\n')
-            .replace(/<\/li>/gi, '\n')
-            .replace(/<li[^>]*>/gi, '\n');                 
-        
+        let processedHtml = String(htmlString).replace(/<br\s*[\/]?>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<\/div>/gi, '\n').replace(/<\/li>/gi, '\n').replace(/<li[^>]*>/gi, '\n');                 
         let tempDiv = document.createElement('div');
         tempDiv.innerHTML = processedHtml;
         let text = tempDiv.innerText || tempDiv.textContent || '';
@@ -1547,9 +1508,7 @@
             return Array.from(table.querySelectorAll('tr')).map(tr =>
                 Array.from(tr.querySelectorAll('th,td')).map(td => extractTextFromHtml(td.innerHTML))
             ).filter(row => row.some(v => v !== ''));
-        } catch (e) {
-            return [];
-        }
+        } catch (e) { return []; }
     }
 
     function parseTextToMatrix(text) {
@@ -1561,25 +1520,14 @@
     }
 
     function parseClipboardTextToMatrix(text) {
-        return String(text || '')
-            .replace(/\r/g, '')
-            .split('\n')
-            .map(line => line.split('\t'))
-            .filter(row => row.some(v => String(v).trim() !== ''));
+        return String(text || '').replace(/\r/g, '').split('\n').map(line => line.split('\t')).filter(row => row.some(v => String(v).trim() !== ''));
     }
 
-    const SHEET_ROWS = 60;
-    const SHEET_COLS = 12;
-    let activeSheetCell = { row: 0, col: 0 };
+    const SHEET_ROWS = 60; const SHEET_COLS = 12; let activeSheetCell = { row: 0, col: 0 };
 
     function colLabel(n) {
-        let s = '';
-        let x = n + 1;
-        while (x > 0) {
-            const m = (x - 1) % 26;
-            s = String.fromCharCode(65 + m) + s;
-            x = Math.floor((x - 1) / 26);
-        }
+        let s = ''; let x = n + 1;
+        while (x > 0) { const m = (x - 1) % 26; s = String.fromCharCode(65 + m) + s; x = Math.floor((x - 1) / 26); }
         return s;
     }
 
@@ -1596,9 +1544,7 @@
         let bodyHtml = '';
         for (let r = 0; r < SHEET_ROWS; r++) {
             bodyHtml += `<tr><th>${r + 1}</th>`;
-            for (let c = 0; c < SHEET_COLS; c++) {
-                bodyHtml += `<td contenteditable="true" data-row="${r}" data-col="${c}"></td>`;
-            }
+            for (let c = 0; c < SHEET_COLS; c++) bodyHtml += `<td contenteditable="true" data-row="${r}" data-col="${c}"></td>`;
             bodyHtml += '</tr>';
         }
         body.innerHTML = bodyHtml;
@@ -1614,15 +1560,10 @@
     function setActiveSheetCell(td) {
         document.querySelectorAll('#inputSheetBody td.active-cell').forEach(el => el.classList.remove('active-cell'));
         td.classList.add('active-cell');
-        activeSheetCell = {
-            row: parseInt(td.dataset.row || '0', 10),
-            col: parseInt(td.dataset.col || '0', 10)
-        };
+        activeSheetCell = { row: parseInt(td.dataset.row || '0', 10), col: parseInt(td.dataset.col || '0', 10) };
     }
 
-    function getSheetCell(r, c) {
-        return document.querySelector(`#inputSheetBody td[data-row="${r}"][data-col="${c}"]`);
-    }
+    function getSheetCell(r, c) { return document.querySelector(`#inputSheetBody td[data-row="${r}"][data-col="${c}"]`); }
 
     function handleSheetPaste(e) {
         const textData = e.clipboardData ? e.clipboardData.getData('text/plain') : '';
@@ -1632,7 +1573,6 @@
         if (!matrix.length) return;
 
         e.preventDefault();
-
         const startRow = activeSheetCell.row || 0;
         const startCol = activeSheetCell.col || 0;
 
@@ -1642,7 +1582,6 @@
                 if (cell) cell.innerText = String(val || '').trim();
             });
         });
-
         syncRawFromSheet();
     }
 
@@ -1652,16 +1591,13 @@
 
         const lines = [];
         for (let r = 0; r < SHEET_ROWS; r++) {
-            const rowVals = [];
-            let lastUsed = -1;
+            const rowVals = []; let lastUsed = -1;
             for (let c = 0; c < SHEET_COLS; c++) {
                 const cell = getSheetCell(r, c);
                 let val = cell ? (cell.innerText || cell.textContent).replace(/\u00a0/g, ' ').trim() : '';
-                
                 if (val.includes('\n') || val.includes('\r') || val.includes('"') || val.includes('\t')) {
                     val = '"' + val.replace(/"/g, '""') + '"';
                 }
-                
                 rowVals.push(val);
                 if (val !== '' && val !== '""') lastUsed = c;
             }
@@ -1674,10 +1610,7 @@
         for (let r = 0; r < SHEET_ROWS; r++) {
             for (let c = 0; c < SHEET_COLS; c++) {
                 const cell = getSheetCell(r, c);
-                if (cell) {
-                    cell.innerText = '';
-                    cell.classList.remove('active-cell');
-                }
+                if (cell) { cell.innerText = ''; cell.classList.remove('active-cell'); }
             }
         }
         const raw = document.getElementById('rawPasteArea');
@@ -1686,7 +1619,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         initInputSheet();
-        
         const raw = document.getElementById('rawPasteArea');
         if (raw) {
             raw.addEventListener('paste', function(e) {
@@ -1696,12 +1628,9 @@
                     if (matrix && matrix.length > 0) {
                         e.preventDefault();
                         const tsv = matrix.map(row => row.map(val => {
-                            if (val.includes('\n') || val.includes('\r') || val.includes('"') || val.includes('\t')) {
-                                return '"' + val.replace(/"/g, '""') + '"';
-                            }
+                            if (val.includes('\n') || val.includes('\r') || val.includes('"') || val.includes('\t')) return '"' + val.replace(/"/g, '""') + '"';
                             return val;
                         }).join('\t')).join('\n');
-                        
                         const start = this.selectionStart;
                         const end = this.selectionEnd;
                         this.value = this.value.substring(0, start) + tsv + this.value.substring(end);
@@ -1712,17 +1641,11 @@
         }
     });
 
-    let parsedData = {};
-    let parsedModels = [];
-    let optionCount = 0;
-    let optionLabels = [];
-    let gapBaseIndex = 0;
-    let latestResults = [];
+    let parsedData = {}; let parsedModels = []; let optionCount = 0; let optionLabels = []; let gapBaseIndex = 0; let latestResults = [];
 
     function getKnownKey(text) {
         const norm = String(text).replace(/\s+/g, '');
         if (!norm) return null;
-
         if (norm.includes('체감구독료')) return '체감구독료(월)';
         if (norm.includes('정상구독료') || norm.includes('월구독료')) return '정상구독료(월)';
         if (norm.includes('프로모션할인')) return '프로모션할인(월)';
@@ -1731,9 +1654,7 @@
         if (norm.includes('제휴카드월') || norm.includes('제휴카드할인') || norm.includes('카드할인월') || (norm.includes('제휴카드') && norm.includes('월'))) return '제휴카드(월)';
         if (norm.includes('제휴카드')) return '제휴카드';
         if (norm.includes('선납금액')) return '선납금액';
-        // '선납 캐시백' 파싱 규칙 수정 완료
         if (norm.includes('선납캐시백') || norm.includes('선납시캐시백') || norm.includes('선납시카드') || norm.includes('선납카드')) return '선납캐시백';
-        
         if (norm.includes('정상가') || norm.includes('정상판매가') || norm.includes('정상가격')) return '정상가';
         if (norm.includes('행사가') || norm.includes('행사판매가') || (norm.includes('판매가') && !norm.includes('정상'))) return '행사가';
         if (norm.includes('특별할인') || norm.includes('즉시할인')) return '특별할인';
@@ -1741,22 +1662,17 @@
         if (norm.includes('캐시백') || norm.includes('캐쉬백')) return '캐시백';
         if (norm.includes('상품권')) return '상품권';
         if (norm.includes('멤버십') || norm.includes('멤버쉽') || norm.includes('포인트')) return '멤버십';
-        
         if (norm.includes('특별혜택')) return '특별혜택';
-        
         if (norm.includes('최종혜택금액') || norm.includes('최종혜택가') || norm.includes('최종혜택')) return '최종혜택금액';
         if (norm.includes('혜택합계') || norm.includes('총혜택') || norm.includes('총혜택금액')) return '혜택합계';
         if (norm.includes('계약개월') || norm.includes('계약기간') || norm.includes('개월수')) return '계약개월수';
-
         return null;
     }
 
     function populateGapBaseOptions() {
         const select = document.getElementById('gapBaseSelect');
         if (!select) return;
-        select.innerHTML = Array.from({ length: optionCount }, (_, idx) =>
-            `<option value="${idx}" ${idx === gapBaseIndex ? 'selected' : ''}>${idx + 1}안</option>`
-        ).join('');
+        select.innerHTML = Array.from({ length: optionCount }, (_, idx) => `<option value="${idx}" ${idx === gapBaseIndex ? 'selected' : ''}>${idx + 1}안</option>`).join('');
         select.value = String(gapBaseIndex);
     }
 
@@ -1769,23 +1685,13 @@
         calculateAndRender();
     }
 
-    function setParseStatus(lines) {
-        const el = document.getElementById('parseStatusText');
-        if (!el) return;
-        el.innerHTML = lines.map(v => `• ${v}`).join('<br>');
-    }
-
     function normalizeModelLine(text) {
-        return String(text || '')
-            .replace(/\s+/g, ' ')               
-            .replace(/\s*\[구독\]/gi, ' [구독]') 
-            .trim();
+        return String(text || '').replace(/\s+/g, ' ').replace(/\s*\[구독\]/gi, ' [구독]').trim();
     }
 
     function formatModelCellBlock(text) {
         if (!text) return '-';
         const lines = String(text).split(/\r?\n/);
-        
         const processed = lines.map(normalizeModelLine).filter(Boolean);
         return processed.length > 0 ? processed.join('\n') : '-';
     }
@@ -1794,27 +1700,19 @@
         const cleaned = lines.map(normalizeModelLine).filter(Boolean);
         if (!cleaned.length) return Array.from({ length: optionCount }, () => '-');
         if (optionCount === 1) return [cleaned.join('\n')];
-
         const result = Array.from({ length: optionCount }, () => '-');
         const firstSubIdx = cleaned.findIndex(v => /\[구독\]/.test(v));
 
         if (firstSubIdx > 0) {
             result[0] = cleaned.slice(0, firstSubIdx).join('\n');
             const rest = cleaned.slice(firstSubIdx);
-
-            if (optionCount === 2) {
-                result[1] = rest.join('\n');
-                return result;
-            }
-
-            const a = rest[0] || '';
-            const b = rest[1] || '';
+            if (optionCount === 2) { result[1] = rest.join('\n'); return result; }
+            const a = rest[0] || ''; const b = rest[1] || '';
             const starts = [0];
             for (let i = 1; i < rest.length - 1; i++) {
                 if (starts.length >= optionCount - 1) break;
                 if (rest[i] === a && rest[i + 1] === b) starts.push(i);
             }
-
             if (starts.length === optionCount - 1) {
                 for (let i = 0; i < optionCount - 1; i++) {
                     const s = starts[i];
@@ -1823,7 +1721,6 @@
                 }
                 return result;
             }
-
             const starts2 = [0];
             for (let i = 1; i < rest.length; i++) {
                 if (starts2.length >= optionCount - 1) break;
@@ -1837,7 +1734,6 @@
                 }
                 return result;
             }
-
             let cursor = 0;
             for (let i = 1; i < optionCount; i++) {
                 const remainingLines = rest.length - cursor;
@@ -1849,8 +1745,7 @@
             return result;
         }
 
-        const a = cleaned[0] || '';
-        const b = cleaned[1] || '';
+        const a = cleaned[0] || ''; const b = cleaned[1] || '';
         const starts = [0];
         for (let i = 1; i < cleaned.length - 1; i++) {
             if (starts.length >= optionCount) break;
@@ -1875,12 +1770,7 @@
     }
 
     function isKnownValueRow(text) {
-        const known = [
-            '정상가','행사가','특별할인','결제금액','캐시백','상품권','멤버십',
-            '특별혜택','제휴카드','선택결제카드','선택결제카드명','선택결제카드설명',
-            '혜택합계','최종혜택금액','정상구독료(월)','프로모션할인(월)','결합할인(월)',
-            '선납할인(월)','제휴카드(월)','선납금액','선납캐시백','체감구독료(월)' // '선납캐시백'으로 수정 완료
-        ];
+        const known = ['정상가','행사가','특별할인','결제금액','캐시백','상품권','멤버십','특별혜택','제휴카드','선택결제카드','선택결제카드명','선택결제카드설명','혜택합계','최종혜택금액','정상구독료(월)','프로모션할인(월)','결합할인(월)','선납할인(월)','제휴카드(월)','선납금액','선납캐시백','체감구독료(월)'];
         const key = getKnownKey(String(text || ''));
         return !!key && known.includes(key);
     }
@@ -1888,65 +1778,40 @@
     function parseExcelData() {
         const savedId = sessionStorage.getItem('planner_emp_id');
         if (!savedId || typeof MANAGER_DATA === 'undefined' || !MANAGER_DATA[savedId]) {
-            alert("정상적인 로그인 절차를 거치지 않았습니다. 새로고침 후 로그인해주세요.");
-            location.reload();
-            return;
+            alert("정상적인 로그인 절차를 거치지 않았습니다. 새로고침 후 로그인해주세요."); location.reload(); return;
         }
         
         const rawText = document.getElementById("rawPasteArea").value;
-        if (rawText.trim() === "") {
-            alert("Data를 먼저 붙여넣어 주세요.");
-            return;
-        }
+        if (rawText.trim() === "") { alert("Data를 먼저 붙여넣어 주세요."); return; }
 
         const rows = parseExcelTSV(rawText).filter(r => r.some(c => String(c || '').trim() !== ''));
-        parsedData = {};
-        parsedModels = [];
-        optionCount = 0;
-        optionLabels = [];
-        latestResults = [];
+        parsedData = {}; parsedModels = []; optionCount = 0; optionLabels = []; latestResults = [];
 
-        if (!rows.length) {
-            alert("붙여넣은 Data가 비어 있습니다.");
-            return;
-        }
+        if (!rows.length) { alert("붙여넣은 Data가 비어 있습니다."); return; }
 
         const headerTokens = rows[0].join(' ').match(/\d+안/g) || [];
         optionCount = headerTokens.length >= 2 ? headerTokens.length : Math.max(...rows.map(r => Math.max(0, r.length - 1)));
 
-        let modelStart = -1;
-        let modelEnd = -1;
-        let modelRowIndex = -1;
-        let detectedLastValueCol = 0;
+        let modelStart = -1; let modelEnd = -1; let modelRowIndex = -1; let detectedLastValueCol = 0;
 
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             const rowText = row.join(' ').trim().replace(/\s+/g, '');
             const firstCellNorm = String(row[0] || '').trim().replace(/\s+/g, '');
             if (rowText.includes('선택모델') || rowText.includes('모델명') || firstCellNorm.includes('선택모델')) {
-                modelRowIndex = i;
-                modelStart = i + 1;
-                continue;
+                modelRowIndex = i; modelStart = i + 1; continue;
             }
             const identifiedKey = getKnownKey(String(row[0] || '').trim()) || getKnownKey(rowText);
             if (identifiedKey && row.length > 1) {
                 let lastUsed = 0;
-                row.slice(1).forEach((v, idx) => {
-                    if (String(v || '').trim() !== '') lastUsed = idx + 1;
-                });
+                row.slice(1).forEach((v, idx) => { if (String(v || '').trim() !== '') lastUsed = idx + 1; });
                 detectedLastValueCol = Math.max(detectedLastValueCol, lastUsed);
             }
-            if (modelStart !== -1 && rowText && isKnownValueRow(rows[i][0] || rowText)) {
-                modelEnd = i;
-                break;
-            }
+            if (modelStart !== -1 && rowText && isKnownValueRow(rows[i][0] || rowText)) { modelEnd = i; break; }
         }
 
         if (detectedLastValueCol > 0) optionCount = Math.min(optionCount, detectedLastValueCol);
-        if (optionCount === 0) {
-            alert("안(옵션) 열 데이터를 찾지 못했습니다.");
-            return;
-        }
+        if (optionCount === 0) { alert("안(옵션) 열 데이터를 찾지 못했습니다."); return; }
 
         optionLabels = Array.from({ length: optionCount }, (_, i) => `${i + 1}안`);
         parsedModels = Array.from({ length: optionCount }, () => '-');
@@ -1954,25 +1819,18 @@
         if (modelRowIndex !== -1) {
             const modelRow = rows[modelRowIndex] || [];
             let directMapped = 0;
-
             if (modelRow.length > 1) {
                 for (let c = 1; c <= optionCount; c++) {
                     const v = String(modelRow[c] || '').trim();
-                    if (v) {
-                        parsedModels[c - 1] = formatModelCellBlock(v);
-                        directMapped++;
-                    }
+                    if (v) { parsedModels[c - 1] = formatModelCellBlock(v); directMapped++; }
                 }
             }
-
             if (directMapped === 0) {
                 if (modelEnd === -1) modelEnd = rows.length;
                 const modelLines = [];
-
                 for (let i = modelStart; i < modelEnd; i++) {
                     const row = rows[i];
                     const nonEmpty = row.map(v => String(v || '').trim()).filter(Boolean);
-
                     if (row.length >= optionCount + 1) {
                         for (let c = 1; c <= optionCount; c++) {
                             const v = String(row[c] || '').trim();
@@ -1981,15 +1839,10 @@
                                 parsedModels[c - 1] = formatModelCellBlock(merged);
                             }
                         }
-                    } else if (nonEmpty.length) {
-                        modelLines.push(...nonEmpty);
-                    }
+                    } else if (nonEmpty.length) { modelLines.push(...nonEmpty); }
                 }
-
                 const directCount = parsedModels.filter(v => v !== '-' && v.trim()).length;
-                if (directCount === 0 && modelLines.length) {
-                    parsedModels = groupModelLines(modelLines, optionCount);
-                }
+                if (directCount === 0 && modelLines.length) parsedModels = groupModelLines(modelLines, optionCount);
             }
         }
 
@@ -2019,17 +1872,11 @@
         calculateAndRender();
     }
 
-    function getVal(key, idx) {
-        return parsedData[key] && parsedData[key][idx] !== undefined ? parsedData[key][idx] : 0;
-    }
-
-    function hasVal(key, idx) {
-        return parsedData[key] !== undefined && parsedData[key].length > idx;
-    }
+    function getVal(key, idx) { return parsedData[key] && parsedData[key][idx] !== undefined ? parsedData[key][idx] : 0; }
+    function hasVal(key, idx) { return parsedData[key] !== undefined && parsedData[key].length > idx; }
 
     function calculateAndRender() {
         let results = [];
-
         for (let i = 0; i < optionCount; i++) {
             const modelText = String(parsedModels[i] || '').trim();
             const modelHasSubscriptionTag = /\[구독\]/.test(modelText);
@@ -2049,7 +1896,7 @@
             let preDc = getVal('선납할인(월)', i);
             let cardDcMonthly = getVal('제휴카드(월)', i);
             let preAmt = getVal('선납금액', i);
-            let preCard = getVal('선납캐시백', i); // 변수값 할당 키워드 수정 완료
+            let preCard = getVal('선납캐시백', i);
             const contractMonth = getVal('계약개월수', i) || 72;
 
             const payRaw = getVal('결제금액', i);
@@ -2067,9 +1914,7 @@
             const sourceHasContent = (modelText && modelText !== '-') || 
                 [normalPrice, eventPrice, specialDc, payRaw, cashback, voucher, membership, specialBenefit, cardBenefit, benefitSumRaw, finalBenefitRaw, subFee, promoDc, comboDc, preDc, cardDcMonthly, preAmt, preCard, realSubRaw].some(v => v !== 0);
 
-            if (!modelHasSubscriptionTag) {
-                subFee = 0; promoDc = 0; comboDc = 0; preDc = 0; cardDcMonthly = 0; preAmt = 0; preCard = 0; realSubRaw = 0;
-            }
+            if (!modelHasSubscriptionTag) { subFee = 0; promoDc = 0; comboDc = 0; preDc = 0; cardDcMonthly = 0; preAmt = 0; preCard = 0; realSubRaw = 0; }
 
             const hasSubscription = modelHasSubscriptionTag && 
                 (subFee > 0 || promoDc > 0 || comboDc > 0 || preDc > 0 || cardDcMonthly > 0 || preAmt > 0 || preCard > 0 || realSub > 0 || realSub < 0);
@@ -2080,25 +1925,17 @@
             const subscriptionDominant = subscriptionShare >= 0.7;
 
             results.push({
-                header: optionLabels[i],
-                model: modelText || '-',
-                normalPrice, eventPrice, specialDc, pay, cashback, voucher,
-                membership, specialBenefit, cardBenefit, benefitSum, finalBenefit, subFee,
-                promoDc, comboDc, preDc, cardDcMonthly, preAmt, preCard,
-                realSub, total, contractMonth, hasSubscription, sourceHasContent,
-                subscriptionAmount, subscriptionShare, subscriptionDominant
+                header: optionLabels[i], model: modelText || '-', normalPrice, eventPrice, specialDc, pay, cashback, voucher,
+                membership, specialBenefit, cardBenefit, benefitSum, finalBenefit, subFee, promoDc, comboDc, preDc, cardDcMonthly, preAmt, preCard,
+                realSub, total, contractMonth, hasSubscription, sourceHasContent, subscriptionAmount, subscriptionShare, subscriptionDominant
             });
         }
 
         results = results.filter(item => item.sourceHasContent);
-
         if (!results.length) {
             results = [{
-                header: '1안', model: '-', normalPrice: 0, eventPrice: 0, specialDc: 0, pay: 0,
-                cashback: 0, voucher: 0, membership: 0, cardBenefit: 0, benefitSum: 0,
-                finalBenefit: 0, subFee: 0, promoDc: 0, comboDc: 0, preDc: 0,
-                cardDcMonthly: 0, preAmt: 0, preCard: 0, realSub: 0, total: 0,
-                contractMonth: 72, hasSubscription: false
+                header: '1안', model: '-', normalPrice: 0, eventPrice: 0, specialDc: 0, pay: 0, cashback: 0, voucher: 0, membership: 0, cardBenefit: 0, benefitSum: 0,
+                finalBenefit: 0, subFee: 0, promoDc: 0, comboDc: 0, preDc: 0, cardDcMonthly: 0, preAmt: 0, preCard: 0, realSub: 0, total: 0, contractMonth: 72, hasSubscription: false
             }];
         }
 
@@ -2108,7 +1945,6 @@
 
         if (gapBaseIndex >= optionCount) gapBaseIndex = 0;
         populateGapBaseOptions();
-
         latestResults = results;
         renderQuoteTable(results);
         applyModelRowVisibility();
@@ -2118,49 +1954,74 @@
         const thead = document.getElementById('quoteThead');
         const tbody = document.getElementById('quoteTbody');
 
-        thead.innerHTML = '';
-        tbody.innerHTML = '';
+        thead.innerHTML = ''; tbody.innerHTML = '';
 
+        // 💒 1. 웨딩 패키지 AI 진단 배너 행
+        const weddingBannerRow = document.createElement('tr');
+        weddingBannerRow.className = 'wedding-banner-row only-wedding';
+        let weddingBannerHtml = `<td class="label-cell" style="width:180px;">✨ 웨딩 패키지<br>AI 진단</td>`;
+        
+        results.forEach((item) => {
+            const diagnosis = analyzeWeddingOption(item.model);
+            let cellClass = 'banner-normal';
+            if (diagnosis.type === 'success') cellClass = 'banner-success';
+            else if (diagnosis.type === 'tip-sub') cellClass = 'banner-tip-sub';
+            else if (diagnosis.type === 'tip-model') cellClass = 'banner-tip-model';
+
+            weddingBannerHtml += `<td class="${cellClass}">
+                <span class="banner-title">${diagnosis.title}</span>
+                <span class="banner-desc">${diagnosis.desc}</span>
+            </td>`;
+        });
+        weddingBannerRow.innerHTML = weddingBannerHtml;
+        thead.appendChild(weddingBannerRow);
+
+        // 🎁 2. 라이프스타일 패키지 AI 진단 배너 행 (웨딩과 완벽히 동일한 포맷)
+        const lsBannerRow = document.createElement('tr');
+        lsBannerRow.className = 'lifestyle-banner-row wedding-banner-row'; 
+        let lsBannerHtml = `<td class="label-cell" style="width:180px; background-color:#1e3a8a !important; color:#fff !important;">🎁 패키지<br>추가 혜택</td>`;
+        
+        results.forEach((item) => {
+            const diagnosis = typeof analyzeLifestyleOption === 'function' 
+                            ? analyzeLifestyleOption(item.model) 
+                            : { type: 'normal', title: '-', desc: '데이터 연결 안됨' };
+            
+            let cellClass = 'banner-normal';
+            if (diagnosis.type === 'success') cellClass = 'banner-success';
+            else if (diagnosis.type === 'tip-sub') cellClass = 'banner-tip-sub';
+            else if (diagnosis.type === 'tip-model') cellClass = 'banner-tip-model';
+
+            lsBannerHtml += `<td class="${cellClass}">
+                <span class="banner-title">${diagnosis.title}</span>
+                <span class="banner-desc">${diagnosis.desc}</span>
+            </td>`;
+        });
+        lsBannerRow.innerHTML = lsBannerHtml;
+        thead.appendChild(lsBannerRow);
+
+
+        // 3. 표 헤더 행
         const headerRow = document.createElement('tr');
         let headerHtml = `<th style="width:180px;">구분</th>`;
-        
-        results.forEach((item, idx) => {
+        results.forEach((item) => {
             const dominantClass = item.subscriptionDominant ? 'subscription-dominant-header' : '';
             headerHtml += `<th class="${dominantClass}">${item.header}</th>`;
         });
-        
         headerRow.innerHTML = headerHtml;
         thead.appendChild(headerRow);
 
         const gapLabel = 'GAP (vs 기준안)';
-        const subscriptionKeys = [
-            'subFee', 'promoDc', 'comboDc', 'preDc',
-            'cardDcMonthly', 'preAmt', 'preCard', 'realSub'
-        ];
-
+        const subscriptionKeys = ['subFee', 'promoDc', 'comboDc', 'preDc', 'cardDcMonthly', 'preAmt', 'preCard', 'realSub'];
         const rowDefs = [
             { label: '선택 모델', key: 'model', type: 'model' },
-            { label: '정상가', key: 'normalPrice' },
-            { label: '행사가', key: 'eventPrice' },
-            { label: '특별할인', key: 'specialDc' },
-            { label: '결제금액', key: 'pay' },
-            { label: '캐시백', key: 'cashback' },
-            { label: '상품권', key: 'voucher' },
-            { label: '멤버십', key: 'membership' },
-            { label: '특별혜택', key: 'specialBenefit' },
-            { label: '제휴카드', key: 'cardBenefit' },
-            { label: '혜택합계', key: 'benefitSum' },
-            { label: '최종혜택금액', key: 'finalBenefit', rowClass: 'highlight-dark' },
-            { label: '정상구독료(월)', key: 'subFee' },
-            { label: '프로모션할인(월)', key: 'promoDc' },
-            { label: '결합할인(월)', key: 'comboDc' },
-            { label: '선납할인(월)', key: 'preDc' },
-            { label: '제휴카드(월)', key: 'cardDcMonthly' },
-            { label: '선납금액', key: 'preAmt' },
-            { label: '선납 캐시백', key: 'preCard' }, // 화면 출력 라벨 수정 완료
-            { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
-            { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' },
-            { label: gapLabel, key: 'gap', rowClass: 'gap-row' }
+            { label: '정상가', key: 'normalPrice' }, { label: '행사가', key: 'eventPrice' }, { label: '특별할인', key: 'specialDc' },
+            { label: '결제금액', key: 'pay' }, { label: '캐시백', key: 'cashback' }, { label: '상품권', key: 'voucher' },
+            { label: '멤버십', key: 'membership' }, { label: '특별혜택', key: 'specialBenefit' }, { label: '제휴카드', key: 'cardBenefit' },
+            { label: '혜택합계', key: 'benefitSum' }, { label: '최종혜택금액', key: 'finalBenefit', rowClass: 'highlight-dark' },
+            { label: '정상구독료(월)', key: 'subFee' }, { label: '프로모션할인(월)', key: 'promoDc' }, { label: '결합할인(월)', key: 'comboDc' },
+            { label: '선납할인(월)', key: 'preDc' }, { label: '제휴카드(월)', key: 'cardDcMonthly' }, { label: '선납금액', key: 'preAmt' },
+            { label: '선납 캐시백', key: 'preCard' }, { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
+            { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' }, { label: gapLabel, key: 'gap', rowClass: 'gap-row' }
         ];
 
         rowDefs.forEach(def => {
@@ -2169,11 +2030,8 @@
             if (def.type === 'model') tr.classList.add('model-row');
 
             let html = '';
-            if (def.key === 'gap') {
-                html = `<td class="label-cell"><span id="gapLabelText">${def.label}</span></td>`;
-            } else {
-                html = `<td class="label-cell">${def.label}</td>`;
-            }
+            if (def.key === 'gap') html = `<td class="label-cell"><span id="gapLabelText">${def.label}</span></td>`;
+            else html = `<td class="label-cell">${def.label}</td>`;
 
             if (def.key === 'gap') {
                 const baseTotal = results[gapBaseIndex] ? results[gapBaseIndex].total : 0;
@@ -2185,215 +2043,75 @@
             } else if (def.type === 'model') {
                 html += results.map((item, idx) => {
                     const dominantClass = item.subscriptionDominant ? ' subscription-dominant-cell' : '';
-                    return `<td class="model-cell${dominantClass}">${item.model}</td>`;
+                    
+                    const modelLines = (item.model || '-').split('\n');
+                    const formattedLines = modelLines.map(line => {
+                        let res = line;
+                        if (line !== '-' && isWeddingTarget(line)) res = `<span class="wedding-target">${res}</span>`;
+                        // ✨ 꼬리표 무시 기능이 적용된 외부 데이터 판별
+                        if (line !== '-' && typeof isLifestyleTarget === 'function' && isLifestyleTarget(line)) {
+                            res = `<span class="lifestyle-target">${res}</span>`;
+                        }
+                        return res;
+                    }).join('\n');
+
+                    return `<td class="model-cell${dominantClass}">${formattedLines}</td>`;
                 }).join('');
             } else {
                 html += results.map((item, idx) => {
                     const baseClass = idx === gapBaseIndex ? ' base-col-cell' : '';
-                    if (!item.hasSubscription && subscriptionKeys.includes(def.key)) {
-                        return `<td class="number-cell${baseClass}">0</td>`;
-                    }
+                    if (!item.hasSubscription && subscriptionKeys.includes(def.key)) return `<td class="number-cell${baseClass}">0</td>`;
                     return `<td class="number-cell${baseClass}">${fn(item[def.key])}</td>`;
                 }).join('');
             }
-
             tr.innerHTML = html;
             tbody.appendChild(tr);
         });
     }
 
     function clearAllData() {
-        document.getElementById('rawPasteArea').value = '';
-        parsedData = {};
-        parsedModels = [];
-        optionCount = 0;
-        optionLabels = [];
-        document.getElementById('quoteThead').innerHTML = '';
-        document.getElementById('quoteTbody').innerHTML = '';
+        document.getElementById('rawPasteArea').value = ''; parsedData = {}; parsedModels = []; optionCount = 0; optionLabels = [];
+        document.getElementById('quoteThead').innerHTML = ''; document.getElementById('quoteTbody').innerHTML = '';
     }
 
     const careData = {
-        stem: [
-            { id: 's1', name: '워터필터 교체서비스', period: '12개월 / 6회', price: 507000, desc: '중금속 7종 흡착 필터 : 84,500원 x 6회' },
-            { id: 's2', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '퓨어프레시 필터 29,000원 x 6회' },
-            { id: 's3', name: '세척 케어 및 점검', period: '12개월 / 6회', price: 180000, desc: '소모품(1만) + 인건비(2만) x 6회' },
-            { id: 's4', name: '기계실 분해세척', period: '36개월 차 1회', price: 85000, desc: '분해세척 서비스 비용 총합' },
-            { id: 's5', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 111000, desc: '판토스 무상 재설치 요금' },
-            { id: 's6', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },
-            { id: 'sx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        stemIce: [
-            { id: 'si1', name: '워터필터 교체 (프리필터 포함)', period: '12개월 / 6회', price: 1332000, desc: '중금속(12EA)+박테리아(6EA)+바이러스(6EA) 필터 총합' },
-            { id: 'si2', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '회당 29,000원 x 6회' },
-            { id: 'si3', name: '세척 케어 및 성능 점검', period: '3개월 / 24회', price: 720000, desc: '회당 30,000원 x 24회' },
-            { id: 'si4', name: '기계실 분해세척', period: '36개월 차 1회', price: 85000, desc: '분해세척 서비스 비용 총합' },
-            { id: 'si5', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 111000, desc: '판토스 무상 재설치 요금' },
-            { id: 'si6', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },
-            { id: 'six', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        waterPurifier: [
-            { id: 'wp1', name: '중금속9 흡착필터(6개월 주기)/바이러스 클리어 필터(12개월 주기)', period: '6개월 / 12회', price: 1104000, desc: '필터비용' }
-        ],
-        refrigerator: [
-            { id: 'rf1', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '회당 29,000원 x 6회' },
-            { id: 'rf2', name: '기본 외관/얼음통 & 고무패킹 케어', period: '12개월 / 6회', price: 180000, desc: '방문당 30,000원 x 6회' },
-            { id: 'rf3', name: '기계실 세척 (성능점검 포함)', period: '36개월 차 1회', price: 85000, desc: '기계실 분해세척 서비스 비용 총합' },
-            { id: 'rf4', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },
-            { id: 'rfx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        kimchiRefrigerator: [
-            { id: 'krf1', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '회당 29,000원 x 6회' },
-            { id: 'krf2', name: '기본 외관/얼음통 & 고무패킹 케어', period: '12개월 / 6회', price: 180000, desc: '방문당 30,000원 x 6회' },
-            { id: 'krf3', name: '기계실 세척 (성능점검 포함)', period: '36개월 차 1회', price: 85000, desc: '기계실 분해세척 서비스 비용 총합' },
-            { id: 'krf4', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },
-            { id: 'krfx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        induction: [
-            { id: 'e1', name: '전용 클리너 제공', period: '12개월 / 6회', price: 32700, desc: '전용클리너 6EA' },
-            { id: 'e2', name: '상판 클리닝, 하부 이물제거', period: '12개월 / 6회', price: 153096, desc: '최저시급 + 출장비 x 6회' },
-            { id: 'e3', name: '상판 교체 서비스', period: '36~48개월 1회', price: 245000, desc: '상판 교체 서비스 요금' },
-            { id: 'e4', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 50000, desc: '판토스 무상 재설치 요금' },
-            { id: 'e5', name: '무상 A/S 제공', period: '계약기간', price: 70000, desc: '전기레인지 평균 수리 비용 기준' },
-            { id: 'ex', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        dishwasher: [
-            { id: 'd1', name: '음식물 거름망 교체', period: '12개월 / 6회', price: 102000, desc: '거름필터 12EA' },
-            { id: 'd2', name: '내/외부 세척 및 통살균', period: '12개월 / 6회', price: 360000, desc: '클리닝(1만) + 출장비(2만) x 12회' },
-            { id: 'd3', name: '전용 소금 충전', period: '12개월 / 6회', price: 114000, desc: '정제소금 12EA' },
-            { id: 'd4', name: '연수장치 점검/수질 측정', period: '12개월 / 6회', price: 22800, desc: '경도 키트 12EA' },
-            { id: 'd5', name: '에어필터 교체', period: '12개월 / 6회', price: 75000, desc: '에어필터 6EA' },
-            { id: 'd6', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 130000, desc: '판토스 무상 재설치 요금' },
-            { id: 'd7', name: '무상 A/S 제공', period: '계약기간', price: 70000, desc: '식기세척기 평균 수리 비용 기준' },
-            { id: 'dx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        stickVacuum: [
-            { id: 'v1', name: '분해세척 서비스 (에어/초음파 세척)', period: '12개월 / 6회', price: 396000, desc: '회당 66,000원 x 6회' },
-            { id: 'v2', name: '성능 점검 & 스팀 케어', period: '12개월 / 6회', price: 124000, desc: '최저시급 + 성능/스팀케어 출장비' },
-            { id: 'v3', name: '소모품 배송 (배터리 36개월 1회)', period: '12개월 / 6회', price: 912000, desc: '필터류, 배터리, 올인원타워 소모품 총합' },
-            { id: 'v4', name: '무상 A/S 제공', period: '계약 기간', price: 91300, desc: '청소기 평균 수리 비용 기준' },
-            { id: 'vx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        robotVacuum: [
-            { id: 'r1', name: '7종 소모품 교체 서비스', period: '12개월 / 6회', price: 1287300, desc: '6년 소모품 비용 합계 + 출장 서비스' },
-            { id: 'r2', name: '로봇/스테이션/스팀 클리닝', period: '12개월 / 6회', price: 134000, desc: '회당 22,340원 x 6회' },
-            { id: 'r3', name: '무상 A/S 제공', period: '계약 기간', price: 91300, desc: '청소기 평균 수리 비용 기준' },
-            { id: 'rx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        airConditioner: [
-            { id: 'a1', name: '완전분해 케어 서비스(프리미엄)', period: '36개월 / 2회', price: 610000, desc: '회당 305,000원 x 2회' },
-            { id: 'a1_2', name: '부분분해 케어 서비스(라이트)', period: '36개월 / 2회', price: 80000, desc: '회당 40,000원 x 2회, 타 가전 부분분해세척 비용기준 참고 추정비용' },
-            { id: 'a2', name: '공기청정 필터 교체', period: '12개월 / 6회', price: 600000, desc: '뷰 집진필터 100,000원 x 6회' },
-            { id: 'a3', name: '성능점검 & 내/외부 토탈클리닝', period: '12개월 / 6회', price: 510000, desc: '회당 85,000원 x 6회' },
-            { id: 'a4', name: '무상 철거&재설치 서비스', period: '계약기간 內 1회', price: 388000, desc: '2in1 재설치 기준 388,000원' },
-            { id: 'a5', name: '무상 A/S 제공', period: '계약기간', price: 266000, desc: '에어컨 평균 수리 비용 기준' },
-            { id: 'ax', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        airPurifier: [
-            { id: 'p1', name: '복합 필터 교체', period: '12개월 / 6회', price: 1548000, desc: '회당 258,000원 x 6회' },
-            { id: 'p2', name: '극세 필터 교체', period: '6개월 / 12회', price: 128000, desc: '회당 10,666원 x 12회' },
-            { id: 'p3', name: '클린부스터 분해/클리닝', period: '6개월 / 12회', price: 480000, desc: '회당 40,000원 x 12회' },
-            { id: 'p4', name: '분해 / 스팀 케어', period: '30개월 / 2회', price: 210000, desc: '기계실 분해세척 서비스 총합' },
-            { id: 'p5', name: '무상 A/S 제공', period: '계약기간', price: 91000, desc: '공기청정기 평균 수리 비용' },
-            { id: 'px', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        bathAir: [
-            { id: 'b1', name: '극세필터/팬/위생(UV/피톤치드) 케어', period: '12개월 / 6회', price: 858000, desc: '회당 143,000원 x 6회' },
-            { id: 'b2', name: '극세 필터 교체 서비스', period: '24개월 / 3회', price: 60000, desc: '세트당 20,000원 x 3회' },
-            { id: 'b3', name: '무상 A/S 제공', period: '계약기간', price: 174000, desc: '평균 수리비용 기준' },
-            { id: 'bx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        styler: [
-            { id: 'st1', name: '클리닝 & 스팀케어 & 센서점검', period: '12개월 / 6회', price: 510000, desc: '회당 85,000원 x 6회' },
-            { id: 'st2', name: '인산염 키트 / 향기 시트 제공', period: '12개월 / 6회', price: 83500, desc: '회당 13,917원 x 6회' },
-            { id: 'st3', name: '급 / 배수통 교체 서비스', period: '36개월 / 1회', price: 39900, desc: '스타일러 통 가격 총합' },
-            { id: 'st4', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '평균 수리비용 기준' },
-            { id: 'stx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        washTower: [
-            { id: 'wt1', name: '센서/패킹/필터 세척 & 드럼/스팀케어', period: '6개월 / 12회', price: 630000, desc: '[세탁부] 회당 6.5만x6회 + [건조부] 회당 4만x6회' },
-            { id: 'wt2', name: '배수필터 교체 서비스', period: '24개월 / 3회', price: 15600, desc: '회당 5,200원 x 3회' },
-            { id: 'wt3', name: '2중 안심필터 무상교체', period: '최초 방문 시 1회', price: 36500, desc: '2중 안심필터 가격' },
-            { id: 'wt4', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 220000, desc: '무상 철거 및 재설치 총합' },
-            { id: 'wt5', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
-            { id: 'wtx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        washCombo: [
-            { id: 'wc1', name: '센서/패킹/필터 세척 & 드럼/스팀케어', period: '6개월 / 12회', price: 390000, desc: '회당 65,000원 x 6회' },
-            { id: 'wc2', name: '배수필터 교체 서비스', period: '24개월 / 3회', price: 15600, desc: '회당 5,200원 x 3회' },
-            { id: 'wc3', name: '건조필터 무상교체', period: '최초 방문 시 1회', price: 44500, desc: '건조필터 가격' },
-            { id: 'wc4', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
-            { id: 'wcx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        trommStandard: [
-            { id: 'ts1', name: '배수필터/고무패킹/내외부 클리닝/성능 작동 점검/수평 확인', period: '24개월 / 3회', price: 120000, desc: '세척 소모품 및 인건비' },
-            { id: 'ts2', name: '배수필터/고무패킹 교체', period: '48개월 / 1회', price: 64500, desc: '배수필터 + 고무패킹 가격' },
-            { id: 'ts3', name: '세척조 클리너 제공', period: '48개월 / 1회', price: 7000, desc: '클리너 가격' },
-            { id: 'ts4', name: '분해 세척(스팀 및 UV 관리)', period: '48개월 / 1회', price: 195000, desc: '서비스 비용' },
-            { id: 'ts5', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
-            { id: 'tsx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용(최저시급 x 셀프케어 시간)' }
-        ],
-        trommLight: [
-            { id: 'tl1', name: '배수필터/고무패킹/내외부 클리닝/스팀 관리/', period: '6개월 / 12회', price: 480000, desc: '세척 소모품 및 인건비' },
-            { id: 'tl2', name: '배수필터/고무패킹/내외부 클리닝/스팀 관리/', period: '12개월 / 6회', price: 240000, desc: '세척 소모품 및 인건비' },
-            { id: 'tl3', name: '배수필터교체', period: '24개월 / 1회', price: 15000, desc: '배수필터 가격' },
-            { id: 'tl4', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
-            { id: 'tlx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용(최저시급 x 셀프케어 시간)' }
-        ],
-        dryer: [
-            { id: 'dr1', name: '먼지/배수물통 세척 & 내외부 클리닝', period: '6개월 / 12회', price: 240000, desc: '세척 소모품 및 인건비' },
-            { id: 'dr2', name: '2중 안심필터 제공', period: '최초 방문 1회', price: 36500, desc: '2중 안심필터 가격' },
-            { id: 'dr3', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
-            { id: 'drx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ],
-        tvCare: [
-            { id: 'tv1', name: 'QNED 86형/85시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 2060000, desc: '패널 교체 기준가 약 206만원' },
-            { id: 'tv2', name: 'OLED 83형/G시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 3770000, desc: '패널 교체 기준가 약 377만원' },
-            { id: 'tv3', name: 'OLED 77형/G시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 2990000, desc: '패널 교체 기준가 약 299만원' },
-            { id: 'tv4', name: 'OLED 77형/B시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 2300000, desc: '패널 교체 기준가 약 230만원' },
-            { id: 'tv5', name: 'OLED 65형(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 1500000, desc: '패널 교체 기준가 약 150만원' },
-            { id: 'tv6', name: 'OLED 55형(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 1200000, desc: '패널 교체 기준가 약 120만원' },
-            { id: 'tv7', name: '70인치 이상 무상 설치지원', period: '계약기간 內 1회', price: 128000, desc: '70형대 벽걸이 설치 기준 (철거비/운송비 제외)' },
-            { id: 'tv8', name: '80인치 이상 무상 설치지원', period: '계약기간 內 1회', price: 204000, desc: '80형대 벽걸이 설치 기준 (철거비/운송비 제외)' }
-        ],
-        massageChair: [
-            { id: 'mc1', name: '가죽 교체 서비스', period: '12개월 / 6회', price: 278500, desc: '발 가죽 교체(30,000원) x 3회 + 베개, 등, 엉덩이 가죽교체(188,500원) x 1회' },
-            { id: 'mc2', name: '제품 토탈 클리닝 / 동작 및 제품 성능점검', period: '12개월 / 6회', price: 345600, desc: '케어십 요금 4,800원 x 72개월' },
-            { id: 'mc3', name: '무상 A/S 제공', period: '계약기간', price: 250000, desc: '안마의자 1회 평균 수리 비용 기준' },
-            { id: 'mcx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
-        ]
+        stem: [{ id: 's1', name: '워터필터 교체서비스', period: '12개월 / 6회', price: 507000, desc: '중금속 7종 흡착 필터 : 84,500원 x 6회' },{ id: 's2', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '퓨어프레시 필터 29,000원 x 6회' },{ id: 's3', name: '세척 케어 및 점검', period: '12개월 / 6회', price: 180000, desc: '소모품(1만) + 인건비(2만) x 6회' },{ id: 's4', name: '기계실 분해세척', period: '36개월 차 1회', price: 85000, desc: '분해세척 서비스 비용 총합' },{ id: 's5', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 111000, desc: '판토스 무상 재설치 요금' },{ id: 's6', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },{ id: 'sx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        stemIce: [{ id: 'si1', name: '워터필터 교체 (프리필터 포함)', period: '12개월 / 6회', price: 1332000, desc: '중금속(12EA)+박테리아(6EA)+바이러스(6EA) 필터 총합' },{ id: 'si2', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '회당 29,000원 x 6회' },{ id: 'si3', name: '세척 케어 및 성능 점검', period: '3개월 / 24회', price: 720000, desc: '회당 30,000원 x 24회' },{ id: 'si4', name: '기계실 분해세척', period: '36개월 차 1회', price: 85000, desc: '분해세척 서비스 비용 총합' },{ id: 'si5', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 111000, desc: '판토스 무상 재설치 요금' },{ id: 'si6', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },{ id: 'six', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        waterPurifier: [{ id: 'wp1', name: '중금속9 흡착필터/바이러스 클리어', period: '6개월 / 12회', price: 1104000, desc: '필터비용' }],
+        refrigerator: [{ id: 'rf1', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '회당 29,000원 x 6회' },{ id: 'rf2', name: '기본 외관/얼음통 & 고무패킹 케어', period: '12개월 / 6회', price: 180000, desc: '방문당 30,000원 x 6회' },{ id: 'rf3', name: '기계실 세척 (성능점검 포함)', period: '36개월 차 1회', price: 85000, desc: '기계실 분해세척 서비스 비용 총합' },{ id: 'rf4', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },{ id: 'rfx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        kimchiRefrigerator: [{ id: 'krf1', name: '퓨어프레쉬필터 교체', period: '12개월 / 6회', price: 174000, desc: '회당 29,000원 x 6회' },{ id: 'krf2', name: '기본 외관/얼음통 & 고무패킹 케어', period: '12개월 / 6회', price: 180000, desc: '방문당 30,000원 x 6회' },{ id: 'krf3', name: '기계실 세척 (성능점검 포함)', period: '36개월 차 1회', price: 85000, desc: '기계실 분해세척 서비스 비용 총합' },{ id: 'krf4', name: '무상 A/S 제공', period: '계약기간', price: 147000, desc: '냉장고 평균 수리 비용 기준' },{ id: 'krfx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        induction: [{ id: 'e1', name: '전용 클리너 제공', period: '12개월 / 6회', price: 32700, desc: '전용클리너 6EA' },{ id: 'e2', name: '상판 클리닝, 하부 이물제거', period: '12개월 / 6회', price: 153096, desc: '최저시급 + 출장비 x 6회' },{ id: 'e3', name: '상판 교체 서비스', period: '36~48개월 1회', price: 245000, desc: '상판 교체 서비스 요금' },{ id: 'e4', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 50000, desc: '판토스 무상 재설치 요금' },{ id: 'e5', name: '무상 A/S 제공', period: '계약기간', price: 70000, desc: '전기레인지 평균 수리 비용 기준' },{ id: 'ex', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        dishwasher: [{ id: 'd1', name: '음식물 거름망 교체', period: '12개월 / 6회', price: 102000, desc: '거름필터 12EA' },{ id: 'd2', name: '내/외부 세척 및 통살균', period: '12개월 / 6회', price: 360000, desc: '클리닝(1만) + 출장비(2만) x 12회' },{ id: 'd3', name: '전용 소금 충전', period: '12개월 / 6회', price: 114000, desc: '정제소금 12EA' },{ id: 'd4', name: '연수장치 점검/수질 측정', period: '12개월 / 6회', price: 22800, desc: '경도 키트 12EA' },{ id: 'd5', name: '에어필터 교체', period: '12개월 / 6회', price: 75000, desc: '에어필터 6EA' },{ id: 'd6', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 130000, desc: '판토스 무상 재설치 요금' },{ id: 'd7', name: '무상 A/S 제공', period: '계약기간', price: 70000, desc: '식기세척기 평균 수리 비용 기준' },{ id: 'dx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        stickVacuum: [{ id: 'v1', name: '분해세척 서비스 (에어/초음파 세척)', period: '12개월 / 6회', price: 396000, desc: '회당 66,000원 x 6회' },{ id: 'v2', name: '성능 점검 & 스팀 케어', period: '12개월 / 6회', price: 124000, desc: '최저시급 + 성능/스팀케어 출장비' },{ id: 'v3', name: '소모품 배송 (배터리 36개월 1회)', period: '12개월 / 6회', price: 912000, desc: '필터류, 배터리, 올인원타워 소모품 총합' },{ id: 'v4', name: '무상 A/S 제공', period: '계약 기간', price: 91300, desc: '청소기 평균 수리 비용 기준' },{ id: 'vx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        robotVacuum: [{ id: 'r1', name: '7종 소모품 교체 서비스', period: '12개월 / 6회', price: 1287300, desc: '6년 소모품 비용 합계 + 출장 서비스' },{ id: 'r2', name: '로봇/스테이션/스팀 클리닝', period: '12개월 / 6회', price: 134000, desc: '회당 22,340원 x 6회' },{ id: 'r3', name: '무상 A/S 제공', period: '계약 기간', price: 91300, desc: '청소기 평균 수리 비용 기준' },{ id: 'rx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        airConditioner: [{ id: 'a1', name: '완전분해 케어 서비스(프리미엄)', period: '36개월 / 2회', price: 610000, desc: '회당 305,000원 x 2회' },{ id: 'a1_2', name: '부분분해 케어 서비스(라이트)', period: '36개월 / 2회', price: 80000, desc: '회당 40,000원 x 2회, 타 가전 부분분해세척 비용기준 참고 추정비용' },{ id: 'a2', name: '공기청정 필터 교체', period: '12개월 / 6회', price: 600000, desc: '뷰 집진필터 100,000원 x 6회' },{ id: 'a3', name: '성능점검 & 내/외부 토탈클리닝', period: '12개월 / 6회', price: 510000, desc: '회당 85,000원 x 6회' },{ id: 'a4', name: '무상 철거&재설치 서비스', period: '계약기간 內 1회', price: 388000, desc: '2in1 재설치 기준 388,000원' },{ id: 'a5', name: '무상 A/S 제공', period: '계약기간', price: 266000, desc: '에어컨 평균 수리 비용 기준' },{ id: 'ax', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        airPurifier: [{ id: 'p1', name: '복합 필터 교체', period: '12개월 / 6회', price: 1548000, desc: '회당 258,000원 x 6회' },{ id: 'p2', name: '극세 필터 교체', period: '6개월 / 12회', price: 128000, desc: '회당 10,666원 x 12회' },{ id: 'p3', name: '클린부스터 분해/클리닝', period: '6개월 / 12회', price: 480000, desc: '회당 40,000원 x 12회' },{ id: 'p4', name: '분해 / 스팀 케어', period: '30개월 / 2회', price: 210000, desc: '기계실 분해세척 서비스 총합' },{ id: 'p5', name: '무상 A/S 제공', period: '계약기간', price: 91000, desc: '공기청정기 평균 수리 비용' },{ id: 'px', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        bathAir: [{ id: 'b1', name: '극세필터/팬/위생(UV/피톤치드) 케어', period: '12개월 / 6회', price: 858000, desc: '회당 143,000원 x 6회' },{ id: 'b2', name: '극세 필터 교체 서비스', period: '24개월 / 3회', price: 60000, desc: '세트당 20,000원 x 3회' },{ id: 'b3', name: '무상 A/S 제공', period: '계약기간', price: 174000, desc: '평균 수리비용 기준' },{ id: 'bx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        styler: [{ id: 'st1', name: '클리닝 & 스팀케어 & 센서점검', period: '12개월 / 6회', price: 510000, desc: '회당 85,000원 x 6회' },{ id: 'st2', name: '인산염 키트 / 향기 시트 제공', period: '12개월 / 6회', price: 83500, desc: '회당 13,917원 x 6회' },{ id: 'st3', name: '급 / 배수통 교체 서비스', period: '36개월 / 1회', price: 39900, desc: '스타일러 통 가격 총합' },{ id: 'st4', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '평균 수리비용 기준' },{ id: 'stx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        washTower: [{ id: 'wt1', name: '센서/패킹/필터 세척 & 드럼/스팀케어', period: '6개월 / 12회', price: 630000, desc: '[세탁부] 회당 6.5만x6회 + [건조부] 회당 4만x6회' },{ id: 'wt2', name: '배수필터 교체 서비스', period: '24개월 / 3회', price: 15600, desc: '회당 5,200원 x 3회' },{ id: 'wt3', name: '2중 안심필터 무상교체', period: '최초 방문 시 1회', price: 36500, desc: '2중 안심필터 가격' },{ id: 'wt4', name: '설치/철거 무상 제공', period: '계약기간 內 1회', price: 220000, desc: '무상 철거 및 재설치 총합' },{ id: 'wt5', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },{ id: 'wtx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        washCombo: [{ id: 'wc1', name: '센서/패킹/필터 세척 & 드럼/스팀케어', period: '6개월 / 12회', price: 390000, desc: '회당 65,000원 x 6회' },{ id: 'wc2', name: '배수필터 교체 서비스', period: '24개월 / 3회', price: 15600, desc: '회당 5,200원 x 3회' },{ id: 'wc3', name: '건조필터 무상교체', period: '최초 방문 시 1회', price: 44500, desc: '건조필터 가격' },{ id: 'wc4', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },{ id: 'wcx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        trommStandard: [{ id: 'ts1', name: '배수필터/고무패킹/내외부 클리닝/성능 작동 점검/수평 확인', period: '24개월 / 3회', price: 120000, desc: '세척 소모품 및 인건비' },{ id: 'ts2', name: '배수필터/고무패킹 교체', period: '48개월 / 1회', price: 64500, desc: '배수필터 + 고무패킹 가격' },{ id: 'ts3', name: '세척조 클리너 제공', period: '48개월 / 1회', price: 7000, desc: '클리너 가격' },{ id: 'ts4', name: '분해 세척(스팀 및 UV 관리)', period: '48개월 / 1회', price: 195000, desc: '서비스 비용' },{ id: 'ts5', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },{ id: 'tsx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용(최저시급 x 셀프케어 시간)' }],
+        trommLight: [{ id: 'tl1', name: '배수필터/고무패킹/내외부 클리닝/스팀 관리/', period: '6개월 / 12회', price: 480000, desc: '세척 소모품 및 인건비' },{ id: 'tl2', name: '배수필터/고무패킹/내외부 클리닝/스팀 관리/', period: '12개월 / 6회', price: 240000, desc: '세척 소모품 및 인건비' },{ id: 'tl3', name: '배수필터교체', period: '24개월 / 1회', price: 15000, desc: '배수필터 가격' },{ id: 'tl4', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },{ id: 'tlx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용(최저시급 x 셀프케어 시간)' }],
+        dryer: [{ id: 'dr1', name: '먼지/배수물통 세척 & 내외부 클리닝', period: '6개월 / 12회', price: 240000, desc: '세척 소모품 및 인건비' },{ id: 'dr2', name: '2중 안심필터 제공', period: '최초 방문 1회', price: 36500, desc: '2중 안심필터 가격' },{ id: 'dr3', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },{ id: 'drx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }],
+        tvCare: [{ id: 'tv1', name: 'QNED 86형/85시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 2060000, desc: '패널 교체 기준가 약 206만원' },{ id: 'tv2', name: 'OLED 83형/G시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 3770000, desc: '패널 교체 기준가 약 377만원' },{ id: 'tv3', name: 'OLED 77형/G시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 2990000, desc: '패널 교체 기준가 약 299만원' },{ id: 'tv4', name: 'OLED 77형/B시리즈(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 2300000, desc: '패널 교체 기준가 약 230만원' },{ id: 'tv5', name: 'OLED 65형(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 1500000, desc: '패널 교체 기준가 약 150만원' },{ id: 'tv6', name: 'OLED 55형(패널 고장 무상A/S)', period: '계약기간 내 고장시', price: 1200000, desc: '패널 교체 기준가 약 120만원' },{ id: 'tv7', name: '70인치 이상 무상 설치지원', period: '계약기간 內 1회', price: 128000, desc: '70형대 벽걸이 설치 기준 (철거비/운송비 제외)' },{ id: 'tv8', name: '80인치 이상 무상 설치지원', period: '계약기간 內 1회', price: 204000, desc: '80형대 벽걸이 설치 기준 (철거비/운송비 제외)' }],
+        massageChair: [{ id: 'mc1', name: '가죽 교체 서비스', period: '12개월 / 6회', price: 278500, desc: '발 가죽 교체(30,000원) x 3회 + 베개, 등, 엉덩이 가죽교체(188,500원) x 1회' },{ id: 'mc2', name: '제품 토탈 클리닝 / 동작 및 제품 성능점검', period: '12개월 / 6회', price: 345600, desc: '케어십 요금 4,800원 x 72개월' },{ id: 'mc3', name: '무상 A/S 제공', period: '계약기간', price: 250000, desc: '안마의자 1회 평균 수리 비용 기준' },{ id: 'mcx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }]
     };
 
-    let checkedState = {};
-    let currentCareTitle = '';
+    let checkedState = {}; let currentCareTitle = '';
 
     function renderPrintSelectedCareTable() {
         const tbody = document.getElementById('printSelectedCareBody');
         const selectedItems = [];
-
         for (const key in checkedState) {
             const item = checkedState[key];
             if (item && item.checked) selectedItems.push(item);
         }
-
-        if (!selectedItems.length) {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">선택된 항목 없음</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = selectedItems.map(item => `
-            <tr>
-                <td class="text-left">${item.category ? item.category + ' : ' : ''}${item.name}</td>
-                <td>${item.period || '-'}</td>
-                <td class="text-right">${item.price === 0 ? '별도 산정' : fn(item.price) + '원'}</td>
-                <td class="text-left">${item.desc || '-'}</td>
-            </tr>
-        `).join('');
+        if (!selectedItems.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">선택된 항목 없음</td></tr>'; return; }
+        tbody.innerHTML = selectedItems.map(item => `<tr><td class="text-left">${item.category ? item.category + ' : ' : ''}${item.name}</td><td>${item.period || '-'}</td><td class="text-right">${item.price === 0 ? '별도 산정' : fn(item.price) + '원'}</td><td class="text-left">${item.desc || '-'}</td></tr>`).join('');
     }
 
     function calculateCareTotal() {
-        let totalVal = 0;
-        const selectedLines = [];
-
+        let totalVal = 0; const selectedLines = [];
         for (const key in checkedState) {
             const item = checkedState[key];
             if (item && item.checked) {
@@ -2402,7 +2120,6 @@
                 selectedLines.push(`• ${prefix}${item.name} ${item.price === 0 ? '(별도 산정)' : '(' + fn(item.price) + '원)'}`);
             }
         }
-
         document.getElementById('selectedItemsList').innerText = selectedLines.length ? selectedLines.join('\n') : '선택된 항목 없음';
         document.getElementById('totalValue').innerText = fn(totalVal);
         renderPrintSelectedCareTable();
@@ -2410,222 +2127,95 @@
 
     function toggleCheck(id, price, name, category, period, desc, cb, row) {
         checkedState[id] = cb.checked ? { checked: true, price: price, name: name, category: category, period: period, desc: desc } : false;
-        if (cb.checked) row.classList.remove('disabled-row');
-        else row.classList.add('disabled-row');
+        if (cb.checked) row.classList.remove('disabled-row'); else row.classList.add('disabled-row');
         calculateCareTotal();
     }
 
     function clearSelectedItems() {
         checkedState = {};
-        document.querySelectorAll('#careTableBody input[type="checkbox"]').forEach(cb => {
-            cb.checked = false;
-            const row = cb.closest('tr');
-            if (row) row.classList.add('disabled-row');
-        });
+        document.querySelectorAll('#careTableBody input[type="checkbox"]').forEach(cb => { cb.checked = false; const row = cb.closest('tr'); if (row) row.classList.add('disabled-row'); });
         calculateCareTotal();
     }
 
     function changeTab(category, titleName, btn) {
         document.querySelectorAll('.tab-btn:not(.video-btn)').forEach(b => b.classList.remove('active'));
         if (btn) btn.classList.add('active');
-
         currentCareTitle = titleName;
         document.getElementById('dashboardTitle').innerText = '✨ 구독 Care 비용';
-
-        const tbody = document.getElementById('careTableBody');
-        tbody.innerHTML = '';
-
+        const tbody = document.getElementById('careTableBody'); tbody.innerHTML = '';
         careData[category].forEach(item => {
             const isChecked = !!(checkedState[item.id] && checkedState[item.id].checked);
             const tr = document.createElement('tr');
             if (!isChecked) tr.classList.add('disabled-row');
-
-            const safeName = String(item.name).replace(/'/g, "\'");
-            const safeTitle = String(titleName).replace(/'/g, "\'");
-            const safePeriod = String(item.period).replace(/'/g, "\\'");
-            const safeDesc = String(item.desc).replace(/'/g, "\\'");
-            tr.innerHTML = `<td class="checkbox-cell"><input type="checkbox" style="width:18px;height:18px; cursor:pointer;" onchange="toggleCheck('${item.id}', ${item.price}, '${safeName}', '${safeTitle}', '${safePeriod}', '${safeDesc}', this, this.parentElement.parentElement)" ${isChecked ? 'checked' : ''}></td>
-                <td class="text-left" style="color:#0056b3; font-weight:bold;">${item.name}</td><td>${item.period}</td>
-                <td class="text-right" style="font-weight:bold;">${item.price === 0 ? "별도 산정" : fn(item.price) + "원"}</td><td class="text-left" style="font-size:11px; color:#555;">${item.desc}</td>`;
+            const safeName = String(item.name).replace(/'/g, "\'"); const safeTitle = String(titleName).replace(/'/g, "\'");
+            const safePeriod = String(item.period).replace(/'/g, "\\'"); const safeDesc = String(item.desc).replace(/'/g, "\\'");
+            tr.innerHTML = `<td class="checkbox-cell"><input type="checkbox" style="width:18px;height:18px; cursor:pointer;" onchange="toggleCheck('${item.id}', ${item.price}, '${safeName}', '${safeTitle}', '${safePeriod}', '${safeDesc}', this, this.parentElement.parentElement)" ${isChecked ? 'checked' : ''}></td><td class="text-left" style="color:#0056b3; font-weight:bold;">${item.name}</td><td>${item.period}</td><td class="text-right" style="font-weight:bold;">${item.price === 0 ? "별도 산정" : fn(item.price) + "원"}</td><td class="text-left" style="font-size:11px; color:#555;">${item.desc}</td>`;
             tbody.appendChild(tr);
         });
     }
 
-    function resetPrintModes() {
-        document.body.classList.remove('print-estimate');
-        document.body.classList.remove('print-care');
-        document.body.classList.remove('print-all');
-    }
-
+    function resetPrintModes() { document.body.classList.remove('print-estimate'); document.body.classList.remove('print-care'); document.body.classList.remove('print-all'); }
     function applyAutoFitZoom() {
-        const panel = document.getElementById('estimatePanel');
-        const table = document.getElementById('quoteTable');
-        if (!panel || !table) return;
-
-        panel.style.zoom = '1'; 
-
-        const A4_MAX_HEIGHT = 980;
-        const printContentHeight = table.offsetHeight + 150;
-
-        if (printContentHeight > A4_MAX_HEIGHT) {
-            const zoomRatio = (A4_MAX_HEIGHT / printContentHeight) * 0.98;
-            panel.style.zoom = zoomRatio;
-        }
+        const panel = document.getElementById('estimatePanel'); const table = document.getElementById('quoteTable');
+        if (!panel || !table) return; panel.style.zoom = '1'; 
+        const A4_MAX_HEIGHT = 980; const printContentHeight = table.offsetHeight + 150;
+        if (printContentHeight > A4_MAX_HEIGHT) { const zoomRatio = (A4_MAX_HEIGHT / printContentHeight) * 0.98; panel.style.zoom = zoomRatio; }
     }
-
-    function removeAutoFitZoom() {
-        const panel = document.getElementById('estimatePanel');
-        if (panel) panel.style.zoom = '1'; 
-    }
+    function removeAutoFitZoom() { const panel = document.getElementById('estimatePanel'); if (panel) panel.style.zoom = '1'; }
 
     function printEstimate() {
-        updateAppMeta();
-        resetPrintModes();
-        document.body.classList.add('print-estimate');
-        
-        applyAutoFitZoom(); 
-
-        setTimeout(() => {
-            window.print();
-            setTimeout(() => {
-                resetPrintModes();
-                removeAutoFitZoom(); 
-            }, 300);
-        }, 50);
+        updateAppMeta(); resetPrintModes(); document.body.classList.add('print-estimate'); applyAutoFitZoom(); 
+        setTimeout(() => { window.print(); setTimeout(() => { resetPrintModes(); removeAutoFitZoom(); }, 300); }, 50);
     }
-
     function printCare() {
-        updateAppMeta();
-        resetPrintModes();
-        document.body.classList.add('print-care');
-        window.print();
-        setTimeout(() => resetPrintModes(), 300);
+        updateAppMeta(); resetPrintModes(); document.body.classList.add('print-care');
+        window.print(); setTimeout(() => resetPrintModes(), 300);
     }
-
     function printAllPage() {
-        updateAppMeta();
-        resetPrintModes();
-        document.body.classList.add('print-all');
-        
-        applyAutoFitZoom(); 
-
-        setTimeout(() => {
-            window.print();
-            setTimeout(() => {
-                resetPrintModes();
-                removeAutoFitZoom(); 
-            }, 300);
-        }, 50);
+        updateAppMeta(); resetPrintModes(); document.body.classList.add('print-all'); applyAutoFitZoom(); 
+        setTimeout(() => { window.print(); setTimeout(() => { resetPrintModes(); removeAutoFitZoom(); }, 300); }, 50);
     }
 
     const cardData = {
-        'shinhan': { 
-            title: '[신한] 더구독케어', 
-            phone: '080-850-0117', 
-            url: 'https://www.shinhancard.com/pconts/html/card/apply/credit/1234346_2207.html?EntryLoc2=4441&btnApp=dp1',
-            benefits: '30만 ↑ 1.7만<br>70만 ↑ 2.7만<br>130만 ↑ 3.0만<br><span style="font-size:11px; color:#888;">*70만/130만 혜택은 7만원 이상 자동이체시 적용</span>'
-        },
-        'woori_plat': { 
-            title: '[우리] 플래티넘', 
-            phone: '1800-0864', 
-            url: 'https://m.wooricard.com/dcmw/yh1/crd/crd01/M1CRD101S02.do?recomNo=104169',
-            benefits: '100만 ↑ 3.5만<br>150만 ↑ 3.9만<br>200만 ↑ 4.2만'
-        },
-        'woori': { 
-            title: '[우리] LG전자', 
-            phone: '1800-4137', 
-            url: 'https://m.wooricard.com/dcmw/yh1/crd/crd01/M1CRD101S02.do?recomNo=102535',
-            benefits: '30만 ↑ 1.8만<br>70만 ↑ 2.2만<br>120만 ↑ 2.4만'
-        },
-        'lotte': { 
-            title: '[롯데] 구독엔로카', 
-            phone: '1577-9469', 
-            url: 'https://m.lottecard.co.kr/spa/card/booth?bId=96417&vtCdKndC=P15666-A15666',
-            benefits: '40만 ↑ 2.0만<br>80만 ↑ 2.3만<br>160만 ↑ 2.6만'
-        },
-        'kb': { 
-            title: '[KB국민] LG전자 KB국민', 
-            phone: '1644-8639', 
-            url: 'https://m.kbcard.com/CRD/DVIEW/MCAMCXHIACRC0002?mainCC=b&allianceCode=04425',
-            benefits: '<b>[프로모션 운영 / 36개월간]</b><br>30만 ↑ 2.0만<br>80만 ↑ 2.5만<br><span style="font-size:11px; color:#888;">* 37회차부터는 기본 혜택(1.0만/1.5만)만 적용</span>'
-        },
-        'hyundai': { 
-            title: '[현대] LG전자 현대', 
-            phone: '1670-0442', 
-            url: 'https://www.hyundaicard.com/cpc/cr/CPCCR0201_01.hc?cardWcd=LGEHC&eventCode=LGR03#cardDetailHash',
-            benefits: '<b>[프로모션 운영 / 60개월간]</b><br>40만 ↑ 0.8만<br>80만 ↑ 1.2만<br>120만 ↑ 1.6만'
-        },
-        'hana': { 
-            title: '[하나] LG전자', 
-            phone: '1800-1264', 
-            url: 'https://m.hanacard.co.kr/MKCDCM1010M.web?CD_PD_SEQ=16959',
-            benefits: '30만 ↑ 1.3만<br>70만 ↑ 1.7만<br>100만 ↑ 2.0만'
-        }
+        'shinhan': { title: '[신한] 더구독케어', phone: '080-850-0117', url: 'https://www.shinhancard.com/pconts/html/card/apply/credit/1234346_2207.html?EntryLoc2=4441&btnApp=dp1', benefits: '30만 ↑ 1.7만<br>70만 ↑ 2.7만<br>130만 ↑ 3.0만<br><span style="font-size:11px; color:#888;">*70만/130만 혜택은 7만원 이상 자동이체시 적용</span>' },
+        'woori_plat': { title: '[우리] 플래티넘', phone: '1800-0864', url: 'https://m.wooricard.com/dcmw/yh1/crd/crd01/M1CRD101S02.do?recomNo=104169', benefits: '100만 ↑ 3.5만<br>150만 ↑ 3.9만<br>200만 ↑ 4.2만' },
+        'woori': { title: '[우리] LG전자', phone: '1800-4137', url: 'https://m.wooricard.com/dcmw/yh1/crd/crd01/M1CRD101S02.do?recomNo=102535', benefits: '30만 ↑ 1.8만<br>70만 ↑ 2.2만<br>120만 ↑ 2.4만' },
+        'lotte': { title: '[롯데] 구독엔로카', phone: '1577-9469', url: 'https://m.lottecard.co.kr/spa/card/booth?bId=96417&vtCdKndC=P15666-A15666', benefits: '40만 ↑ 2.0만<br>80만 ↑ 2.3만<br>160만 ↑ 2.6만' },
+        'kb': { title: '[KB국민] LG전자 KB국민', phone: '1644-8639', url: 'https://m.kbcard.com/CRD/DVIEW/MCAMCXHIACRC0002?mainCC=b&allianceCode=04425', benefits: '<b>[프로모션 운영 / 36개월간]</b><br>30만 ↑ 2.0만<br>80만 ↑ 2.5만<br><span style="font-size:11px; color:#888;">* 37회차부터는 기본 혜택(1.0만/1.5만)만 적용</span>' },
+        'hyundai': { title: '[현대] LG전자 현대', phone: '1670-0442', url: 'https://www.hyundaicard.com/cpc/cr/CPCCR0201_01.hc?cardWcd=LGEHC&eventCode=LGR03#cardDetailHash', benefits: '<b>[프로모션 운영 / 60개월간]</b><br>40만 ↑ 0.8만<br>80만 ↑ 1.2만<br>120만 ↑ 1.6만' },
+        'hana': { title: '[하나] LG전자', phone: '1800-1264', url: 'https://m.hanacard.co.kr/MKCDCM1010M.web?CD_PD_SEQ=16959', benefits: '30만 ↑ 1.3만<br>70만 ↑ 1.7만<br>100만 ↑ 2.0만' }
     };
 
     function openCardQrModal(cardKey) {
-        const data = cardData[cardKey];
-        if(!data) return;
-        
+        const data = cardData[cardKey]; if(!data) return;
         document.getElementById('cardQrModalTitle').innerText = data.title;
         document.getElementById('cardQrModalPhone').innerText = '발급 ARS: ' + data.phone;
         document.getElementById('cardQrModalBenefits').innerHTML = data.benefits;
-        
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&margin=0&data=${encodeURIComponent(data.url)}`;
         document.getElementById('cardQrImage').src = qrUrl;
-        
         document.getElementById('cardQrModalOverlay').style.display = 'flex';
     }
 
     function closeCardQrModal(event) {
-        if (event && event.target !== document.getElementById('cardQrModalOverlay') && event.target.tagName !== 'BUTTON') {
-            return;
-        }
-        document.getElementById('cardQrModalOverlay').style.display = 'none';
-        document.getElementById('cardQrImage').src = ''; 
+        if (event && event.target !== document.getElementById('cardQrModalOverlay') && event.target.tagName !== 'BUTTON') return;
+        document.getElementById('cardQrModalOverlay').style.display = 'none'; document.getElementById('cardQrImage').src = ''; 
     }
 
     window.onload = function() {
-        const firstBtn = document.querySelector('.tab-btn');
-        changeTab('tvCare', 'TV 케어', firstBtn);
-        initSecurity();
-
-        const idInput = document.getElementById('empIdInput');
-        const birthInput = document.getElementById('empBirthInput');
-        
-        if (idInput) {
-            idInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') birthInput.focus();
-            });
-        }
-        if (birthInput) {
-            birthInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') validateAccess();
-            });
-        }
+        const firstBtn = document.querySelector('.tab-btn'); changeTab('tvCare', 'TV 케어', firstBtn); initSecurity();
+        const idInput = document.getElementById('empIdInput'); const birthInput = document.getElementById('empBirthInput');
+        if (idInput) idInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') birthInput.focus(); });
+        if (birthInput) birthInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') validateAccess(); });
     };
 
     let modelRowVisible = true;
-
     function applyModelRowVisibility() {
-        const table = document.getElementById('quoteTable');
-        const btn = document.getElementById('toggleModelBtn');
+        const table = document.getElementById('quoteTable'); const btn = document.getElementById('toggleModelBtn');
         if (!table || !btn) return;
-
-        if (modelRowVisible) {
-            table.classList.remove('hide-model-row');
-            btn.textContent = '모델명 숨기기';
-        } else {
-            table.classList.add('hide-model-row');
-            btn.textContent = '모델명 보이기';
-        }
+        if (modelRowVisible) { table.classList.remove('hide-model-row'); btn.textContent = '모델명 숨기기'; }
+        else { table.classList.add('hide-model-row'); btn.textContent = '모델명 보이기'; }
     }
-
-    function toggleModelRowVisibility() {
-        modelRowVisible = !modelRowVisible;
-        applyModelRowVisibility();
-    }
-
+    function toggleModelRowVisibility() { modelRowVisible = !modelRowVisible; applyModelRowVisibility(); }
 </script>
 </body>
 </html>
