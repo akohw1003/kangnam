@@ -659,7 +659,7 @@
         .print-subscription-notice { display: none; }
 
         /* =========================================================
-           ✨ [웨딩 패키지 AI 진단 배너 & 버튼] 전용 스타일
+           ✨ [웨딩 패키지 AI 진단 배너 & 버튼 & 음영] 전용 스타일
            ========================================================= */
         .wedding-toggle-label {
             margin-left: 10px;
@@ -686,9 +686,22 @@
             height: 16px;
             accent-color: #a50034;
         }
+
         /* 웨딩 체크박스가 꺼져있으면 배너를 완전히 숨김 */
         #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row {
             display: none !important;
+        }
+
+        /* ✨ 웨딩 대상 모델 하이라이트 효과 (배너가 켜졌을 때만) */
+        #quoteTable.show-wedding-banner .wedding-target {
+            background-color: #ffe3e8;
+            color: #a50034;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 800;
+            display: inline-block;
+            margin-bottom: 2px;
+            box-shadow: 0 0 0 1px #ffc1cf inset;
         }
 
         .wedding-banner-row td {
@@ -902,7 +915,6 @@
             <label for="gapBaseSelect"><b>GAP 기준안</b></label>
             <select id="gapBaseSelect" class="gap-select" onchange="handleGapBaseChange()"></select>
             
-            <!-- ✨ 혼수/웨딩 대상 견적 토글 체크박스 -->
             <label class="wedding-toggle-label">
                 <input type="checkbox" id="weddingToggleCb" onchange="toggleWeddingBanner()">
                 💒 혼수/웨딩 견적 진단 켜기
@@ -1446,8 +1458,18 @@
         }
     };
 
-    function cleanModelCode(str) {
-        return String(str || '').replace(/\[구독\]/gi, '').replace(/[^A-Z0-9]/gi, '').toUpperCase();
+    // ✨ 개별 모델명이 웨딩 정책 모델에 해당하는지 판별하는 함수 (원본 훼손 X)
+    function isWeddingTarget(rawLine) {
+        if (!rawLine || rawLine === '-') return false;
+        const checkStr = rawLine.toUpperCase().replace(/\s+/g, ''); // 공백만 제거하고 대조
+        
+        for (const plan of WEDDING_POLICY.fixedPlans) {
+            if (plan.items.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        }
+        if (WEDDING_POLICY.bestPickModels.tv.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        if (WEDDING_POLICY.bestPickModels.fridge.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        if (WEDDING_POLICY.bestPickModels.washer.some(target => checkStr.includes(target.toUpperCase()))) return true;
+        return false;
     }
 
     function analyzeWeddingOption(modelText) {
@@ -1456,8 +1478,8 @@
         const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
         const parsedList = rawLines.map(raw => ({
             raw,
-            clean: cleanModelCode(raw),
-            isSub: /\[구독\]/.test(raw)
+            checkStr: raw.toUpperCase().replace(/\s+/g, ''), // 공백만 제거, [구독] 유지
+            isSub: raw.includes('[구독]')
         }));
 
         let subCount = parsedList.filter(m => m.isSub).length;
@@ -1466,7 +1488,7 @@
         for (const plan of WEDDING_POLICY.fixedPlans) {
             let matchedCount = 0;
             plan.items.forEach(target => {
-                if (parsedList.some(m => m.clean.includes(cleanModelCode(target)))) {
+                if (parsedList.some(m => m.checkStr.includes(target.toUpperCase()))) {
                     matchedCount++;
                 }
             });
@@ -1486,7 +1508,7 @@
                     };
                 }
             } else if (matchedCount === 2) {
-                const missing = plan.items.find(target => !parsedList.some(m => m.clean.includes(cleanModelCode(target))));
+                const missing = plan.items.find(target => !parsedList.some(m => m.checkStr.includes(target.toUpperCase())));
                 return {
                     type: 'tip-model',
                     title: `💡 ${plan.name} 추천`,
@@ -1496,9 +1518,9 @@
         }
 
         // 2. 가변형 (BEST-PICK) 플랜 대조
-        const hasTv = parsedList.some(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.clean.includes(cleanModelCode(target))));
-        const hasFridge = parsedList.some(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.clean.includes(cleanModelCode(target))));
-        const hasWasher = parsedList.some(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.clean.includes(cleanModelCode(target))));
+        const hasTv = parsedList.some(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
+        const hasFridge = parsedList.some(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
+        const hasWasher = parsedList.some(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
 
         if (hasTv && hasFridge && hasWasher) {
             if (subCount >= 1) {
@@ -2395,7 +2417,17 @@
             } else if (def.type === 'model') {
                 html += results.map((item, idx) => {
                     const dominantClass = item.subscriptionDominant ? ' subscription-dominant-cell' : '';
-                    return `<td class="model-cell${dominantClass}">${item.model}</td>`;
+                    
+                    // ✨ 모델명 개별 라인 파싱 및 하이라이트 적용
+                    const modelLines = (item.model || '-').split('\n');
+                    const formattedLines = modelLines.map(line => {
+                        if (line !== '-' && isWeddingTarget(line)) {
+                            return `<span class="wedding-target">${line}</span>`;
+                        }
+                        return line;
+                    }).join('\n');
+
+                    return `<td class="model-cell${dominantClass}">${formattedLines}</td>`;
                 }).join('');
             } else {
                 html += results.map((item, idx) => {
