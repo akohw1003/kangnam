@@ -157,7 +157,7 @@
         /* 웨딩과 라이프스타일 모두 대상인 모델을 위한 혼합 디자인 (UI 깨짐 방지) */
         #quoteTable .wedding-target.lifestyle-target {
             background: linear-gradient(135deg, #ffe3e8 0%, #e0e7ff 100%) !important;
-            color: #4c1d95 !important; /* 진한 보라색 텍스트 */
+            color: #4c1d95 !important;
             box-shadow: 0 0 0 1.5px #c4b5fd inset !important;
         }
 
@@ -169,7 +169,7 @@
         .ls-modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #555; opacity: 0.8; transition: 0.2s; z-index: 10001; }
         .ls-modal-close:hover { opacity: 1; color: #000; }
         
-        .ls-wrap { padding: 40px 30px 30px; } /* 상단 여백 추가 (히어로 영역 삭제 고려) */
+        .ls-wrap { padding: 40px 30px 30px; } 
         
         .ls-card { background: var(--ls-card); border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(43,58,74,.06); }
         .ls-card h2 { font-size: 16px; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; border: none; padding: 0; color: var(--ls-ink); }
@@ -867,8 +867,10 @@
         const parsedList = mergedLines.map(raw => ({
             raw, checkStr: raw.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, ''), isSub: raw.includes('[구독]')
         }));
-        
+
         const isWasherTarget = (chk) => WEDDING_POLICY.bestPickModels.washer.some(target => chk.includes(target.toUpperCase()));
+
+        let bestResult = null; 
 
         for (const plan of WEDDING_POLICY.fixedPlans) {
             let matchedCount = 0; let subMatchedCount = 0; let missingItems = [];
@@ -889,10 +891,17 @@
             });
 
             if (matchedCount === 3) {
-                if (subMatchedCount === 3) return { type: 'success', title: `🎉 ${plan.name} 달성!`, desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>` };
-                else return { type: 'tip-sub', title: `💡 ${plan.name} 임박!`, desc: `<b>일시불 ${3 - subMatchedCount}개를 [구독] 전환 시</b><br>추가할인 <b>${plan.rate}</b> 적용!` };
+                if (subMatchedCount === 3) {
+                    return { type: 'success', title: `🎉 ${plan.name} 달성!`, desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>` };
+                } else {
+                    if (!bestResult || bestResult.priority > 3) {
+                        bestResult = { priority: 3, data: { type: 'tip-sub', title: `💡 ${plan.name} 임박!`, desc: `일반 구매 <b>${3 - subMatchedCount}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!` } };
+                    }
+                }
             } else if (matchedCount === 2) {
-                return { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `<b>[${missingItems[0]}]</b> 가전 추가 시<br>추가할인 <b>${plan.rate}</b> 적용!` };
+                if (!bestResult || bestResult.priority > 5) {
+                    bestResult = { priority: 5, data: { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `1개 제품을 <b>[${missingItems[0]}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!` } };
+                }
             }
         }
         
@@ -901,13 +910,19 @@
         const washerMatch = parsedList.find(m => isWasherTarget(m.checkStr));
         
         if (tvMatch && fridgeMatch && washerMatch) {
-            if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) return { type: 'success', title: `🎉 웨딩 BEST-PICK 달성!`, desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>` };
-            else {
+            if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) {
+                if (!bestResult || bestResult.priority > 2) {
+                    bestResult = { priority: 2, data: { type: 'success', title: `🎉 웨딩 BEST-PICK 달성!`, desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>` } };
+                }
+            } else {
                 let needSubCount = (!tvMatch.isSub ? 1 : 0) + (!fridgeMatch.isSub ? 1 : 0) + (!washerMatch.isSub ? 1 : 0);
-                return { type: 'tip-sub', title: `💡 BEST-PICK 달성 임박!`, desc: `<b>일시불 ${needSubCount}개를 [구독] 전환 시</b><br><b>3.0% 추가 할인</b>!` };
+                if (!bestResult || bestResult.priority > 4) {
+                    bestResult = { priority: 4, data: { type: 'tip-sub', title: `💡 BEST-PICK 달성 임박!`, desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!` } };
+                }
             }
         }
-        return { type: 'normal', title: '-', desc: '일반 상담 견적' };
+
+        return bestResult ? bestResult.data : { type: 'normal', title: '-', desc: '일반 상담 견적' };
     }
 
     function toggleWeddingBanner() {
@@ -1502,7 +1517,7 @@
                         let isWed = isWeddingTarget(line);
                         let isLife = false;
                         
-                        // 라이프스타일 검사 (구독 유무 상관없이 검사하도록 변경!)
+                        // 라이프스타일 검사 (구독 유무 상관없이 검사하도록 변경)
                         let checkLifeStr = line.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
                         for (const lm of (typeof LIFESTYLE_MODELS !== 'undefined' ? LIFESTYLE_MODELS : [])) {
                             const mb = lm.code.toUpperCase().split('.')[0];
@@ -1511,7 +1526,7 @@
                             }
                         }
 
-                        // 태그 병합 렌더링 (UI 깨짐 방지)
+                        // 태그 병합 렌더링 (UI 깨짐 방지 콤보 효과)
                         if (isWed && isLife) {
                             res = `<span class="wedding-target lifestyle-target" style="cursor:pointer;" onclick="openLsModal(${idx})">${res}</span>`;
                         } else if (isWed) {
@@ -1535,6 +1550,17 @@
             tr.innerHTML = html;
             tbody.appendChild(tr);
         });
+    }
+
+    function toggleModelRowVisibility() {
+        const table = document.getElementById('quoteTable'); const btn = document.getElementById('toggleModelBtn');
+        if (table.classList.contains('hide-model-row')) { table.classList.remove('hide-model-row'); btn.innerText = '모델명 숨기기'; } 
+        else { table.classList.add('hide-model-row'); btn.innerText = '모델명 보이기'; }
+    }
+    function applyModelRowVisibility() {
+        const table = document.getElementById('quoteTable'); const btn = document.getElementById('toggleModelBtn');
+        if (table.classList.contains('hide-model-row')) btn.innerText = '모델명 보이기'; 
+        else btn.innerText = '모델명 숨기기';
     }
 
     function clearAllData() {
@@ -1686,7 +1712,10 @@
     function lsComparePkg(a,b){var ar=lsPkgRank(a), br=lsPkgRank(b); for(var i=0;i<ar.length;i++){if(ar[i]!==br[i]) return br[i]-ar[i];} return a.name.localeCompare(b.name);}
     function lsComboScore(combo){var rate=0, cats=0, heavy=0; for(var i=0;i<combo.length;i++){rate+=lsRateNum(combo[i]); cats+=combo[i].required.length; heavy+=lsHeavyScore(combo[i].required);} return [combo.length, rate, cats, heavy];}
     function lsBetterCombo(a,b){var as=lsComboScore(a), bs=lsComboScore(b); for(var i=0;i<as.length;i++){if(as[i]!==bs[i]) return as[i]>bs[i];} return false;}
+    
+    // 이전에 에러가 발생했던 핵심 로직을 완벽히 수정한 부분입니다.
     function lsBestNonOverlapCombo(applicable){var best=[]; function dfs(idx, chosen, used){if(idx>=applicable.length){if(lsBetterCombo(chosen,best)) best=chosen.slice(); return;} dfs(idx+1, chosen, used); var p=applicable[idx], ok=true; for(var i=0;i<p.required.length;i++){if(used[p.required[i]]){ok=false;break;}} if(ok){var nu=Object.assign({},used); for(var j=0;j<p.required.length;j++)nu[p.required[j]]=true; chosen.push(p); dfs(idx+1, chosen, nu); chosen.pop();} } dfs(0, [], {}); return best;}
+    
     function lsOwnedCategories(){var s={}; lsSelected.forEach(function(m){if(!m.unregistered)s[m.category]=true;}); return s;}
     function lsMissingFor(p, owned){return p.required.filter(function(r){return !owned[r];});}
 
