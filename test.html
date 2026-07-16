@@ -112,8 +112,11 @@
         
         #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row.only-wedding { display: none !important; }
         #quoteTable.show-wedding-banner .wedding-target { background-color: #ffe3e8; color: #a50034; padding: 2px 6px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 2px; box-shadow: 0 0 0 1px #ffc1cf inset; }
+        
+        /* 🔥 웨딩 패키지 배경색 밝은 테마로 정상 복구 (연핑크 바탕, 짙은 붉은 글씨) */
         .wedding-banner-row td { padding: 10px 8px !important; vertical-align: middle !important; text-align: center !important; line-height: 1.4 !important; font-size: 12.5px !important; border-bottom: 2px solid #2c3e50 !important; box-shadow: none !important; }
-        .wedding-banner-row td.label-cell { background-color: #8f002e !important; color: #ffffff !important; font-size: 13.5px !important; font-weight: 800 !important; letter-spacing: -0.5px; }
+        .wedding-banner-row td.label-cell { background-color: #ffe3e8 !important; color: #a50034 !important; font-size: 13.5px !important; font-weight: 800 !important; letter-spacing: -0.5px; }
+        
         .banner-title { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; display: block; }
         .banner-desc { font-size: 11.5px; line-height: 1.35; font-weight: 600; }
         .banner-success { background-color: #d1e7dd !important; color: #0f5132 !important; border: 2px solid #198754 !important; }
@@ -699,10 +702,10 @@
         }
     };
 
+    // [수정 완료] 일반 구매, 구독 여부와 관계없이 대상 모델이면 하이라이트 되도록 변경
     function isWeddingTarget(rawLine) {
         if (!rawLine || rawLine === '-') return false;
         
-        // 구독 제약 삭제 완료! [구독] 글씨 유무와 상관없이 웨딩 대상이면 하이라이트 되도록 변경
         const checkStr = rawLine.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
         
         for (const plan of WEDDING_POLICY.fixedPlans) {
@@ -1275,10 +1278,10 @@
         const thead = document.getElementById('quoteThead'); const tbody = document.getElementById('quoteTbody');
         thead.innerHTML = ''; tbody.innerHTML = '';
 
-        // 💒 1. 웨딩 패키지 AI 진단 배너 행
+        // 💒 1. 웨딩 패키지 배너 행 (문구 수정 완료)
         const weddingBannerRow = document.createElement('tr');
         weddingBannerRow.className = 'wedding-banner-row only-wedding';
-        let weddingBannerHtml = `<td class="label-cell" style="width:180px;">✨ 웨딩 패키지<br>AI 진단</td>`;
+        let weddingBannerHtml = `<td class="label-cell" style="width:180px;">✨ 웨딩 패키지</td>`;
         
         results.forEach((item) => {
             const diagnosis = analyzeWeddingOption(item.model);
@@ -1539,7 +1542,6 @@
 
     // =========================================================
     // 🎁 라이프스타일 패키지 진단 기능 (오버라이드)
-    // - 패키지 이름이 표시되도록 기존 함수를 덮어씁니다.
     // =========================================================
     function analyzeLifestyleOption(modelText) {
         try {
@@ -1610,7 +1612,7 @@
 
             const { pkg, missing } = bestMatch;
             const rate = pkg.discVal || 0;
-            const pkgName = pkg.name; // 패키지 이름 추출
+            const pkgName = pkg.name; 
             
             if (missing.length === 0) {
                 return { html: `<div class="lifestyle-badge ok">🎉 [${pkgName}] ${rate}% 할인 달성!</div>` };
