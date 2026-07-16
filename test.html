@@ -175,6 +175,7 @@
             <button type="button" class="btn-print" onclick="printEstimate()">비교표 출력</button>
             <button type="button" class="btn-print btn-print-secondary" onclick="printCare()">구독 Care 출력</button>
             <button type="button" class="btn-print btn-print-secondary" onclick="printAllPage()">전체 출력</button>
+            <!-- 구독 특화 제안서 버튼 삭제됨 -->
             <button type="button" class="btn-print btn-planner" onclick="window.open('https://akohw1003.github.io/kangnam/kyowon3', '_blank')">교원 플래너</button>
         </div>
 
@@ -702,7 +703,7 @@
         }
     };
 
-    // [수정 완료] 일반 구매, 구독 여부와 관계없이 대상 모델이면 하이라이트 되도록 변경
+    // [버그 수정 완료] 웨딩 패키지는 일반구매/구독 상관없이 모델명이 일치하면 하이라이트 되도록 [구독] 필터링 조건문 삭제
     function isWeddingTarget(rawLine) {
         if (!rawLine || rawLine === '-') return false;
         
@@ -781,16 +782,39 @@
         return { type: 'normal', title: '-', desc: '일반 상담 견적' };
     }
 
+    // [기능 통합 완료] 웨딩 - 라이프스타일 패키지 중복 방지 (배타적 토글 로직)
     function toggleWeddingBanner() {
-        const cb = document.getElementById('weddingToggleCb'); const table = document.getElementById('quoteTable');
+        const cb = document.getElementById('weddingToggleCb');
+        const lsCb = document.getElementById('lifestyleToggleCb');
+        const table = document.getElementById('quoteTable');
         if (!cb || !table) return;
-        if (cb.checked) table.classList.add('show-wedding-banner'); else table.classList.remove('show-wedding-banner');
+        
+        if (cb.checked) {
+            table.classList.add('show-wedding-banner');
+            if (lsCb) {
+                lsCb.checked = false;
+                table.classList.remove('show-lifestyle-banner');
+            }
+        } else {
+            table.classList.remove('show-wedding-banner');
+        }
     }
 
     function toggleLifestyleBanner() {
-        const cb = document.getElementById('lifestyleToggleCb'); const table = document.getElementById('quoteTable');
+        const cb = document.getElementById('lifestyleToggleCb');
+        const wdCb = document.getElementById('weddingToggleCb');
+        const table = document.getElementById('quoteTable');
         if (!cb || !table) return;
-        if (cb.checked) table.classList.add('show-lifestyle-banner'); else table.classList.remove('show-lifestyle-banner');
+        
+        if (cb.checked) {
+            table.classList.add('show-lifestyle-banner');
+            if (wdCb) {
+                wdCb.checked = false;
+                table.classList.remove('show-wedding-banner');
+            }
+        } else {
+            table.classList.remove('show-lifestyle-banner');
+        }
     }
 
     function getTodayYmd() {
@@ -1278,7 +1302,7 @@
         const thead = document.getElementById('quoteThead'); const tbody = document.getElementById('quoteTbody');
         thead.innerHTML = ''; tbody.innerHTML = '';
 
-        // 💒 1. 웨딩 패키지 배너 행 (문구 수정 완료)
+        // 💒 1. 웨딩 패키지 AI 진단 배너 행 (문구 및 디자인 복원)
         const weddingBannerRow = document.createElement('tr');
         weddingBannerRow.className = 'wedding-banner-row only-wedding';
         let weddingBannerHtml = `<td class="label-cell" style="width:180px;">✨ 웨딩 패키지</td>`;
@@ -1542,6 +1566,7 @@
 
     // =========================================================
     // 🎁 라이프스타일 패키지 진단 기능 (오버라이드)
+    // - 패키지 이름이 표시되도록 기존 함수를 덮어씁니다.
     // =========================================================
     function analyzeLifestyleOption(modelText) {
         try {
@@ -1612,7 +1637,7 @@
 
             const { pkg, missing } = bestMatch;
             const rate = pkg.discVal || 0;
-            const pkgName = pkg.name; 
+            const pkgName = pkg.name; // 패키지 이름 추출
             
             if (missing.length === 0) {
                 return { html: `<div class="lifestyle-badge ok">🎉 [${pkgName}] ${rate}% 할인 달성!</div>` };
