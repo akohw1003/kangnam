@@ -162,7 +162,7 @@
         .ls-modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #555; opacity: 0.8; transition: 0.2s; z-index: 10001; }
         .ls-modal-close:hover { opacity: 1; color: #000; }
         
-        .ls-wrap { padding: 40px 30px 30px; } /* 상단 여백 추가 (히어로 영역 삭제 고려) */
+        .ls-wrap { padding: 40px 30px 30px; }
         
         .ls-card { background: var(--ls-card); border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(43,58,74,.06); }
         .ls-card h2 { font-size: 16px; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; border: none; padding: 0; color: var(--ls-ink); }
@@ -413,7 +413,6 @@
     </div>
 </div>
 
-<!-- 🎁 라이프스타일 팝업 모달 추가 (심플 버전) -->
 <div id="lsModalOverlay">
     <div class="ls-modal-content">
         <div class="ls-modal-close" onclick="closeLsModal()">&#10005;</div>
@@ -790,23 +789,7 @@
         "18979": { branch: "문정본점", name: "이수민", birth: "890608" },
         "10283": { branch: "문정본점", name: "김우진", birth: "691215" },
         "13838": { branch: "문정본점", name: "신현수", birth: "871207" },
-        "17396": { branch: "문정본점", name: "김영범", birth: "890121" },
-        "16772": { branch: "고덕점", name: "최민우", birth: "860812" },
-        "51735": { branch: "고덕점", name: "김륜영", birth: "920319" },
-        "17802": { branch: "고덕점", name: "김수환", birth: "910311" },
-        "14575": { branch: "고덕점", name: "최노원", birth: "860210" },
-        "18541": { branch: "고덕점", name: "지현근", birth: "830630" },
-        "15472": { branch: "고덕점", name: "김은석", birth: "881021" },
-        "17882": { branch: "고덕점", name: "이석현", birth: "911125" },
-        "17160": { branch: "고덕점", name: "김영국", birth: "870722" },
-        "14569": { branch: "고덕점", name: "이준호", birth: "860921" },
-        "15456": { branch: "고덕점", name: "김새롬", birth: "861112" },
-        "19487": { branch: "이케아 광명점", name: "박봉수", birth: "920508" },
-        "18924": { branch: "이케아 광명점", name: "진승완", birth: "870729" },
-        "16164": { branch: "이케아 광명점", name: "조성현", birth: "870428" },
-        "14601": { branch: "이케아 광명점", name: "윤성기", birth: "801004" },
-        "13222": { branch: "이케아 광명점", name: "안호철", birth: "800902" },
-        "13518": { branch: "이케아 광명점", name: "김한준", birth: "841018" }
+        "17396": { branch: "문정본점", name: "김영범", birth: "890121" }
     };
 
     const APP_CONFIG = {
@@ -1467,8 +1450,8 @@
                     const formattedLines = modelLines.map(line => {
                         let res = line;
                         if (line !== '-' && isWeddingTarget(line)) res = `<span class="wedding-target">${res}</span>`;
-                        // 라이프스타일 팝업을 위한 클릭 트리거
-                        if (line !== '-' && line.includes('[구독]')) {
+                        // [수정 완료] 라이프스타일 대상 모델은 구독 조건 없이 클릭 및 음영 표기 작동
+                        if (line !== '-') {
                              let checkStr = line.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
                              for (const lm of (typeof LIFESTYLE_MODELS !== 'undefined' ? LIFESTYLE_MODELS : [])) {
                                  const mb = lm.code.toUpperCase().split('.')[0];
@@ -1628,7 +1611,8 @@
     }
 
     // =========================================================
-    // 🎁 라이프스타일 패키지 상세 분석 모달 기능 (심플 버전)
+    // 🎁 라이프스타일 패키지 상세 분석 모달 기능 (심플 다이어트 버전)
+    // - 구독 조건 필터링 삭제 반영 완료
     // =========================================================
     let lsSelected = [];
     const LS_PRIORITY = {'TV':1,'DIOS':1,'TROMM':1,'에어컨':2,'김치냉장고':2,'청소로봇':2,'식기세척기':2,'스타일러':2,'전기레인지':3,'공기청정기':3};
@@ -1656,7 +1640,7 @@
         }).join('');
         
         var unreg=lsSelected.filter(function(m){return m.unregistered;}); var alertEl=document.getElementById('lsAlert');
-        if(unreg.length>0){alertEl.className='ls-alert show'; alertEl.innerHTML='<b>&#9888; 미대상 모델 '+unreg.length+'개</b> - 패키지 대상 모델이 아닙니다. 대상 모델로 변경이 필요합니다.'+'<div class="tags">'+unreg.map(function(m){return '<span class="rtag">'+lsEscape(m.code)+'</span>';}).join('')+'</div>';}
+        if(unreg.length>0){alertEl.className='ls-alert show'; alertEl.innerHTML='<b>&#9888; 미대상 모델 '+unreg.length+'개</b> - 패키지 대상 모델이 아닙니다.'+'<div class="tags">'+unreg.map(function(m){return '<span class="rtag">'+lsEscape(m.code)+'</span>';}).join('')+'</div>';}
         else {alertEl.className='ls-alert'; alertEl.innerHTML='';}
         
         var owned=lsOwnedCategories();
@@ -1694,6 +1678,7 @@
     function lsAddUnregistered(code){if(lsAlreadySelected(code))return; lsSelected.push({code:code, category:null, unregistered:true}); renderLsModal();}
     function lsRemoveModel(idx){lsSelected.splice(idx,1); renderLsModal();}
 
+    // [수정 완료] 라이프스타일 팝업 모델 인식 (구독 필터링 해제)
     function openLsModal(optionIndex) {
         lsSelected = [];
         if (latestResults && latestResults[optionIndex]) {
@@ -1708,10 +1693,12 @@
                 }
                 
                 mergedLines.forEach(line => {
-                    if (!line.includes('[구독]')) return; 
+                    let cleanLine = line.replace(/\[구독\]/g, '').trim();
+                    if (!cleanLine) return;
+
                     let checkStr = line.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
                     let matchedCat = null;
-                    let matchedCode = line.replace(/\[구독\]/g, '').trim();
+                    let matchedCode = cleanLine;
                     for (const item of (typeof LIFESTYLE_MODELS !== 'undefined' ? LIFESTYLE_MODELS : [])) {
                         const masterBaseCode = item.code.toUpperCase().split('.')[0];
                         if (checkStr.includes(masterBaseCode) || masterBaseCode.includes(checkStr)) { matchedCat = item.category; matchedCode = item.code; break; }
@@ -1721,7 +1708,7 @@
                         }
                     }
                     if (matchedCat) { lsSelected.push({ code: matchedCode, category: matchedCat, unregistered: false }); } 
-                    else { lsSelected.push({ code: line.replace(/\[구독\]/g, '').trim(), category: null, unregistered: true }); }
+                    else { lsSelected.push({ code: cleanLine, category: null, unregistered: true }); }
                 });
             }
         }
@@ -1775,7 +1762,7 @@
         if (birthInput) birthInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') validateAccess(); });
     });
 
-    // 🎁 라이프스타일 패키지 진단 기능 (클릭 이벤트 적용 오버라이드)
+    // 🎁 라이프스타일 패키지 진단 기능 (클릭 이벤트 및 구독 제약 해제 오버라이드)
     function analyzeLifestyleOption(modelText, optionIndex) {
         try {
             const clickAttr = `onclick="openLsModal(${optionIndex})" style="cursor:pointer;"`;
@@ -1798,7 +1785,7 @@
             const ownedCategories = new Set();
             
             mergedLines.forEach(line => {
-                if (!line.includes('[구독]')) return; 
+                // [수정 완료] 일반 모델도 라이프스타일 패키지로 인식하도록 필터 삭제
                 let checkStr = line.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
                 for (const item of (typeof LIFESTYLE_MODELS !== 'undefined' ? LIFESTYLE_MODELS : [])) {
                     const masterBaseCode = item.code.toUpperCase().split('.')[0];
@@ -1814,7 +1801,7 @@
             });
 
             if (ownedCategories.size === 0) {
-                return { html: '<span style="color:#999; font-size:12px;">구독 가전 없음</span>' };
+                return { html: '<span style="color:#999; font-size:12px;">대상 가전 없음</span>' };
             }
 
             let bestMatch = null;
