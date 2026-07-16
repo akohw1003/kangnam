@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>고객맞춤플래너 통합 대시보드 v2.2 (라이프스타일 상시진단)</title>
+    <title>고객맞춤플래너 통합 대시보드 v2.2 (라이프스타일/웨딩 상시진단)</title>
     
-    <!-- 데이터 분리 스크립트 로드 -->
     <script src="lifestyle_data.js"></script>
     <script src="manager_data.js"></script>
     <script src="care_data.js"></script>
@@ -129,8 +128,9 @@
         #quoteTable:not(.show-wedding-banner) tr.wedding-banner-row.only-wedding { display: none !important; }
         #quoteTable.show-wedding-banner .wedding-target { background-color: #ffe3e8; color: #a50034; padding: 2px 6px; border-radius: 4px; font-weight: 800; display: inline-block; margin-bottom: 2px; box-shadow: 0 0 0 1px #ffc1cf inset; }
         
-        .wedding-banner-row td { padding: 10px 8px !important; vertical-align: middle !important; text-align: center !important; line-height: 1.4 !important; font-size: 12.5px !important; border-bottom: 2px solid #2c3e50 !important; box-shadow: none !important; }
-        .wedding-banner-row td.label-cell { background-color: #ffe3e8 !important; color: #a50034 !important; font-size: 13.5px !important; font-weight: 800 !important; letter-spacing: -0.5px; }
+        .wedding-banner-row td { padding: 10px 8px !important; vertical-align: middle !important; text-align: center !important; line-height: 1.4 !important; font-size: 12.5px !important; border-bottom: 2px solid #2c3e50 !important; box-shadow: none !important; transition: 0.2s; }
+        .wedding-banner-row td:hover { filter: brightness(0.96); }
+        .wedding-banner-row td.label-cell { background-color: #ffe3e8 !important; color: #a50034 !important; font-size: 13.5px !important; font-weight: 800 !important; letter-spacing: -0.5px; pointer-events: none; filter: none; }
         
         .banner-title { font-size: 13.5px; font-weight: 800; margin-bottom: 3px; display: block; }
         .banner-desc { font-size: 11.5px; line-height: 1.35; font-weight: 600; }
@@ -161,15 +161,14 @@
         .lifestyle-tip:hover { color: #003d82; }
 
         /* =========================================================
-           🎁 [상세 분석 팝업 (Modal)] 전용 디자인 CSS 통합 (간소화)
+           🎁 [상세 분석 팝업 (Modal)] 전용 디자인 CSS 통합 (공통사용)
            ========================================================= */
-        #lsModalOverlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+        #lsModalOverlay, #wdModalOverlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
         .ls-modal-content { background: var(--ls-bg); width: 100%; max-width: 1160px; max-height: 95vh; overflow-y: auto; border-radius: 20px; padding: 0; position: relative; font-family: 'Malgun Gothic', sans-serif; color: var(--ls-ink); text-align: left; }
         .ls-modal-close { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #555; opacity: 0.8; transition: 0.2s; z-index: 10001; }
         .ls-modal-close:hover { opacity: 1; color: #000; }
         
-        .ls-wrap { padding: 40px 30px 30px; } /* 상단 여백 추가 (히어로 영역 삭제 고려) */
-        
+        .ls-wrap { padding: 40px 30px 30px; }
         .ls-card { background: var(--ls-card); border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 16px rgba(43,58,74,.06); }
         .ls-card h2 { font-size: 16px; margin: 0 0 14px; display: flex; align-items: center; gap: 8px; border: none; padding: 0; color: var(--ls-ink); }
         .ls-search-box { position: relative; }
@@ -208,6 +207,7 @@
         .ls-legend .right { margin-left: auto; display: flex; align-items: center; flex-wrap: wrap; gap: 16px; }
         .ls-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
         .ls-dot.g { background: var(--ls-ok); } .ls-dot.o { background: var(--ls-near); } .ls-dot.c { background: var(--ls-coral); } .ls-dot.gy { background: var(--ls-off); } .ls-dot.r { background: var(--ls-red); }
+        .ls-dot.b { background: #0d6efd; } /* 블루(구독전환 필요) 뱃지용 */
         
         .ls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
         .ls-pcard { background: #fbfcfe; border: 1px solid #eef1f6; border-radius: 16px; padding: 16px 17px; border-top: 5px solid var(--ls-off); position: relative; }
@@ -217,6 +217,7 @@
         .ls-pcard.off { border-top-color: var(--ls-off); }
         .ls-pcard.combo { border: 2px solid var(--ls-red); box-shadow: 0 0 0 3px rgba(224,82,107,.08); }
         .ls-pcard.reco { box-shadow: 0 0 0 3px rgba(91,124,250,.12); }
+        .ls-pcard.blue { border-top-color: #0d6efd; box-shadow: 0 0 0 3px rgba(13,110,253,.12); }
         .ls-pc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
         .ls-pname { font-weight: bold; font-size: 15px; line-height: 1.3; }
         .ls-pfull { font-size: 11px; color: var(--ls-sub); margin-top: 3px; line-height: 1.3; }
@@ -230,12 +231,13 @@
         .ls-badge.off { background: #dbe2ec; color: var(--ls-sub); }
         .ls-badge.reco { background: var(--ls-brand); color: #fff; }
         .ls-badge.combo { background: #fff; color: var(--ls-red); border: 1px solid var(--ls-red-bd); }
+        .ls-badge.blue { background: #0d6efd; color: #fff; }
         .ls-err { color: #e05a5a; font-size: 14px; }
 
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .print-toolbar, .paste-area-container, .tab-container, .btn-calc, .btn-clear, .btn-clear-select, #videoPanel, #installGuidePanel, #qrPanel, #cardQrModalOverlay, .security-overlay, .gap-toolbar, .app-meta { display: none !important; }
-            #lsModalOverlay { display: none !important; }
+            #lsModalOverlay, #wdModalOverlay { display: none !important; }
             body { padding: 0; margin: 0; padding-bottom: 40px !important; }
             .container { display: block !important; max-width: none; margin: 0; } 
             .panel { box-shadow: none; border: none; padding: 0; margin-bottom: 20px; page-break-inside: avoid; }
@@ -419,7 +421,6 @@
     </div>
 </div>
 
-<!-- 🎁 라이프스타일 팝업 모달 추가 (심플 버전) -->
 <div id="lsModalOverlay">
     <div class="ls-modal-content">
         <div class="ls-modal-close" onclick="closeLsModal()">&#10005;</div>
@@ -454,6 +455,29 @@
                     </div>
                 </div>
                 <div id="lsPackages"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="wdModalOverlay">
+    <div class="ls-modal-content">
+        <div class="ls-modal-close" onclick="closeWdModal()">&#10005;</div>
+        <div class="ls-wrap">
+            <div class="ls-card" style="margin-top: 20px;">
+                <h2 style="color: #a50034;">&#128141; 인식된 웨딩 대상 모델</h2>
+                <div id="wdChips" class="ls-chips"></div>
+            </div>
+            <div class="ls-card">
+                <h2 style="color: #a50034;">&#9989; 웨딩 패키지 적용 현황</h2>
+                <div class="ls-legend">
+                    <div class="grp">
+                        <div class="li"><span class="ls-dot g"></span> 구독 완료</div>
+                        <div class="li"><span class="ls-dot b"></span> 일반 구매 (구독 전환 시 혜택)</div>
+                        <div class="li"><span class="ls-dot gy"></span> 필요 제품</div>
+                    </div>
+                </div>
+                <div id="wdPackages"></div>
             </div>
         </div>
     </div>
@@ -517,8 +541,9 @@
         return false;
     }
 
+    // 💡 웨딩 배너 분석 로직 고도화 (단 1개 모델이라도 팁/상세분석 버튼 노출되도록 개선)
     function analyzeWeddingOption(modelText) {
-        if (!modelText || modelText === '-') return { type: 'normal', title: '-', desc: '일반 상담 견적' };
+        if (!modelText || modelText === '-') return { type: 'normal', title: '-', desc: '일반 상담 견적', hasTarget: false };
         const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
         const mergedLines = [];
         for (const line of rawLines) {
@@ -529,6 +554,9 @@
         const parsedList = mergedLines.map(raw => ({
             raw, checkStr: raw.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, ''), isSub: raw.includes('[구독]')
         }));
+        
+        let hasTarget = parsedList.some(m => isWeddingTarget(m.raw));
+
         for (const plan of WEDDING_POLICY.fixedPlans) {
             let matchedCount = 0; let subMatchedCount = 0;
             plan.items.forEach(target => {
@@ -536,24 +564,35 @@
                 if (found) { matchedCount++; if (found.isSub) subMatchedCount++; }
             });
             if (matchedCount === 3) {
-                if (subMatchedCount === 3) return { type: 'success', title: `🎉 ${plan.name} 달성!`, desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>` };
-                else return { type: 'tip-sub', title: `💡 ${plan.name} 임박!`, desc: `일반 구매 <b>${3 - subMatchedCount}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!` };
+                if (subMatchedCount === 3) return { type: 'success', title: `🎉 ${plan.name} 달성!`, desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>`, hasTarget: true };
+                else return { type: 'tip-sub', title: `💡 ${plan.name} 임박!`, desc: `일반 구매 <b>${3 - subMatchedCount}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!`, hasTarget: true };
             } else if (matchedCount === 2) {
                 const missing = plan.items.find(target => !parsedList.some(m => m.checkStr.includes(target.toUpperCase())));
-                return { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!` };
+                return { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!`, hasTarget: true };
             }
         }
         const tvMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
         const fridgeMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
         const washerMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
-        if (tvMatch && fridgeMatch && washerMatch) {
-            if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) return { type: 'success', title: `🎉 웨딩 BEST-PICK 달성!`, desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>` };
+        
+        let bestMatchedCount = (tvMatch ? 1 : 0) + (fridgeMatch ? 1 : 0) + (washerMatch ? 1 : 0);
+        
+        if (bestMatchedCount === 3) {
+            if (tvMatch.isSub && fridgeMatch.isSub && washerMatch.isSub) return { type: 'success', title: `🎉 웨딩 BEST-PICK 달성!`, desc: `추가할인 <b>3.0%</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(가변형 희망조합 혜택)</span>`, hasTarget: true };
             else {
                 let needSubCount = (!tvMatch.isSub ? 1 : 0) + (!fridgeMatch.isSub ? 1 : 0) + (!washerMatch.isSub ? 1 : 0);
-                return { type: 'tip-sub', title: `💡 BEST-PICK 달성 임박!`, desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!` };
+                return { type: 'tip-sub', title: `💡 BEST-PICK 달성 임박!`, desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!`, hasTarget: true };
             }
+        } else if (bestMatchedCount === 2) {
+            return { type: 'tip-model', title: `💡 BEST-PICK 추천`, desc: `1개 대상품목을 <b>[구독]</b>으로<br>추가 시 추가할인 <b>3.0%</b> 적용!`, hasTarget: true };
         }
-        return { type: 'normal', title: '-', desc: '일반 상담 견적' };
+
+        // 대상 모델이 1개라도 있으면 배너 및 팝업 버튼 활성화
+        if (hasTarget) {
+            return { type: 'tip-model', title: `💡 웨딩 패키지 대상 포함`, desc: `웨딩 대상 모델이 발견되었습니다.<br>조합 조건을 확인해 보세요!`, hasTarget: true };
+        }
+
+        return { type: 'normal', title: '-', desc: '일반 상담 견적', hasTarget: false };
     }
 
     function toggleWeddingBanner() {
@@ -1050,21 +1089,30 @@
         const thead = document.getElementById('quoteThead'); const tbody = document.getElementById('quoteTbody');
         thead.innerHTML = ''; tbody.innerHTML = '';
 
-        // 💒 1. 웨딩 패키지 배너 행
+        // 💒 1. 웨딩 패키지 배너 행 (버튼 항상 보장 로직 포함)
         const weddingBannerRow = document.createElement('tr');
         weddingBannerRow.className = 'wedding-banner-row only-wedding';
         let weddingBannerHtml = `<td class="label-cell" style="width:180px;">✨ 웨딩 패키지</td>`;
         
-        results.forEach((item) => {
+        results.forEach((item, idx) => {
             const diagnosis = analyzeWeddingOption(item.model);
             let cellClass = 'banner-normal';
-            if (diagnosis.type === 'success') cellClass = 'banner-success';
-            else if (diagnosis.type === 'tip-sub') cellClass = 'banner-tip-sub';
-            else if (diagnosis.type === 'tip-model') cellClass = 'banner-tip-model';
+            let detailBtnHtml = '';
+            let clickAttrWd = '';
 
-            weddingBannerHtml += `<td class="${cellClass}">
+            if (diagnosis.hasTarget) {
+                if (diagnosis.type === 'success') cellClass = 'banner-success';
+                else if (diagnosis.type === 'tip-sub') cellClass = 'banner-tip-sub';
+                else if (diagnosis.type === 'tip-model') cellClass = 'banner-tip-model';
+                
+                clickAttrWd = `onclick="openWdModal(${idx})" style="cursor:pointer;"`;
+                detailBtnHtml = `<div class="lifestyle-tip" style="margin-top: 5px;">🔍 상세 분석 보기</div>`;
+            }
+
+            weddingBannerHtml += `<td class="${cellClass}" ${clickAttrWd}>
                 <span class="banner-title">${diagnosis.title}</span>
                 <span class="banner-desc">${diagnosis.desc}</span>
+                ${detailBtnHtml}
             </td>`;
         });
         weddingBannerRow.innerHTML = weddingBannerHtml;
@@ -1146,7 +1194,7 @@
                         
                         // 1. 웨딩 패키지 대상 음영 처리 (구독 상관없음)
                         if (line !== '-' && isWeddingTarget(line)) {
-                            res = `<span class="wedding-target">${res}</span>`;
+                            res = `<span class="wedding-target" style="cursor:pointer;" onclick="openWdModal(${idx})">${res}</span>`;
                         }
                         
                         // 2. 라이프스타일 패키지 대상 음영 처리 (구독 상관없음)
@@ -1385,6 +1433,163 @@
     }
 
     function closeLsModal() { document.getElementById('lsModalOverlay').style.display = 'none'; }
+
+    // =========================================================
+    // 💍 웨딩 패키지 상세 분석 모달 기능
+    // =========================================================
+    let wdSelected = [];
+
+    function openWdModal(optionIndex) {
+        wdSelected = [];
+        if (latestResults && latestResults[optionIndex]) {
+            const modelText = latestResults[optionIndex].model;
+            if (modelText && modelText !== '-') {
+                const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
+                const mergedLines = [];
+                for (const line of rawLines) {
+                    if (line.includes('[구독]') && line.replace(/\[구독\]/g, '').trim() === '') {
+                        if (mergedLines.length > 0) mergedLines[mergedLines.length - 1] += ' [구독]';
+                    } else { mergedLines.push(line); }
+                }
+
+                mergedLines.forEach(line => {
+                    let isSub = line.includes('[구독]');
+                    let checkStr = line.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
+                    let rawCode = line.replace(/\[구독\]/g, '').trim();
+
+                    if (isWeddingTarget(line)) {
+                        wdSelected.push({ code: rawCode, isSub: isSub, checkStr: checkStr });
+                    }
+                });
+            }
+        }
+        document.getElementById('wdModalOverlay').style.display = 'flex';
+        renderWdModal();
+    }
+
+    function closeWdModal() { document.getElementById('wdModalOverlay').style.display = 'none'; }
+
+    function renderWdModal() {
+        // 1. 칩 렌더링 (구독 여부에 따른 시각적 구분)
+        const chipsHtml = wdSelected.map((m, i) => {
+            if (m.isSub) {
+                return `<div class="ls-chip" style="background:#e9fbf3; border:1px solid #bff0da; color:#1f6b2a;"><b>[구독]</b> ${lsEscape(m.code)}</div>`;
+            } else {
+                return `<div class="ls-chip" style="background:#eef5ff; border:1px solid #b6d4fe; color:#0d6efd;"><b>[일반]</b> ${lsEscape(m.code)}</div>`;
+            }
+        }).join('') || '<span style="color:#999; font-size:13px;">인식된 웨딩 대상 모델이 없습니다.</span>';
+        
+        document.getElementById('wdChips').innerHTML = chipsHtml;
+
+        // 2. 패키지 플랜 렌더링
+        let cardsHtml = '';
+
+        if (typeof WEDDING_POLICY !== 'undefined') {
+            // 고정 플랜 렌더링
+            WEDDING_POLICY.fixedPlans.forEach(plan => {
+                let matchedCount = 0;
+                let subMatchedCount = 0;
+                
+                let reqTags = plan.items.map(target => {
+                    const found = wdSelected.find(m => m.checkStr.includes(target.toUpperCase()));
+                    if (found) {
+                        matchedCount++;
+                        if (found.isSub) {
+                            subMatchedCount++;
+                            return `<span class="ls-tag sm on">&#10003; ${target}</span>`; 
+                        } else {
+                            // 구독이 아닌 일반 구매인 경우 (파란색 강조)
+                            return `<span class="ls-tag sm" style="background:#eef5ff; color:#0d6efd; border-color:#b6d4fe;">! ${target} (일반)</span>`; 
+                        }
+                    }
+                    return `<span class="ls-tag sm off">${target}</span>`; 
+                }).join(' ');
+
+                let statusClass = 'off';
+                let borderClass = 'off';
+                let badgeHtml = '';
+
+                if (matchedCount === 3) {
+                    if (subMatchedCount === 3) {
+                        statusClass = 'ok'; borderClass = 'ok';
+                        badgeHtml = '<span class="ls-badge ok">🎉 조건 달성</span>';
+                    } else {
+                        statusClass = 'blue'; borderClass = 'blue';
+                        badgeHtml = `<span class="ls-badge blue">구독 전환 ${3 - subMatchedCount}개 필요</span>`;
+                    }
+                } else if (matchedCount === 2) {
+                    statusClass = 'coral'; borderClass = 'coral';
+                    badgeHtml = '<span class="ls-badge coral">1개 모델 추가 필요</span>';
+                } else {
+                    badgeHtml = `<span class="ls-badge off">${3 - matchedCount}개 모델 부족</span>`;
+                }
+
+                cardsHtml += `<div class="ls-pcard ${borderClass}">
+                    <div class="ls-pc-top">
+                        <div>
+                            <div class="ls-pname">${plan.name}</div>
+                            <div class="ls-pfull" style="color:#a50034; font-weight:bold;">추가할인 ${plan.rate}</div>
+                        </div>
+                        <div class="ls-badges">${badgeHtml}</div>
+                    </div>
+                    <div class="ls-pc-req-label" style="margin-top:12px;">필요 대상 모델</div>
+                    <div class="ls-cats" style="gap:6px">${reqTags}</div>
+                </div>`;
+            });
+
+            // BEST-PICK 플랜 렌더링
+            let bestTv = wdSelected.find(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
+            let bestFridge = wdSelected.find(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
+            let bestWasher = wdSelected.find(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
+
+            let bestMatchedCount = (bestTv ? 1 : 0) + (bestFridge ? 1 : 0) + (bestWasher ? 1 : 0);
+            let bestSubCount = (bestTv && bestTv.isSub ? 1 : 0) + (bestFridge && bestFridge.isSub ? 1 : 0) + (bestWasher && bestWasher.isSub ? 1 : 0);
+
+            const renderBestTag = (matchObj, label) => {
+                if (matchObj) {
+                    if (matchObj.isSub) return `<span class="ls-tag sm on">&#10003; ${label}</span>`;
+                    return `<span class="ls-tag sm" style="background:#eef5ff; color:#0d6efd; border-color:#b6d4fe;">! ${label} (일반)</span>`;
+                }
+                return `<span class="ls-tag sm off">${label}</span>`;
+            };
+
+            let bestTags = renderBestTag(bestTv, 'TV 대상모델') + ' ' + 
+                           renderBestTag(bestFridge, '냉장고 대상모델') + ' ' + 
+                           renderBestTag(bestWasher, '세탁기 대상모델');
+
+            let bestStatusClass = 'off';
+            let bestBadgeHtml = '';
+
+            if (bestMatchedCount === 3) {
+                if (bestSubCount === 3) {
+                    bestStatusClass = 'ok';
+                    bestBadgeHtml = '<span class="ls-badge ok">🎉 조건 달성</span>';
+                } else {
+                    bestStatusClass = 'blue';
+                    bestBadgeHtml = `<span class="ls-badge blue">구독 전환 ${3 - bestSubCount}개 필요</span>`;
+                }
+            } else if (bestMatchedCount === 2) {
+                bestStatusClass = 'coral';
+                bestBadgeHtml = '<span class="ls-badge coral">1개 모델 추가 필요</span>';
+            } else {
+                bestBadgeHtml = `<span class="ls-badge off">${3 - bestMatchedCount}개 모델 부족</span>`;
+            }
+
+            cardsHtml += `<div class="ls-pcard ${bestStatusClass}">
+                <div class="ls-pc-top">
+                    <div>
+                        <div class="ls-pname">웨딩 BEST-PICK</div>
+                        <div class="ls-pfull" style="color:#a50034; font-weight:bold;">추가할인 3.0% (희망조합)</div>
+                    </div>
+                    <div class="ls-badges">${bestBadgeHtml}</div>
+                </div>
+                <div class="ls-pc-req-label" style="margin-top:12px;">필요 제품군 (각 1개 이상)</div>
+                <div class="ls-cats" style="gap:6px">${bestTags}</div>
+            </div>`;
+        }
+
+        document.getElementById('wdPackages').innerHTML = `<div class="ls-grid">${cardsHtml}</div>`;
+    }
 
     // 팝업 내부 이벤트 리스너 등록
     window.addEventListener('DOMContentLoaded', function() {
