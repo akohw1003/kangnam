@@ -1143,18 +1143,17 @@
                     const modelLines = (item.model || '-').split('\n');
                     const formattedLines = modelLines.map(line => {
                         let res = line;
-                        if (line !== '-' && isWeddingTarget(line)) res = `<span class="wedding-target">${res}</span>`;
-                        // 라이프스타일 팝업을 위한 클릭 트리거
-                        if (line !== '-' && line.includes('[구독]')) {
-                             let checkStr = line.toUpperCase().split('.')[0].replace(/\s+/g, '').replace(/\[구독\]/g, '');
-                             for (const lm of (typeof LIFESTYLE_MODELS !== 'undefined' ? LIFESTYLE_MODELS : [])) {
-                                 const mb = lm.code.toUpperCase().split('.')[0];
-                                 if (checkStr.includes(mb) || mb.includes(checkStr) || (mb.startsWith('SC') && checkStr.startsWith('S') && (checkStr.includes(mb.replace(/^SC/,'S')) || mb.replace(/^SC/,'S').includes(checkStr)))) {
-                                     res = `<span class="lifestyle-target" style="cursor:pointer;" onclick="openLsModal(${idx})">${res}</span>`;
-                                     break;
-                                 }
-                             }
+                        
+                        // 1. 웨딩 패키지 대상 음영 처리 (구독 상관없음)
+                        if (line !== '-' && isWeddingTarget(line)) {
+                            res = `<span class="wedding-target">${res}</span>`;
                         }
+                        
+                        // 2. 라이프스타일 패키지 대상 음영 처리 (구독 상관없음)
+                        if (line !== '-' && typeof isLifestyleTarget === 'function' && isLifestyleTarget(line)) {
+                            res = `<span class="lifestyle-target" style="cursor:pointer;" onclick="openLsModal(${idx})">${res}</span>`;
+                        }
+                        
                         return res;
                     }).join('\n');
 
