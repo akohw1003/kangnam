@@ -525,7 +525,7 @@
 <script>
     const APP_CONFIG = {
         version: 'v2.2', 
-        expiryDate: '2026-07-20', 
+        expiryDate: '2026-07-31', 
         notice: '내부전용 / 지점배포용 / 웨딩 및 라이프스타일 진단 탑재'
     };
 
@@ -641,6 +641,14 @@
             if (MANAGER_DATA[empId].birth === empBirth || (MANAGER_DATA[empId].birth === "000000" && empBirth === "000000")) {
                 document.getElementById('securityOverlay').style.display = 'none'; document.getElementById('mainAppContainer').style.display = 'flex'; 
                 sessionStorage.setItem('planner_emp_id', empId); error.innerText = ''; updateAppMeta(); 
+                
+                try {
+                    const mgr = MANAGER_DATA[empId];
+                    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxJcHrY01hb4m_JFEy8fOaoO8ue3ot0-J6iTHiMPoRiftpGSUpwKeQzWIwwsAT9pX9m2w/exec'; 
+                    const logUrl = `${scriptUrl}?branch=${encodeURIComponent(mgr.branch)}&empId=${encodeURIComponent(empId)}&name=${encodeURIComponent(mgr.name)}`;
+                    fetch(logUrl, { method: 'GET', mode: 'no-cors' }).catch(e => console.log('Log error', e));
+                } catch (err) {}
+                
             } else { error.innerText = '생년월일이 일치하지 않습니다.'; birthInput.focus(); birthInput.select(); }
         } else { error.innerText = '등록되지 않은 사번입니다.'; idInput.focus(); idInput.select(); }
     }
