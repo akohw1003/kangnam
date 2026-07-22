@@ -107,6 +107,16 @@ const careData = {
         { id: 'wt5', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
         { id: 'wtx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
     ],
+    washTowerDirect: [
+        { id: 'wtd1', name: '드럼 & 스팀 케어', period: '12개월 / 홀수 년 차', price: 240000, desc: '12개월에 1번(홀수 년 차)' },
+        { id: 'wtd2', name: '직수/고압세척 & 스팀/UV케어', period: '12개월 / 짝수 년 차', price: 480000, desc: '12개월에 1번(짝수 년 차) NEW' },
+        { id: 'wtd3', name: '세탁기 관리제 사용', period: '매 방문 시 제공', price: 144000, desc: '소모품 정기 교체' },
+        { id: 'wtd4', name: '2중 안심필터 교체', period: '최초 방문 시 1회', price: 38300, desc: '최초 방문 시 제공' },
+        { id: 'wtd5', name: '배수필터 교체', period: '12개월 / 6회', price: 15600, desc: '교체 주기 : 1년' },
+        { id: 'wtd6', name: '이사 시 철거 및 재설치', period: '계약 기간 내 1회', price: 231000, desc: '계약 기간 내 1회 지원' },
+        { id: 'wtd7', name: '무상 A/S 제공', period: '계약 기간 동안', price: 110000, desc: '세탁기 평균 수리비용 기준' },
+        { id: 'wtdx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
+    ],
     washCombo: [
         { id: 'wc1', name: '센서/패킹/필터 세척 & 드럼/스팀케어', period: '6개월 / 12회', price: 390000, desc: '회당 65,000원 x 6회' },
         { id: 'wc2', name: '배수필터 교체 서비스', period: '24개월 / 3회', price: 15600, desc: '회당 5,200원 x 3회' },
