@@ -112,7 +112,7 @@ const careData = {
         { id: 'wtd2', name: '직수/고압세척 & 스팀/UV케어', period: '12개월 / 짝수 년 차', price: 480000, desc: '회당 160,000원 x 3회' },
         { id: 'wtd3', name: '세탁기 관리제 사용', period: '매 방문 시 제공', price: 144000, desc: '회당 24,000원 x 6회' },
         { id: 'wtd4', name: '2중 안심필터 교체', period: '최초 방문 시 1회', price: 38300, desc: '2중 안심필터 가격' },
-        { id: 'wtd5', name: '배수펌프 교체', period: '12개월 / 6회', price: 15600, desc: '회당 2,600원 x 6회' },
+        { id: 'wtd5', name: '배수필터 교체', period: '12개월 / 6회', price: 15600, desc: '회당 2,600원 x 6회' },
         { id: 'wtd6', name: '설치/철거 무상 제공', period: '계약 기간 내 1회', price: 231000, desc: '무상 철거 및 재설치 총합' },
         { id: 'wtd7', name: '무상 A/S 제공', period: '계약기간', price: 110000, desc: '세탁기 평균 수리비용 기준' },
         { id: 'wtdx', name: '위생 관리, 시간 절약 등', period: '-', price: 0, desc: '기회비용 (최저시급 x 케어 시간)' }
