@@ -413,7 +413,6 @@
                 <button class="tab-btn" onclick="openCardQrModal('shinhan')">[신한] 더구독케어</button>
                 <button class="tab-btn" onclick="openCardQrModal('woori_plat')">[우리] 플래티넘</button>
                 <button class="tab-btn" onclick="openCardQrModal('woori')">[우리] LG전자</button>
-                <button class="tab-btn" onclick="openCardQrModal('lotte')">[롯데] 구독엔로카</button>
                 <button class="tab-btn" onclick="openCardQrModal('kb')">[KB] LG전자</button>
                 <button class="tab-btn" onclick="openCardQrModal('hyundai')">[현대] LG전자</button>
                 <button class="tab-btn" onclick="openCardQrModal('hana')">[하나] LG전자</button>
@@ -526,9 +525,11 @@
 <script>
     const APP_CONFIG = {
         version: 'v2.2', 
-        expiryDate: '2026-07-31', 
+        expiryDate: '2026-12-31', 
         notice: '내부전용 / 지점배포용 / 웨딩 및 라이프스타일 진단 탑재'
     };
+
+    let kbCardStates = {}; // KB카드 체크박스 상태 관리용 객체 추가
 
     function isWeddingTarget(rawLine) {
         if (!rawLine || rawLine === '-') return false;
@@ -542,7 +543,7 @@
         return false;
     }
 
-    // 💡 웨딩 배너 분석 로직 고도화 (단 1개 모델이라도 팁/상세분석 버튼 노출되도록 개선)
+    // 💡 웨딩 배너 분석 우선순위 교정 완료
     function analyzeWeddingOption(modelText) {
         if (!modelText || modelText === '-') return { type: 'normal', title: '-', desc: '일반 상담 견적', hasTarget: false };
         const rawLines = String(modelText).split('\n').map(m => m.trim()).filter(Boolean);
@@ -558,6 +559,7 @@
         
         let hasTarget = parsedList.some(m => isWeddingTarget(m.raw));
 
+        // 1. 고정 플랜 달성 검사 (3개 일치)
         for (const plan of WEDDING_POLICY.fixedPlans) {
             let matchedCount = 0; let subMatchedCount = 0;
             plan.items.forEach(target => {
@@ -567,11 +569,10 @@
             if (matchedCount === 3) {
                 if (subMatchedCount === 3) return { type: 'success', title: `🎉 ${plan.name} 달성!`, desc: `추가할인 <b>${plan.rate}</b> 반영 필수!<br><span style="font-size:11px; font-weight:normal;">(웨딩 기본 + ${plan.rate} + 지점혜택)</span>`, hasTarget: true };
                 else return { type: 'tip-sub', title: `💡 ${plan.name} 임박!`, desc: `일반 구매 <b>${3 - subMatchedCount}개를 [구독]</b>으로<br>전환 시 추가할인 <b>${plan.rate}</b> 적용!`, hasTarget: true };
-            } else if (matchedCount === 2) {
-                const missing = plan.items.find(target => !parsedList.some(m => m.checkStr.includes(target.toUpperCase())));
-                return { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!`, hasTarget: true };
             }
         }
+
+        // 2. BEST-PICK 달성 검사 (3개 일치)
         const tvMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.tv.some(target => m.checkStr.includes(target.toUpperCase())));
         const fridgeMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.fridge.some(target => m.checkStr.includes(target.toUpperCase())));
         const washerMatch = parsedList.find(m => WEDDING_POLICY.bestPickModels.washer.some(target => m.checkStr.includes(target.toUpperCase())));
@@ -584,11 +585,25 @@
                 let needSubCount = (!tvMatch.isSub ? 1 : 0) + (!fridgeMatch.isSub ? 1 : 0) + (!washerMatch.isSub ? 1 : 0);
                 return { type: 'tip-sub', title: `💡 BEST-PICK 달성 임박!`, desc: `일반 구매 <b>${needSubCount}개를<br>[구독]</b>으로 전환 시 <b>3.0% 할인</b>!`, hasTarget: true };
             }
-        } else if (bestMatchedCount === 2) {
+        }
+
+        // 3. 고정 플랜 추천 검사 (2개 일치)
+        for (const plan of WEDDING_POLICY.fixedPlans) {
+            let matchedCount = 0;
+            plan.items.forEach(target => {
+                if (parsedList.find(m => m.checkStr.includes(target.toUpperCase()))) matchedCount++;
+            });
+            if (matchedCount === 2) {
+                const missing = plan.items.find(target => !parsedList.some(m => m.checkStr.includes(target.toUpperCase())));
+                return { type: 'tip-model', title: `💡 ${plan.name} 추천`, desc: `1개 제품을 <b>[${missing}]</b>(구독)으로<br>추가 시 추가할인 <b>${plan.rate}</b> 적용!`, hasTarget: true };
+            }
+        }
+
+        // 4. BEST-PICK 추천 검사 (2개 일치)
+        if (bestMatchedCount === 2) {
             return { type: 'tip-model', title: `💡 BEST-PICK 추천`, desc: `1개 대상품목을 <b>[구독]</b>으로<br>추가 시 추가할인 <b>3.0%</b> 적용!`, hasTarget: true };
         }
 
-        // 대상 모델이 1개라도 있으면 배너 및 팝업 버튼 활성화
         if (hasTarget) {
             return { type: 'tip-model', title: `💡 웨딩 패키지 대상 포함`, desc: `웨딩 대상 모델이 발견되었습니다.<br>조합 조건을 확인해 보세요!`, hasTarget: true };
         }
@@ -884,6 +899,12 @@
         populateGapBaseOptions(); calculateAndRender();
     }
 
+    // KB카드 체크박스 토글 처리 함수
+    function toggleKbCard(idx, cb) {
+        kbCardStates[idx] = cb.checked;
+        calculateAndRender();
+    }
+
     function normalizeModelLine(text) { return String(text || '').replace(/\s+/g, ' ').replace(/\s*\[구독\]/gi, ' [구독]').trim(); }
 
     function formatModelCellBlock(text) {
@@ -1068,7 +1089,11 @@
 
             const hasSubscription = modelHasSubscriptionTag && (subFee > 0 || promoDc > 0 || comboDc > 0 || preDc > 0 || cardDcMonthly > 0 || preAmt > 0 || preCard > 0 || realSub > 0 || realSub < 0);
             const subscriptionAmount = hasSubscription ? Math.max(0, preAmt - preCard + (realSub * contractMonth)) : 0;
-            const total = hasSubscription ? finalBenefit + subscriptionAmount : finalBenefit;
+            
+            // KB카드 혜택감소액(+36만) 추가 연산 적용
+            const kbPenalty = kbCardStates[i] ? 360000 : 0;
+            const total = (hasSubscription ? finalBenefit + subscriptionAmount : finalBenefit) + kbPenalty;
+            
             const subscriptionShare = total > 0 ? (subscriptionAmount / total) : 0;
             const subscriptionDominant = subscriptionShare >= 0.7;
 
@@ -1174,6 +1199,7 @@
             { label: '결제금액', key: 'pay' }, { label: '캐시백', key: 'cashback' }, { label: '상품권', key: 'voucher' }, { label: '멤버십', key: 'membership' }, { label: '특별혜택', key: 'specialBenefit' }, { label: '제휴카드', key: 'cardBenefit' },
             { label: '혜택합계', key: 'benefitSum' }, { label: '최종혜택금액', key: 'finalBenefit', rowClass: 'highlight-dark' }, { label: '정상구독료(월)', key: 'subFee' }, { label: '프로모션할인(월)', key: 'promoDc' }, { label: '결합할인(월)', key: 'comboDc' },
             { label: '선납할인(월)', key: 'preDc' }, { label: '제휴카드(월)', key: 'cardDcMonthly' }, { label: '선납금액', key: 'preAmt' }, { label: '선납 캐시백', key: 'preCard' }, { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
+            { label: 'KB카드 혜택감소<br><span style="font-size:11px;font-weight:normal;">(37~72개월차 적용)</span>', key: 'kbCard', type: 'kb_checkbox' }, // 신설된 KB카드 체크박스 행
             { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' }, { label: gapLabel, key: 'gap', rowClass: 'gap-row' }
         ];
 
@@ -1216,6 +1242,16 @@
 
                     return `<td class="model-cell${dominantClass}">${formattedLines}</td>`;
                 }).join('');
+            } else if (def.type === 'kb_checkbox') {
+                html += results.map((item, idx) => {
+                    const dominantClass = item.subscriptionDominant ? ' subscription-dominant-cell' : '';
+                    const isChecked = kbCardStates[idx] ? 'checked' : '';
+                    return `<td class="number-cell${dominantClass}" style="text-align:center; padding: 10px 0;">
+                        <label style="cursor:pointer; font-size:12px; font-weight:bold; color:#d32f2f; background:#fff0f3; padding:5px 8px; border-radius:4px; border:1px solid #f6c2cc; display:inline-block;">
+                            <input type="checkbox" style="vertical-align:middle; margin:0 4px 0 0; cursor:pointer;" onchange="toggleKbCard(${idx}, this)" ${isChecked}> 적용 (+36만)
+                        </label>
+                    </td>`;
+                }).join('');
             } else {
                 html += results.map((item, idx) => {
                     const baseClass = idx === gapBaseIndex ? ' base-col-cell' : '';
@@ -1230,6 +1266,7 @@
 
     function clearAllData() {
         document.getElementById('rawPasteArea').value = ''; parsedData = {}; parsedModels = []; optionCount = 0; optionLabels = [];
+        kbCardStates = {}; // 전체 지우기 실행 시 KB카드 상태 초기화
         document.getElementById('quoteThead').innerHTML = ''; document.getElementById('quoteTbody').innerHTML = '';
     }
 
@@ -1318,7 +1355,7 @@
         'shinhan': { title: '[신한] 더구독케어', phone: '080-850-0117', url: 'https://www.shinhancard.com/pconts/html/card/apply/credit/1234346_2207.html?EntryLoc2=4441&btnApp=dp1', benefits: '30만 ↑ 1.7만<br>70만 ↑ 2.7만<br>130만 ↑ 3.0만<br><span style="font-size:11px; color:#888;">*70만/130만 혜택은 7만원 이상 자동이체시 적용</span>' },
         'woori_plat': { title: '[우리] 플래티넘', phone: '1800-0864', url: 'https://m.wooricard.com/dcmw/yh1/crd/crd01/M1CRD101S02.do?recomNo=104169', benefits: '100만 ↑ 3.5만<br>150만 ↑ 3.9만<br>200만 ↑ 4.2만' },
         'woori': { title: '[우리] LG전자', phone: '1800-4137', url: 'https://m.wooricard.com/dcmw/yh1/crd/crd01/M1CRD101S02.do?recomNo=102535', benefits: '30만 ↑ 1.8만<br>70만 ↑ 2.2만<br>120만 ↑ 2.4만' },
-        'lotte': { title: '[롯데] 구독엔로카', phone: '1577-9469', url: 'https://m.lottecard.co.kr/spa/card/booth?bId=96417&vtCdKndC=P15666-A15666', benefits: '40만 ↑ 2.0만<br>80만 ↑ 2.3만<br>160만 ↑ 2.6만' },
+        
         'kb': { title: '[KB국민] LG전자 KB국민', phone: '1644-8639', url: 'https://m.kbcard.com/CRD/DVIEW/MCAMCXHIACRC0002?mainCC=b&allianceCode=04425', benefits: '<b>[프로모션 운영 / 36개월간]</b><br>30만 ↑ 2.0만<br>80만 ↑ 2.5만<br><span style="font-size:11px; color:#888;">* 37회차부터는 기본 혜택(1.0만/1.5만)만 적용</span>' },
         'hyundai': { title: '[현대] LG전자 현대', phone: '1670-0442', url: 'https://www.hyundaicard.com/cpc/cr/CPCCR0201_01.hc?cardWcd=LGEHC&eventCode=LGR03#cardDetailHash', benefits: '<b>[프로모션 운영 / 60개월간]</b><br>40만 ↑ 0.8만<br>80만 ↑ 1.2만<br>120만 ↑ 1.6만' },
         'hana': { title: '[하나] LG전자', phone: '1800-1264', url: 'https://m.hanacard.co.kr/MKCDCM1010M.web?CD_PD_SEQ=16959', benefits: '30만 ↑ 1.3만<br>70만 ↑ 1.7만<br>100만 ↑ 2.0만' }
