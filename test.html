@@ -256,6 +256,8 @@
             .print-footer { display: block !important; position: fixed !important; bottom: 0 !important; width: 100% !important; padding-top: 8px; border-top: 1px solid #ddd; font-size: 9pt; color: #333; text-align: right; background: #fff; z-index: 9999; }
             .print-subscription-notice { display: block !important; margin-top: 20px; margin-bottom: 15px; padding: 12px 15px; border: 1px solid #999; border-radius: 6px; background-color: #f8f9fa !important; page-break-inside: avoid; }
             #quoteTable.hide-model-row tr.model-row { display: none !important; }
+            /* 인쇄 시 KB카드 보정 등 특정 행 숨김 처리 */
+            .print-hide-row { display: none !important; }
         }
     </style>
 </head>
@@ -530,6 +532,8 @@
     };
 
     let kbCardStates = {}; // KB카드 체크박스 상태 관리용 객체 추가
+    let parsedData = {}; let parsedModels = []; let optionCount = 0; let optionLabels = []; let gapBaseIndex = 0; let latestResults = [];
+    let isModelRowHidden = false; // 모델명 숨기기 상태 변수 추가
 
     function isWeddingTarget(rawLine) {
         if (!rawLine || rawLine === '-') return false;
@@ -860,8 +864,6 @@
         }
     });
 
-    let parsedData = {}; let parsedModels = []; let optionCount = 0; let optionLabels = []; let gapBaseIndex = 0; let latestResults = [];
-
     function getKnownKey(text) {
         const norm = String(text).replace(/\s+/g, ''); if (!norm) return null;
         if (norm.includes('체감구독료')) return '체감구독료(월)';
@@ -904,6 +906,29 @@
         kbCardStates[idx] = cb.checked;
         calculateAndRender();
     }
+
+    // ==========================================
+    // 모델명 숨기기 기능 함수 추가
+    // ==========================================
+    function toggleModelRowVisibility() {
+        isModelRowHidden = !isModelRowHidden;
+        applyModelRowVisibility();
+    }
+
+    function applyModelRowVisibility() {
+        const table = document.getElementById('quoteTable');
+        const btn = document.getElementById('toggleModelBtn');
+        if (!table || !btn) return;
+        
+        if (isModelRowHidden) {
+            table.classList.add('hide-model-row');
+            btn.innerText = '모델명 보이기';
+        } else {
+            table.classList.remove('hide-model-row');
+            btn.innerText = '모델명 숨기기';
+        }
+    }
+    // ==========================================
 
     function normalizeModelLine(text) { return String(text || '').replace(/\s+/g, ' ').replace(/\s*\[구독\]/gi, ' [구독]').trim(); }
 
@@ -1116,7 +1141,10 @@
         results = results.map((item, idx) => ({ ...item, header: optionLabels[idx] }));
 
         if (gapBaseIndex >= optionCount) gapBaseIndex = 0;
-        populateGapBaseOptions(); latestResults = results; renderQuoteTable(results); applyModelRowVisibility();
+        populateGapBaseOptions(); latestResults = results; renderQuoteTable(results); 
+        
+        // 데이터가 변경(재산출)될 때마다 모델명 숨김 상태를 유지하도록 함수 호출부 추가
+        applyModelRowVisibility();
     }
 
     function renderQuoteTable(results) {
@@ -1194,18 +1222,22 @@
 
         const gapLabel = 'GAP (vs 기준안)';
         const subscriptionKeys = ['subFee', 'promoDc', 'comboDc', 'preDc', 'cardDcMonthly', 'preAmt', 'preCard', 'realSub'];
+        
+        // KB카드 보정 행의 위치를 GAP 아래로 내리고, 스타일을 무채색으로 조정
         const rowDefs = [
             { label: '선택 모델', key: 'model', type: 'model' }, { label: '정상가', key: 'normalPrice' }, { label: '행사가', key: 'eventPrice' }, { label: '특별할인', key: 'specialDc' },
             { label: '결제금액', key: 'pay' }, { label: '캐시백', key: 'cashback' }, { label: '상품권', key: 'voucher' }, { label: '멤버십', key: 'membership' }, { label: '특별혜택', key: 'specialBenefit' }, { label: '제휴카드', key: 'cardBenefit' },
             { label: '혜택합계', key: 'benefitSum' }, { label: '최종혜택금액', key: 'finalBenefit', rowClass: 'highlight-dark' }, { label: '정상구독료(월)', key: 'subFee' }, { label: '프로모션할인(월)', key: 'promoDc' }, { label: '결합할인(월)', key: 'comboDc' },
             { label: '선납할인(월)', key: 'preDc' }, { label: '제휴카드(월)', key: 'cardDcMonthly' }, { label: '선납금액', key: 'preAmt' }, { label: '선납 캐시백', key: 'preCard' }, { label: '체감구독료(월)', key: 'realSub', rowClass: 'highlight-dark' },
-            { label: 'KB카드 혜택감소<br><span style="font-size:11px;font-weight:normal;">(37~72개월차 적용)</span>', key: 'kbCard', type: 'kb_checkbox' }, // 신설된 KB카드 체크박스 행
-            { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' }, { label: gapLabel, key: 'gap', rowClass: 'gap-row' }
+            { label: '혜택가(총 체감가)', key: 'total', rowClass: 'highlight-yellow' }, { label: gapLabel, key: 'gap', rowClass: 'gap-row' },
+            { label: 'KB카드 보정', key: 'kbCard', type: 'kb_checkbox', rowClass: 'print-hide-row' } // 순서 변경 및 인쇄 숨김 클래스 적용
         ];
 
         rowDefs.forEach(def => {
             const tr = document.createElement('tr');
             if (def.rowClass) tr.className = def.rowClass;
+            
+            // tr에 'model-row' 클래스를 안전하게 추가 (이 클래스가 있어야 숨김 CSS가 작동함)
             if (def.type === 'model') tr.classList.add('model-row');
 
             let html = '';
@@ -1243,12 +1275,13 @@
                     return `<td class="model-cell${dominantClass}">${formattedLines}</td>`;
                 }).join('');
             } else if (def.type === 'kb_checkbox') {
+                // UI를 무채색(흰색 바탕, 회색 톤)으로 조정하여 부정적인 인상 배제
                 html += results.map((item, idx) => {
                     const dominantClass = item.subscriptionDominant ? ' subscription-dominant-cell' : '';
                     const isChecked = kbCardStates[idx] ? 'checked' : '';
                     return `<td class="number-cell${dominantClass}" style="text-align:center; padding: 10px 0;">
-                        <label style="cursor:pointer; font-size:12px; font-weight:bold; color:#d32f2f; background:#fff0f3; padding:5px 8px; border-radius:4px; border:1px solid #f6c2cc; display:inline-block;">
-                            <input type="checkbox" style="vertical-align:middle; margin:0 4px 0 0; cursor:pointer;" onchange="toggleKbCard(${idx}, this)" ${isChecked}> 적용 (+36만)
+                        <label style="cursor:pointer; font-size:12px; color:#555; background:#fff; padding:4px 6px; border-radius:4px; border:1px solid #ddd; display:inline-block; font-weight:normal;">
+                            <input type="checkbox" style="vertical-align:middle; margin:0 4px 0 0; cursor:pointer;" onchange="toggleKbCard(${idx}, this)" ${isChecked}> 보정액 반영
                         </label>
                     </td>`;
                 }).join('');
