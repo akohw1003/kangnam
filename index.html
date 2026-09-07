@@ -258,6 +258,9 @@
             #quoteTable.hide-model-row tr.model-row { display: none !important; }
             /* 인쇄 시 KB카드 보정 등 특정 행 숨김 처리 */
             .print-hide-row { display: none !important; }
+            
+            /* 신규 추가: 인쇄 시 숨김 처리 (모델 숨기기 버튼 영역, 웨딩/라이프스타일 진단 배너) */
+            .result-toolbar, .wedding-banner-row, .lifestyle-banner-row { display: none !important; }
         }
     </style>
 </head>
@@ -532,6 +535,8 @@
     };
 
     let kbCardStates = {}; // KB카드 체크박스 상태 관리용 객체 추가
+    let parsedData = {}; let parsedModels = []; let optionCount = 0; let optionLabels = []; let gapBaseIndex = 0; let latestResults = [];
+    let isModelRowHidden = false; // 모델명 숨기기 상태 변수 추가
 
     function isWeddingTarget(rawLine) {
         if (!rawLine || rawLine === '-') return false;
@@ -862,8 +867,6 @@
         }
     });
 
-    let parsedData = {}; let parsedModels = []; let optionCount = 0; let optionLabels = []; let gapBaseIndex = 0; let latestResults = [];
-
     function getKnownKey(text) {
         const norm = String(text).replace(/\s+/g, ''); if (!norm) return null;
         if (norm.includes('체감구독료')) return '체감구독료(월)';
@@ -906,6 +909,29 @@
         kbCardStates[idx] = cb.checked;
         calculateAndRender();
     }
+
+    // ==========================================
+    // 모델명 숨기기 기능 함수 추가
+    // ==========================================
+    function toggleModelRowVisibility() {
+        isModelRowHidden = !isModelRowHidden;
+        applyModelRowVisibility();
+    }
+
+    function applyModelRowVisibility() {
+        const table = document.getElementById('quoteTable');
+        const btn = document.getElementById('toggleModelBtn');
+        if (!table || !btn) return;
+        
+        if (isModelRowHidden) {
+            table.classList.add('hide-model-row');
+            btn.innerText = '모델명 보이기';
+        } else {
+            table.classList.remove('hide-model-row');
+            btn.innerText = '모델명 숨기기';
+        }
+    }
+    // ==========================================
 
     function normalizeModelLine(text) { return String(text || '').replace(/\s+/g, ' ').replace(/\s*\[구독\]/gi, ' [구독]').trim(); }
 
@@ -1118,7 +1144,10 @@
         results = results.map((item, idx) => ({ ...item, header: optionLabels[idx] }));
 
         if (gapBaseIndex >= optionCount) gapBaseIndex = 0;
-        populateGapBaseOptions(); latestResults = results; renderQuoteTable(results); applyModelRowVisibility();
+        populateGapBaseOptions(); latestResults = results; renderQuoteTable(results); 
+        
+        // 데이터가 변경(재산출)될 때마다 모델명 숨김 상태를 유지하도록 함수 호출부 추가
+        applyModelRowVisibility();
     }
 
     function renderQuoteTable(results) {
@@ -1210,6 +1239,8 @@
         rowDefs.forEach(def => {
             const tr = document.createElement('tr');
             if (def.rowClass) tr.className = def.rowClass;
+            
+            // tr에 'model-row' 클래스를 안전하게 추가 (이 클래스가 있어야 숨김 CSS가 작동함)
             if (def.type === 'model') tr.classList.add('model-row');
 
             let html = '';
