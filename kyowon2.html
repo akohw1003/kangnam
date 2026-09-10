@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>구독 교원 맞춤형 상담 솔루션</title>
+    <title>구독 맞춤형 상담 솔루션</title>
     <style>
         /* 기본 리셋 및 폰트 */
         body { font-family: 'Malgun Gothic', sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; color: #333; line-height: 1.4; }
@@ -16,7 +16,10 @@
         /* 상단 헤더 */
         .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #a50034; padding-bottom: 12px; margin-bottom: 20px; }
         .header h1 { margin: 0; font-size: 22px; color: #a50034; font-weight: 800; letter-spacing: -0.5px; }
-        .drag-guide { font-size: 13px; color: #1565c0; font-weight: bold; background: #e3f2fd; padding: 5px 10px; border-radius: 4px; }
+        
+        /* 초기화 버튼 스타일 */
+        .reset-btn { font-size: 13px; color: #444; font-weight: bold; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+        .reset-btn:hover { background: #fdf2f5; border-color: #a50034; color: #a50034; }
         
         /* 메인 레이아웃 (높이 자동 맞춤 stretch) */
         .main-content { display: flex; gap: 20px; align-items: stretch; }
@@ -94,7 +97,9 @@
         .summary-table { margin-bottom: 0; border: 2px solid #a50034; border-radius: 6px; overflow: hidden; } 
         .summary-table th { background-color: #fdf2f5; border-top: none; padding: 10px 4px; font-size: 13px; color: #a50034; }
         .summary-table td { padding: 10px 4px; font-size: 13px; font-weight: bold;}
-        .notice { font-size: 12px; color: #a50034; font-weight: bold; background: #fdf2f5; padding: 8px; border-radius: 4px; text-align: center; margin-top: 8px; transition: all 0.3s; border: 1px solid #f8bbd0;}
+        
+        /* 줄바꿈 방지 적용 (notice) */
+        .notice { font-size: 12px; color: #a50034; font-weight: bold; background: #fdf2f5; padding: 8px; border-radius: 4px; text-align: center; margin-top: 8px; transition: all 0.3s; border: 1px solid #f8bbd0; white-space: nowrap; letter-spacing: -0.5px;}
         .notice.empty { background: #f4f5f7; color: #666; border: 1px solid #ddd; }
     </style>
 </head>
@@ -102,8 +107,9 @@
 
 <div class="container">
     <div class="header">
-        <h1>구독 교원 맞춤형 상담 솔루션</h1>
-        <div class="drag-guide">💡 🔒(잠금) 표시된 결과는 마우스로 스윽~ 드래그하면 짠! 하고 열립니다.</div>
+        <h1>구독 맞춤형 상담 솔루션</h1>
+        <!-- 초기화 버튼 추가 -->
+        <button class="reset-btn" onclick="resetAll()">🔄 전체 초기화</button>
     </div>
 
     <div class="main-content">
@@ -111,7 +117,7 @@
         <div class="left-panel">
             <div class="table-wrap">
                 <table id="consumptionTable">
-                    <tr><td colspan="8" class="table-title">1. 소비형 할인 (일반 제휴카드 사용 시 직접 납부액)</td></tr>
+                    <tr><td colspan="8" class="table-title">1. 소비형 할인</td></tr>
                     <tr>
                         <th style="width: 14%;">구분</th>
                         <th style="width: 11%;">1년차</th><th style="width: 11%;">2년차</th><th style="width: 11%;">3년차</th>
@@ -133,7 +139,7 @@
                         <script>for(let i=1; i<=6; i++) document.write(`<td class="input-cell"><input type="text" id="con-card-${i}" class="num-input" data-row="card" value="" oninput="formatAndCalc(this)"></td>`);</script>
                         <td id="con-card-sum" class="sum-col"></td>
                     </tr>
-                    <!-- 🎁 결과 블라인드 대상 행 -->
+                    <!-- 🎁 소비형 결과 블라인드 대상 행 -->
                     <tr class="total-row">
                         <td style="text-align:center;">할인 후 월요금</td>
                         <td id="con-total-1" class="reveal-cell"></td><td id="con-total-2" class="reveal-cell"></td><td id="con-total-3" class="reveal-cell"></td>
@@ -151,34 +157,33 @@
 
             <div class="table-wrap">
                 <table>
-                    <!-- 법무적 이슈 반영: '저축형' -> '환급형' 혜택으로 명칭 변경 -->
-                    <tr><td colspan="8" class="table-title">2. 환급형 혜택 (구독 교원 가입 시 실제 체감액)</td></tr>
+                    <tr><td colspan="8" class="table-title">2. 환급형 혜택</td></tr>
                     <tr>
                         <th style="width: 14%;">구분</th>
                         <th style="width: 11%;">1년차</th><th style="width: 11%;">2년차</th><th style="width: 11%;">3년차</th>
                         <th style="width: 11%;">4년차</th><th style="width: 11%;">5년차</th><th style="width: 11%;">6년차</th>
                         <th style="width: 20%;" class="sum-col">6년 총계</th>
                     </tr>
+                    <!-- 🎁 환급형 혜택 표 전체 블라인드 처리 -->
                     <tr>
                         <td style="text-align:center;">구독요금</td>
-                        <td id="sav-base-1"></td><td id="sav-base-2"></td><td id="sav-base-3"></td>
-                        <td id="sav-base-4"></td><td id="sav-base-5"></td><td id="sav-base-6"></td>
-                        <td id="sav-base-sum" class="sum-col"></td>
+                        <td id="sav-base-1" class="reveal-cell"></td><td id="sav-base-2" class="reveal-cell"></td><td id="sav-base-3" class="reveal-cell"></td>
+                        <td id="sav-base-4" class="reveal-cell"></td><td id="sav-base-5" class="reveal-cell"></td><td id="sav-base-6" class="reveal-cell"></td>
+                        <td id="sav-base-sum" class="sum-col reveal-cell"></td>
                     </tr>
                     <tr>
                         <td style="text-align:center;">포인트할인</td>
-                        <td id="sav-point-1"></td><td id="sav-point-2"></td><td id="sav-point-3"></td>
-                        <td id="sav-point-4"></td><td id="sav-point-5"></td><td id="sav-point-6"></td>
-                        <td id="sav-point-sum" class="sum-col"></td>
+                        <td id="sav-point-1" class="reveal-cell"></td><td id="sav-point-2" class="reveal-cell"></td><td id="sav-point-3" class="reveal-cell"></td>
+                        <td id="sav-point-4" class="reveal-cell"></td><td id="sav-point-5" class="reveal-cell"></td><td id="sav-point-6" class="reveal-cell"></td>
+                        <td id="sav-point-sum" class="sum-col reveal-cell"></td>
                     </tr>
                     <tr>
                         <td style="text-align:center;">지원금 + 카드</td>
-                        <td id="sav-benefit-1" class="highlight"></td><td id="sav-benefit-2" class="highlight"></td>
-                        <td id="sav-benefit-3" class="highlight"></td><td id="sav-benefit-4" class="highlight"></td>
-                        <td id="sav-benefit-5" class="highlight"></td><td id="sav-benefit-6" class="highlight"></td>
-                        <td id="sav-benefit-sum" class="sum-col" style="color:#d32f2f;"></td>
+                        <td id="sav-benefit-1" class="highlight reveal-cell"></td><td id="sav-benefit-2" class="highlight reveal-cell"></td>
+                        <td id="sav-benefit-3" class="highlight reveal-cell"></td><td id="sav-benefit-4" class="highlight reveal-cell"></td>
+                        <td id="sav-benefit-5" class="highlight reveal-cell"></td><td id="sav-benefit-6" class="highlight reveal-cell"></td>
+                        <td id="sav-benefit-sum" class="sum-col reveal-cell" style="color:#d32f2f;"></td>
                     </tr>
-                    <!-- 🎁 결과 블라인드 대상 행 -->
                     <tr class="total-row">
                         <td style="text-align:center;">최종 체감 월요금</td>
                         <td id="sav-total-1" class="highlight reveal-cell"></td><td id="sav-total-2" class="highlight reveal-cell"></td>
@@ -217,7 +222,6 @@
                         <div class="opt-btn account-btn" data-val="4"><strong>4구좌</strong></div>
                     </div>
 
-                    <!-- 용어 변경 반영 (환급형 표) -->
                     <div class="config-title">💳 교원 제휴카드 할인 (환급형 표에만 반영)</div>
                     <div class="card-toggle-wrap">
                         <input type="checkbox" id="useCard" onchange="calculateAll()">
@@ -243,14 +247,13 @@
 </div>
 
 <script>
-    // --- 상품 DB (거치기간 추가 반영) ---
-    // payMonths: 실제 납입 횟수, waitMonths: 거치 개월 수
+    // --- 상품 DB (거치기간 및 총 원금 추가 반영) ---
     const kyowonData = {
-        "72": { payment: 84000, support: 10000, payMonths: 72, waitMonths: 28 },
-        "108": { payment: 84000, support: 15000, payMonths: 72, waitMonths: 72 },
-        "130": { payment: 59900, support: 18100, payMonths: 100, waitMonths: 80 },
-        "144": { payment: 84000, support: 20000, payMonths: 72, waitMonths: 108 },
-        "216": { payment: 125000, support: 30000, payMonths: 72, waitMonths: 108 }
+        "72": { payment: 84000, support: 10000, payMonths: 72, waitMonths: 28, totalPrincipal: 5990000 },
+        "108": { payment: 84000, support: 15000, payMonths: 72, waitMonths: 72, totalPrincipal: 5990000 },
+        "130": { payment: 59900, support: 18100, payMonths: 100, waitMonths: 80, totalPrincipal: 5990000 },
+        "144": { payment: 84000, support: 20000, payMonths: 72, waitMonths: 108, totalPrincipal: 5990000 },
+        "216": { payment: 125000, support: 30000, payMonths: 72, waitMonths: 108, totalPrincipal: 8990000 }
     };
 
     let currentProduct = null;
@@ -258,6 +261,7 @@
 
     function getNum(val) { return parseInt(val.replace(/,/g, '')) || 0; }
     function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+    function formatManWon(num) { return formatNumber(Math.floor(num / 10000)) + "만 원"; }
 
     function formatAndCalc(inputEl) {
         let rawValue = inputEl.value.replace(/[^0-9-]/g, '');
@@ -268,6 +272,29 @@
     function formatCardInput(inputEl) {
         let rawValue = inputEl.value.replace(/[^0-9]/g, '');
         inputEl.value = rawValue ? formatNumber(rawValue) : '';
+        calculateAll();
+    }
+
+    // --- 초기화 함수 ---
+    function resetAll() {
+        // 1. 모든 입력창 비우기
+        document.querySelectorAll('.num-input').forEach(input => input.value = '');
+        
+        // 2. 버튼 선택 해제 및 변수 초기화
+        currentProduct = null;
+        currentAccounts = null;
+        document.querySelectorAll('.product-btn, .account-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // 3. 카드 할인 토글 및 기본 금액 리셋
+        document.getElementById('useCard').checked = false;
+        document.getElementById('cardAmount').value = '17,000';
+        
+        // 4. 스크래치 상태(클래스) 초기화
+        document.querySelectorAll('.reveal-cell').forEach(cell => {
+            cell.classList.remove('revealed', 'has-value');
+        });
+        
+        // 5. 전체 계산 로직 재실행 (빈값에 맞춰 하단 결과들도 모두 비워짐)
         calculateAll();
     }
 
@@ -296,7 +323,6 @@
     let dragValue = "";
     let dragRowType = "";
     
-    // 입력 셀 드래그 채우기
     const inputs = document.querySelectorAll('.num-input');
     inputs.forEach(input => {
         input.addEventListener('mousedown', function(e) {
@@ -344,7 +370,6 @@
         });
     });
 
-    // 결과 숨김 셀 스크래치(드래그) 오픈
     const revealCells = document.querySelectorAll('.reveal-cell');
     revealCells.forEach(cell => {
         cell.addEventListener('mousedown', function(e) {
@@ -362,7 +387,6 @@
         });
     });
 
-    // 마우스 뗐을 때 상태 해제 (텍스트 복사 활성화)
     window.addEventListener('mouseup', function() {
         isDragging = false;
         isRevealing = false;
@@ -370,7 +394,6 @@
         document.body.classList.remove('is-dragging'); 
     });
 
-    // 값 주입 및 숨김 상태 관리 헬퍼 함수
     function setRevealValue(id, valueNum, isEmpty) {
         const el = document.getElementById(id);
         if (!el) return;
@@ -386,19 +409,17 @@
 
     // --- 핵심 계산 로직 ---
     function calculateAll() {
-        // 기본값 방어 로직
-        const selectedProduct = currentProduct ? kyowonData[currentProduct] : { payment: 0, support: 0, payMonths: 0, waitMonths: 0 };
-        const kyowonInterest = (currentProduct && currentAccounts) ? (selectedProduct.support * currentAccounts) : 0;
+        const selectedProduct = currentProduct ? kyowonData[currentProduct] : null;
+        const kyowonInterest = (selectedProduct && currentAccounts) ? (selectedProduct.support * currentAccounts) : 0;
         const savCardDiscount = document.getElementById('useCard').checked ? getNum(document.getElementById('cardAmount').value) : 0;
         
         const summaryBody = document.getElementById('summaryBody');
         const refundNotice = document.getElementById('refundNotice');
         
-        // 1. 우측 요약표 렌더링
         summaryBody.innerHTML = '';
         for(let i=1; i<=4; i++) {
-            const payAmt = selectedProduct.payment * i;
-            const interestAmt = selectedProduct.support * i;
+            const payAmt = selectedProduct ? (selectedProduct.payment * i) : 0;
+            const interestAmt = selectedProduct ? (selectedProduct.support * i) : 0;
             const totalBenefit = interestAmt + savCardDiscount;
             
             const trStyle = (currentAccounts === i) ? 'background-color:#fff9c4; color:#a50034; border: 2px solid #a50034;' : 'background-color:#fff;';
@@ -414,9 +435,13 @@
             `;
         }
 
-        // --- 조건부 환급 메시지 업데이트 (거치기간 포함) ---
-        if (currentProduct) {
-            refundNotice.innerText = `✨ ${selectedProduct.payMonths}회 납입 + ${selectedProduct.waitMonths}개월 거치 후 원금 100% 환급 ✨`;
+        if (selectedProduct && currentAccounts) {
+            const totalRefundValue = selectedProduct.totalPrincipal * currentAccounts;
+            const refundText = formatManWon(totalRefundValue);
+            
+            let waitText = selectedProduct.waitMonths > 0 ? `+ ${selectedProduct.waitMonths}개월 거치 ` : '';
+            
+            refundNotice.innerText = `✨ ${selectedProduct.payMonths}회 납입 ${waitText}후 원금 100% (${refundText}) 환급 ✨`;
             refundNotice.classList.remove('empty');
         } else {
             refundNotice.innerText = `💡 교원 상품과 구좌를 선택해주세요`;
@@ -426,7 +451,6 @@
         let conBaseSum = 0, conPointSum = 0, conCardSum = 0, conYearSum = 0;
         let savBenefitSum = 0, savYearSum = 0;
 
-        // 2. 좌측 6년 표 렌더링 및 결과 숨김 처리
         for(let i=1; i<=6; i++) {
             let baseInput = document.getElementById(`con-base-${i}`).value.trim();
             const isEmpty = (baseInput === "");
@@ -434,12 +458,12 @@
             if (isEmpty) {
                 setRevealValue(`con-total-${i}`, 0, true);
                 setRevealValue(`con-year-${i}`, 0, true);
+                
+                setRevealValue(`sav-base-${i}`, 0, true);
+                setRevealValue(`sav-point-${i}`, 0, true);
+                setRevealValue(`sav-benefit-${i}`, 0, true);
                 setRevealValue(`sav-total-${i}`, 0, true);
                 setRevealValue(`sav-year-${i}`, 0, true);
-                
-                document.getElementById(`sav-base-${i}`).innerText = '';
-                document.getElementById(`sav-point-${i}`).innerText = '';
-                document.getElementById(`sav-benefit-${i}`).innerText = '';
                 continue; 
             }
 
@@ -458,12 +482,12 @@
             setRevealValue(`con-total-${i}`, conTotal, false);
             setRevealValue(`con-year-${i}`, conYear, false);
 
-            document.getElementById(`sav-base-${i}`).innerText = formatNumber(baseFee);
-            document.getElementById(`sav-point-${i}`).innerText = formatNumber(pointDc);
+            setRevealValue(`sav-base-${i}`, baseFee, false);
+            setRevealValue(`sav-point-${i}`, pointDc, false);
             
             let totalSavBenefit = kyowonInterest + savCardDiscount;
             savBenefitSum += (totalSavBenefit * 12);
-            document.getElementById(`sav-benefit-${i}`).innerText = formatNumber(totalSavBenefit);
+            setRevealValue(`sav-benefit-${i}`, totalSavBenefit, false);
 
             let savTotal = baseFee - pointDc - totalSavBenefit;
             let savYear = baseFee > 0 ? (savTotal * 12) : 0;
@@ -473,23 +497,19 @@
             setRevealValue(`sav-year-${i}`, savYear, false);
         }
 
-        // 3. 총계 렌더링
         const hasAnyInput = (conBaseSum > 0);
         
         document.getElementById('con-base-sum').innerText = hasAnyInput ? formatNumber(conBaseSum) : '';
         document.getElementById('con-point-sum').innerText = hasAnyInput ? formatNumber(conPointSum) : '';
         document.getElementById('con-card-sum').innerText = hasAnyInput ? formatNumber(conCardSum) : '';
-        
         setRevealValue('con-year-sum', conYearSum, !hasAnyInput);
 
-        document.getElementById('sav-base-sum').innerText = hasAnyInput ? formatNumber(conBaseSum) : '';
-        document.getElementById('sav-point-sum').innerText = hasAnyInput ? formatNumber(conPointSum) : '';
-        document.getElementById('sav-benefit-sum').innerText = hasAnyInput ? formatNumber(savBenefitSum) : '';
-        
+        setRevealValue('sav-base-sum', conBaseSum, !hasAnyInput);
+        setRevealValue('sav-point-sum', conPointSum, !hasAnyInput);
+        setRevealValue('sav-benefit-sum', savBenefitSum, !hasAnyInput);
         setRevealValue('sav-year-sum', savYearSum, !hasAnyInput);
     }
 
-    // 초기 실행
     window.onload = function() {
         calculateAll();
     };
