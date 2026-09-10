@@ -13,12 +13,19 @@
         
         .container { max-width: 1250px; margin: 0 auto; background: #fff; padding: 20px 25px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         
-        /* 상단 헤더 및 버튼 그룹 */
-        .header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #a50034; padding-bottom: 12px; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 22px; color: #a50034; font-weight: 800; letter-spacing: -0.5px; }
+        /* 상단 헤더 (7:3 비율 그리드로 본문과 정렬 일치) */
+        .header { display: flex; gap: 20px; border-bottom: 2px solid #a50034; padding-bottom: 12px; margin-bottom: 20px; align-items: flex-end; }
+        .header-left { flex: 7; display: flex; justify-content: space-between; align-items: flex-end; min-width: 0; }
+        .header-right { flex: 3; display: flex; justify-content: flex-end; align-items: flex-end; min-width: 280px; gap: 8px; }
         
-        .header-buttons { display: flex; gap: 8px; }
+        .header h1 { margin: 0; font-size: 22px; color: #a50034; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
         
+        /* 일시불 입력 UI (6년 총계 수직 정렬용) */
+        .lump-sum-wrap { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: bold; color: #333; margin-bottom: 2px; }
+        .lump-sum-input { width: 100px; padding: 4px 6px; text-align: right; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; font-size: 14px; color: #333; outline: none; transition: border-color 0.2s; }
+        .lump-sum-input:focus { border-color: #a50034; box-shadow: 0 0 0 1px #a50034; }
+        .lump-sum-input::placeholder { color: #bbb; font-weight: normal; }
+
         /* 초기화 버튼 */
         .reset-btn { font-size: 13px; color: #444; font-weight: bold; background: #fff; border: 1px solid #ccc; padding: 6px 12px; border-radius: 4px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
         .reset-btn:hover { background: #fdf2f5; border-color: #a50034; color: #a50034; }
@@ -112,9 +119,18 @@
 <body>
 
 <div class="container">
+    <!-- 🎯 7:3 구조가 적용된 헤더 -->
     <div class="header">
-        <h1>구독 맞춤형 상담 솔루션</h1>
-        <div class="header-buttons">
+        <div class="header-left">
+            <h1>구독 맞춤형 상담 솔루션</h1>
+            <!-- 일시불 입력 UI (6년 총계 열 우측 끝선에 완벽 정렬됨) -->
+            <div class="lump-sum-wrap">
+                <label for="lumpSum">일시불 :</label>
+                <input type="text" id="lumpSum" class="lump-sum-input" placeholder="빈칸" oninput="formatSimpleNumber(this)">
+                <span>원</span>
+            </div>
+        </div>
+        <div class="header-right">
             <!-- 상담신청 링크 버튼 (새 창 열림) -->
             <a href="http://www.lgcaresolutionkyowon.co.kr/" target="_blank" class="apply-btn">📝 교원 상담신청</a>
             <!-- 초기화 버튼 -->
@@ -217,8 +233,8 @@
                 <div class="config-box">
                     <div class="config-title">🏷️ 교원 상품 선택</div>
                     <div class="btn-grid" id="productGrid">
+                        <!-- 108 상품 삭제 완료 -->
                         <div class="opt-btn product-btn" data-val="72"><strong>72</strong><span>1만/월</span></div>
-                        <div class="opt-btn product-btn" data-val="108"><strong>108</strong><span>1.5만/월</span></div>
                         <div class="opt-btn product-btn" data-val="130"><strong>130</strong><span>1.81만</span></div>
                         <div class="opt-btn product-btn" data-val="144"><strong>144</strong><span>2만/월</span></div>
                         <div class="opt-btn product-btn" data-val="216"><strong>216</strong><span>3만/월</span></div>
@@ -257,10 +273,9 @@
 </div>
 
 <script>
-    // --- 상품 DB (거치기간 및 총 원금 추가 반영) ---
+    // --- 상품 DB (108 데이터 삭제 완료) ---
     const kyowonData = {
         "72": { payment: 84000, support: 10000, payMonths: 72, waitMonths: 28, totalPrincipal: 5990000 },
-        "108": { payment: 84000, support: 15000, payMonths: 72, waitMonths: 72, totalPrincipal: 5990000 },
         "130": { payment: 59900, support: 18100, payMonths: 100, waitMonths: 80, totalPrincipal: 5990000 },
         "144": { payment: 84000, support: 20000, payMonths: 72, waitMonths: 108, totalPrincipal: 5990000 },
         "216": { payment: 125000, support: 30000, payMonths: 72, waitMonths: 108, totalPrincipal: 8990000 }
@@ -284,11 +299,17 @@
         inputEl.value = rawValue ? formatNumber(rawValue) : '';
         calculateAll();
     }
+    
+    // 단순 숫자 포맷터 (계산 연동 없이 콤마만 적용)
+    function formatSimpleNumber(inputEl) {
+        let rawValue = inputEl.value.replace(/[^0-9]/g, '');
+        inputEl.value = rawValue ? formatNumber(rawValue) : '';
+    }
 
     // --- 초기화 함수 ---
     function resetAll() {
-        // 1. 모든 입력창 비우기
-        document.querySelectorAll('.num-input').forEach(input => input.value = '');
+        // 1. 모든 숫자 입력창 비우기 (일시불 포함)
+        document.querySelectorAll('.num-input, .lump-sum-input').forEach(input => input.value = '');
         
         // 2. 버튼 선택 해제 및 변수 초기화
         currentProduct = null;
