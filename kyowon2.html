@@ -123,7 +123,7 @@
     <div class="header">
         <div class="header-left">
             <h1>구독 맞춤형 상담 솔루션</h1>
-            <!-- 일시불 입력 UI (6년 총계 열 우측 끝선에 완벽 정렬됨) -->
+            <!-- 일시불 입력 UI -->
             <div class="lump-sum-wrap">
                 <label for="lumpSum">일시불 :</label>
                 <input type="text" id="lumpSum" class="lump-sum-input" placeholder="빈칸" oninput="formatSimpleNumber(this)">
@@ -131,7 +131,7 @@
             </div>
         </div>
         <div class="header-right">
-            <!-- 상담신청 링크 버튼 (새 창 열림) -->
+            <!-- 상담신청 링크 버튼 -->
             <a href="http://www.lgcaresolutionkyowon.co.kr/" target="_blank" class="apply-btn">📝 교원 상담신청</a>
             <!-- 초기화 버튼 -->
             <button class="reset-btn" onclick="resetAll()">🔄 전체 초기화</button>
@@ -158,7 +158,8 @@
                     <tr>
                         <td style="text-align:center;">포인트할인</td>
                         <script>for(let i=1; i<=6; i++) document.write(`<td class="input-cell"><input type="text" id="con-point-${i}" class="num-input" data-row="point" value="" oninput="formatAndCalc(this)"></td>`);</script>
-                        <td id="con-point-sum" class="sum-col"></td>
+                        <!-- 🎯 포인트 총계 수동 보정 입력칸 -->
+                        <td class="input-cell sum-col"><input type="text" id="con-point-sum" class="num-input" style="color: #1565c0; font-size: 14px;" oninput="handlePointSumOverride(this)" placeholder=""></td>
                     </tr>
                     <tr>
                         <td style="text-align:center;">카드할인</td>
@@ -190,7 +191,7 @@
                         <th style="width: 11%;">4년차</th><th style="width: 11%;">5년차</th><th style="width: 11%;">6년차</th>
                         <th style="width: 20%;" class="sum-col">6년 총계</th>
                     </tr>
-                    <!-- 🎁 환급형 혜택 표 전체 블라인드 처리 -->
+                    <!-- 🎁 환급형 혜택 표 전체 블라인드 처리 (포인트 할인 행 복구 완료) -->
                     <tr>
                         <td style="text-align:center;">구독요금</td>
                         <td id="sav-base-1" class="reveal-cell"></td><td id="sav-base-2" class="reveal-cell"></td><td id="sav-base-3" class="reveal-cell"></td>
@@ -199,6 +200,7 @@
                     </tr>
                     <tr>
                         <td style="text-align:center;">포인트할인</td>
+                        <!-- 🎯 포인트 할인 행 다시 블라인드(reveal-cell) 적용 -->
                         <td id="sav-point-1" class="reveal-cell"></td><td id="sav-point-2" class="reveal-cell"></td><td id="sav-point-3" class="reveal-cell"></td>
                         <td id="sav-point-4" class="reveal-cell"></td><td id="sav-point-5" class="reveal-cell"></td><td id="sav-point-6" class="reveal-cell"></td>
                         <td id="sav-point-sum" class="sum-col reveal-cell"></td>
@@ -233,7 +235,6 @@
                 <div class="config-box">
                     <div class="config-title">🏷️ 교원 상품 선택</div>
                     <div class="btn-grid" id="productGrid">
-                        <!-- 108 상품 삭제 완료 -->
                         <div class="opt-btn product-btn" data-val="72"><strong>72</strong><span>1만/월</span></div>
                         <div class="opt-btn product-btn" data-val="130"><strong>130</strong><span>1.81만</span></div>
                         <div class="opt-btn product-btn" data-val="144"><strong>144</strong><span>2만/월</span></div>
@@ -273,7 +274,7 @@
 </div>
 
 <script>
-    // --- 상품 DB (108 데이터 삭제 완료) ---
+    // --- 상품 DB ---
     const kyowonData = {
         "72": { payment: 84000, support: 10000, payMonths: 72, waitMonths: 28, totalPrincipal: 5990000 },
         "130": { payment: 59900, support: 18100, payMonths: 100, waitMonths: 80, totalPrincipal: 5990000 },
@@ -283,14 +284,29 @@
 
     let currentProduct = null;
     let currentAccounts = null;
+    let isPointSumOverridden = false; // 🎯 포인트 총계 보정 여부 플래그
 
     function getNum(val) { return parseInt(val.replace(/,/g, '')) || 0; }
     function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
     function formatManWon(num) { return formatNumber(Math.floor(num / 10000)) + "만 원"; }
 
+    // 개별 월 포인트 및 기본 입력 처리
     function formatAndCalc(inputEl) {
         let rawValue = inputEl.value.replace(/[^0-9-]/g, '');
         inputEl.value = rawValue ? formatNumber(rawValue) : '';
+        
+        // 개별 월 포인트 값을 변경하면, 수동 보정 모드를 해제하고 다시 자동 계산 모드로 돌아감
+        if(inputEl.dataset.row === 'point') {
+            isPointSumOverridden = false;
+        }
+        calculateAll();
+    }
+    
+    // 포인트 6년 총계 수동 보정(덮어쓰기) 처리
+    function handlePointSumOverride(inputEl) {
+        let rawValue = inputEl.value.replace(/[^0-9-]/g, '');
+        inputEl.value = rawValue ? formatNumber(rawValue) : '';
+        isPointSumOverridden = true; // 수동 보정 모드 ON
         calculateAll();
     }
     
@@ -300,7 +316,6 @@
         calculateAll();
     }
     
-    // 단순 숫자 포맷터 (계산 연동 없이 콤마만 적용)
     function formatSimpleNumber(inputEl) {
         let rawValue = inputEl.value.replace(/[^0-9]/g, '');
         inputEl.value = rawValue ? formatNumber(rawValue) : '';
@@ -308,24 +323,21 @@
 
     // --- 초기화 함수 ---
     function resetAll() {
-        // 1. 모든 숫자 입력창 비우기 (일시불 포함)
         document.querySelectorAll('.num-input, .lump-sum-input').forEach(input => input.value = '');
         
-        // 2. 버튼 선택 해제 및 변수 초기화
         currentProduct = null;
         currentAccounts = null;
+        isPointSumOverridden = false; // 플래그 초기화
+        
         document.querySelectorAll('.product-btn, .account-btn').forEach(btn => btn.classList.remove('active'));
         
-        // 3. 카드 할인 토글 및 기본 금액 리셋
         document.getElementById('useCard').checked = false;
         document.getElementById('cardAmount').value = '17,000';
         
-        // 4. 스크래치 상태(클래스) 초기화
         document.querySelectorAll('.reveal-cell').forEach(cell => {
             cell.classList.remove('revealed', 'has-value');
         });
         
-        // 5. 전체 계산 로직 재실행 (빈값에 맞춰 하단 결과들도 모두 비워짐)
         calculateAll();
     }
 
@@ -367,6 +379,8 @@
             if (isDragging && this.dataset.row === dragRowType) {
                 this.value = dragValue; 
                 this.classList.add('dragging'); 
+                // 드래그 자동 채우기 시에도 보정 모드 해제
+                if(dragRowType === 'point') isPointSumOverridden = false;
                 calculateAll(); 
             }
         });
@@ -469,9 +483,7 @@
         if (selectedProduct && currentAccounts) {
             const totalRefundValue = selectedProduct.totalPrincipal * currentAccounts;
             const refundText = formatManWon(totalRefundValue);
-            
             let waitText = selectedProduct.waitMonths > 0 ? `+ ${selectedProduct.waitMonths}개월 거치 ` : '';
-            
             refundNotice.innerText = `✨ ${selectedProduct.payMonths}회 납입 ${waitText}후 원금 100% (${refundText}) 환급 ✨`;
             refundNotice.classList.remove('empty');
         } else {
@@ -479,8 +491,8 @@
             refundNotice.classList.add('empty');
         }
 
-        let conBaseSum = 0, conPointSum = 0, conCardSum = 0, conYearSum = 0;
-        let savBenefitSum = 0, savYearSum = 0;
+        let conBaseSum = 0, conPointSum = 0, conCardSum = 0;
+        let savBenefitSum = 0;
 
         for(let i=1; i<=6; i++) {
             let baseInput = document.getElementById(`con-base-${i}`).value.trim();
@@ -491,6 +503,7 @@
                 setRevealValue(`con-year-${i}`, 0, true);
                 
                 setRevealValue(`sav-base-${i}`, 0, true);
+                // 🎯 2번 표 포인트 셀 블라인드(reveal-cell) 적용에 맞춰 setRevealValue 사용
                 setRevealValue(`sav-point-${i}`, 0, true);
                 setRevealValue(`sav-benefit-${i}`, 0, true);
                 setRevealValue(`sav-total-${i}`, 0, true);
@@ -503,17 +516,17 @@
             let conCardDc = getNum(document.getElementById(`con-card-${i}`).value); 
 
             conBaseSum += baseFee * 12;
-            conPointSum += pointDc * 12;
+            conPointSum += pointDc * 12; // 임시 12개월 곱하기 자동 계산
             conCardSum += conCardDc * 12;
 
             let conTotal = baseFee - pointDc - conCardDc;
             let conYear = baseFee > 0 ? (conTotal * 12) : 0;
-            conYearSum += conYear;
             
             setRevealValue(`con-total-${i}`, conTotal, false);
             setRevealValue(`con-year-${i}`, conYear, false);
 
             setRevealValue(`sav-base-${i}`, baseFee, false);
+            // 🎯 2번 표 포인트 셀 블라인드(reveal-cell) 복구
             setRevealValue(`sav-point-${i}`, pointDc, false);
             
             let totalSavBenefit = kyowonInterest + savCardDiscount;
@@ -522,7 +535,6 @@
 
             let savTotal = baseFee - pointDc - totalSavBenefit;
             let savYear = baseFee > 0 ? (savTotal * 12) : 0;
-            savYearSum += savYear;
 
             setRevealValue(`sav-total-${i}`, savTotal, false);
             setRevealValue(`sav-year-${i}`, savYear, false);
@@ -530,13 +542,30 @@
 
         const hasAnyInput = (conBaseSum > 0);
         
+        // 🎯 포인트 총계 보정(Override) 로직 적용
+        let actualPointSum = conPointSum; 
+        if (hasAnyInput) {
+            if (isPointSumOverridden && document.getElementById('con-point-sum').value.trim() !== "") {
+                actualPointSum = getNum(document.getElementById('con-point-sum').value);
+            } else {
+                document.getElementById('con-point-sum').value = formatNumber(conPointSum);
+            }
+        } else {
+            document.getElementById('con-point-sum').value = '';
+            isPointSumOverridden = false;
+        }
+
+        // 보정된 포인트를 바탕으로 6년 연 요금(최종 결괏값) 실시간 재계산
+        let conYearSum = conBaseSum - actualPointSum - conCardSum;
+        let savYearSum = conBaseSum - actualPointSum - savBenefitSum;
+
         document.getElementById('con-base-sum').innerText = hasAnyInput ? formatNumber(conBaseSum) : '';
-        document.getElementById('con-point-sum').innerText = hasAnyInput ? formatNumber(conPointSum) : '';
         document.getElementById('con-card-sum').innerText = hasAnyInput ? formatNumber(conCardSum) : '';
         setRevealValue('con-year-sum', conYearSum, !hasAnyInput);
 
         setRevealValue('sav-base-sum', conBaseSum, !hasAnyInput);
-        setRevealValue('sav-point-sum', conPointSum, !hasAnyInput);
+        // 🎯 2번 표 포인트 총계 셀 블라인드(reveal-cell) 복구
+        setRevealValue('sav-point-sum', actualPointSum, !hasAnyInput);
         setRevealValue('sav-benefit-sum', savBenefitSum, !hasAnyInput);
         setRevealValue('sav-year-sum', savYearSum, !hasAnyInput);
     }
