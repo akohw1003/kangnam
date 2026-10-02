@@ -1123,8 +1123,8 @@
             const hasSubscription = modelHasSubscriptionTag && (subFee > 0 || promoDc > 0 || comboDc > 0 || preDc > 0 || cardDcMonthly > 0 || preAmt > 0 || preCard > 0 || realSub > 0 || realSub < 0);
             const subscriptionAmount = hasSubscription ? Math.max(0, preAmt - preCard + (realSub * contractMonth)) : 0;
             
-            // KB카드 혜택감소액(+36만) 추가 연산 적용
-            const kbPenalty = kbCardStates[i] ? 360000 : 0;
+            // KB카드 혜택감소액(+18만) 추가 연산 적용
+            const kbPenalty = kbCardStates[i] ? 180000 : 0;
             const total = (hasSubscription ? finalBenefit + subscriptionAmount : finalBenefit) + kbPenalty;
             
             const subscriptionShare = total > 0 ? (subscriptionAmount / total) : 0;
