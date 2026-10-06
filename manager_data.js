@@ -232,7 +232,7 @@ const MANAGER_DATA = {
     "11951": { branch: "모란점", name: "안경현", birth: "820226" },
     "12406": { branch: "모란점", name: "조승한", birth: "830516" },
     "16034": { branch: "미사본점", name: "금영현", birth: "900211" },
-    "18922": { branch: "강남 실행강화팀", name: "김현태", birth: "941230" },
+    "52175": { branch: "금천본점", name: "정다진", birth: "870227" },
     "51668": { branch: "강남 실행강화팀", name: "이세희", birth: "951007" },
     "51990": { branch: "강남 실행강화팀", name: "이정화", birth: "940903" },
     "52017": { branch: "강남 실행강화팀", name: "김혜지", birth: "900502" },
