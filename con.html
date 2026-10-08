@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가전 공간 컨설팅</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; 
+            background-color: #f4f5f7; 
+            color: #333; 
+            width: 100vw; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        
+        /* 1. 최상단 헤더 */
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 16px 32px; 
+            border-bottom: 1px solid #e5e5e5; 
+            background: #ffffff; 
+            z-index: 100; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            min-height: 64px;
+            flex-shrink: 0;
+        }
+        .logo { font-size: 22px; font-weight: 900; color: #a50034; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        
+        /* 헤더 컨트롤 (홈 버튼, 출력 버튼) */
+        .header-controls { display: flex; gap: 12px; }
+        .control-btn { 
+            padding: 8px 16px; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; 
+        }
+        .home-btn { background: #f0f1f4; color: #333; }
+        .home-btn:hover { background: #e4e5e9; }
+        .print-btn { background: #a50034; color: #fff; }
+        .print-btn:hover { background: #8a002b; }
+
+        /* 화면 전환용 클래스 */
+        .view-section { display: none; flex: 1; overflow: hidden; }
+        .view-section.active { display: flex; }
+
+        /* ==================== 2. 메인 화면 (홈 뷰) ==================== */
+        #home-view {
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .menu-section { width: 100%; max-width: 1000px; margin-bottom: 40px; }
+        .section-title { font-size: 20px; font-weight: 700; color: #444; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #333; display: inline-block; }
+        
+        .card-grid { display: grid; gap: 24px; grid-template-columns: repeat(4, 1fr); }
+        
+        .menu-card {
+            background: #ffffff; border-radius: 16px; padding: 40px 20px; text-align: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.04); transition: all 0.3s ease; border: 2px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+        }
+        .menu-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-color: #a50034; }
+        .menu-card.guide { background: #fdf0f3; }
+        .menu-card.guide:hover { border-color: #a50034; background: #fff; }
+
+        .card-icon { width: 64px; height: 64px; background: #f0f1f4; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #888; transition: all 0.3s ease; }
+        .menu-card:hover .card-icon { background: #a50034; color: #fff; }
+        .menu-card.guide .card-icon { background: #ffffff; color: #a50034; }
+        .card-title { font-size: 18px; font-weight: 700; color: #333; letter-spacing: -0.5px; }
+
+        @media (max-width: 900px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
+
+        /* ==================== 3. 상세 화면 (슬라이더 뷰) ==================== */
+        #detail-view { flex-direction: row; }
+
+        /* 좌측 사이드바 */
+        .sidebar { width: 280px; background: #ffffff; border-right: 1px solid #eaeaea; padding: 24px 20px; z-index: 99; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+        .sidebar-title { font-size: 14px; font-weight: 700; color: #888; margin-bottom: 4px; padding-left: 4px; }
+        
+        .cat-btn { padding: 14px 18px; border: none; background: #f9f9fb; cursor: pointer; border-radius: 10px; font-weight: 600; font-size: 15px; color: #555; text-align: left; transition: all 0.2s; border: 1px solid transparent; width: 100%; }
+        .cat-btn:hover { background: #f0f1f4; color: #333; }
+        .cat-btn.active { background: #fdf0f3; color: #a50034; font-weight: 700; border-color: #f7dadd; }
+        
+        /* 메인 슬라이더 영역 */
+        .slider-area { flex: 1; position: relative; background: #f8f9fa; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .slide-group { width: 100%; height: 100%; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease-in-out; display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 1; }
+        .slide.active { opacity: 1; z-index: 10; }
+        .slide img { width: 100%; height: 100%; object-fit: contain; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.25); color: #fff; border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 20; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
+        .nav-btn:hover { background: #a50034; }
+        .prev-btn { left: 24px; }
+        .next-btn { right: 24px; }
+        .slide-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 20; letter-spacing: 1px; }
+
+        /* ==================== 4. 인쇄(프린트)용 스타일 ==================== */
+        @media print {
+            body { background: #fff; overflow: visible; height: auto; display: block; }
+            .header, #home-view, .sidebar, .nav-btn, .slide-counter { display: none !important; }
+            .view-section { display: block !important; overflow: visible; }
+            .slider-area, .slide-group { display: block !important; overflow: visible; height: auto !important; background: transparent; }
+            
+            .slide { 
+                position: relative !important; 
+                opacity: 1 !important; 
+                display: block !important; 
+                width: 100%; 
+                height: 100vh !important; 
+                page-break-after: always; /* 각 이미지를 새로운 페이지에 출력 */
+                padding: 0; 
+            }
+            .slide img { box-shadow: none; border-radius: 0; object-fit: contain; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="logo" onclick="goHome()">LG 가전 공간 컨설팅</div>
+        <div class="header-controls">
+            <button id="btn-print-action" class="control-btn print-btn" onclick="printImages()" style="display: none;">🖨️ 출력하기</button>
+            <button id="btn-go-home" class="control-btn home-btn" onclick="goHome()" style="display: none;">🏠 홈으로</button>
+        </div>
+    </header>
+
+    <!-- [뷰 1] 메인 네비게이션 영역 (홈 뷰) -->
+    <main id="home-view" class="view-section active">
+        <section class="menu-section">
+            <h2 class="section-title">제품</h2>
+            <div class="card-grid">
+                <div class="menu-card" onclick="openCategory('tv')">
+                    <div class="card-icon">📺</div>
+                    <div class="card-title">TV</div>
+                </div>
+                <div class="menu-card" onclick="openCategory('dishwasher')">
+                    <div class="card-icon">🍽️</div>
+                    <div class="card-title">식기세척기 / 인덕션</div>
+                </div>
+                <div class="menu-card" onclick="openCategory('washtower')">
+                    <div class="card-icon">🧺</div>
+                    <div class="card-title">워시타워</div>
+                </div>
+                <div class="menu-card" onclick="openCategory('refrigerator')">
+                    <div class="card-icon">❄️</div>
+                    <div class="card-title">냉장고</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="menu-section">
+            <h2 class="section-title">공간 컨설팅 가이드</h2>
+            <div class="card-grid">
+                <div class="menu-card guide" onclick="openCategory('interior')">
+                    <div class="card-icon">🎨</div>
+                    <div class="card-title">인테리어</div>
+                </div>
+                <div class="menu-card guide" onclick="openCategory('measure')">
+                    <div class="card-icon">📏</div>
+                    <div class="card-title">실측 가이드</div>
+                </div>
+                <div class="menu-card guide" onclick="openCategory('print')">
+                    <div class="card-icon">🖨️</div>
+                    <div class="card-title">종합본(고객 출력용)</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- [뷰 2] 상세 슬라이더 영역 (디테일 뷰) -->
+    <main id="detail-view" class="view-section">
+        <!-- 좌측 사이드바 -->
+        <aside class="sidebar">
+            <div class="sidebar-title">제품</div>
+            <button class="cat-btn" id="sidebar-tv" onclick="openCategory('tv')">TV</button>
+            <button class="cat-btn" id="sidebar-dishwasher" onclick="openCategory('dishwasher')">식기세척기 / 인덕션</button>
+            <button class="cat-btn" id="sidebar-washtower" onclick="openCategory('washtower')">워시타워</button>
+            <button class="cat-btn" id="sidebar-refrigerator" onclick="openCategory('refrigerator')">냉장고</button>
+            
+            <div class="sidebar-title" style="margin-top: 20px;">공간 컨설팅 가이드</div>
+            <button class="cat-btn" id="sidebar-interior" onclick="openCategory('interior')">인테리어</button>
+            <button class="cat-btn" id="sidebar-measure" onclick="openCategory('measure')">실측 가이드</button>
+            <button class="cat-btn" id="sidebar-print" onclick="openCategory('print')">종합본(고객 출력용)</button>
+        </aside>
+
+        <!-- 우측 슬라이더 -->
+        <div class="slider-area">
+            <div id="slide-track" class="slide-group active">
+                <!-- 자바스크립트를 통해 이미지가 동적 생성됩니다. -->
+            </div>
+            
+            <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
+            <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+            <div class="slide-counter" id="slide-counter">1 / 1</div>
+        </div>
+    </main>
+
+<script>
+    // 카테고리별 파일 매핑 정보 설정
+    const categoryData = {
+        'tv': { prefix: 'TV', count: 19 },
+        'dishwasher': { prefix: 'kit', count: 15 },
+        'washtower': { prefix: 'wa', count: 17 },
+        'refrigerator': { prefix: 'REF', count: 17 },
+        'interior': { prefix: 'int', count: 13 },
+        'measure': { prefix: 'ru', count: 4 },
+        'print': { prefix: 'all', count: 5 }
+    };
+
+    const folderPath = "./"; // 이미지가 있는 경로
+    let currentSlideIndex = 0;
+    let currentCategoryCount = 0;
+
+    // 카테고리 열기 (메인 뷰 -> 디테일 뷰 전환 & 슬라이드 로드)
+    function openCategory(categoryId) {
+        // 1. 화면 전환
+        document.getElementById('home-view').classList.remove('active');
+        document.getElementById('detail-view').classList.add('active');
+        
+        // 2. 헤더 버튼 제어
+        document.getElementById('btn-go-home').style.display = 'flex';
+        if(categoryId === 'print') {
+            document.getElementById('btn-print-action').style.display = 'flex';
+        } else {
+            document.getElementById('btn-print-action').style.display = 'none';
+        }
+
+        // 3. 사이드바 활성화 표시
+        document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`sidebar-${categoryId}`).classList.add('active');
+
+        // 4. 슬라이드 동적 생성
+        loadSlides(categoryId);
+    }
+
+    // 홈으로 돌아가기
+    function goHome() {
+        document.getElementById('detail-view').classList.remove('active');
+        document.getElementById('home-view').classList.add('active');
+        
+        document.getElementById('btn-go-home').style.display = 'none';
+        document.getElementById('btn-print-action').style.display = 'none';
+    }
+
+    // 슬라이드 이미지 DOM 생성
+    function loadSlides(categoryId) {
+        const track = document.getElementById('slide-track');
+        track.innerHTML = ''; // 기존 슬라이드 초기화
+        
+        const data = categoryData[categoryId];
+        currentCategoryCount = data.count;
+        currentSlideIndex = 0;
+
+        for (let i = 1; i <= data.count; i++) {
+            // 프린트 카테고리의 경우 인쇄를 위해 lazy loading 제외
+            const lazyAttr = categoryId === 'print' ? '' : 'loading="lazy"';
+            const isActive = i === 1 ? 'active' : '';
+            
+            const slideHTML = `
+                <div class="slide ${isActive}">
+                    <img src="${folderPath}${data.prefix}${i}.JPG" 
+                         alt="${categoryId} ${i}" 
+                         ${lazyAttr}
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/1200x675/e5e5e5/666666?text=Image+Not+Found+(${data.prefix}${i}.JPG)';">
+                </div>
+            `;
+            track.innerHTML += slideHTML;
+        }
+        updateCounter();
+    }
+
+    // 슬라이드 이동
+    function moveSlide(direction) {
+        if(currentCategoryCount <= 1) return;
+        
+        const slides = document.querySelectorAll('#slide-track .slide');
+        slides[currentSlideIndex].classList.remove('active');
+        
+        currentSlideIndex += direction;
+        
+        if (currentSlideIndex >= currentCategoryCount) currentSlideIndex = 0;
+        if (currentSlideIndex < 0) currentSlideIndex = currentCategoryCount - 1;
+        
+        slides[currentSlideIndex].classList.add('active');
+        updateCounter();
+    }
+
+    // 카운터 텍스트 업데이트
+    function updateCounter() {
+        const counter = document.getElementById('slide-counter');
+        counter.innerText = `${currentSlideIndex + 1} / ${currentCategoryCount}`;
+    }
+
+    // 키보드 좌우 방향키 지원 (상세 뷰가 열려있을 때만 작동)
+    document.addEventListener('keydown', (e) => {
+        if (document.getElementById('detail-view').classList.contains('active')) {
+            if(e.key === 'ArrowRight') moveSlide(1);
+            if(e.key === 'ArrowLeft') moveSlide(-1);
+        }
+    });
+
+    // 종합본 인쇄 기능 호출
+    function printImages() {
+        window.print();
+    }
+</script>
+
+</body>
+</html>
