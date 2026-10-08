@@ -10,35 +10,38 @@
         body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f4f5f7; color: #333; width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
         /* 1. 최상단 헤더 (로고 및 모드 전환만 존재) */
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; border-bottom: 1px solid #e5e5e5; background: #ffffff; z-index: 100; min-height: 60px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; border-bottom: 1px solid #e5e5e5; background: #ffffff; z-index: 100; min-height: 60px; flex-shrink: 0; }
         .logo { font-size: 20px; font-weight: 900; color: #a50034; letter-spacing: -0.5px; }
         
         .mode-switch { display: flex; background: #f0f1f4; padding: 4px; border-radius: 8px; }
         .mode-btn { padding: 6px 16px; border: none; background: transparent; color: #666; cursor: pointer; border-radius: 6px; font-weight: bold; font-size: 14px; transition: all 0.2s; }
         .mode-btn.active { background: #ffffff; color: #333; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+        /* 2. 하단 콘텐츠 영역 (사이드바 + 메인 슬라이드) */
+        .content-wrapper { display: flex; flex: 1; flex-direction: row; overflow: hidden; }
         
-        /* 2. 서브 헤더 (대분류 + 소분류 한 줄 배치) */
-        .sub-header-container { display: none; align-items: center; justify-content: center; background: #ffffff; border-bottom: 1px solid #eaeaea; padding: 12px 20px; gap: 16px; z-index: 99; min-height: 56px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .sub-header-container.active { display: flex; }
+        /* 3. 좌측 사이드바 (기존 서브 헤더 대체) */
+        .sidebar { display: none; flex-direction: column; width: 280px; background: #ffffff; border-right: 1px solid #eaeaea; padding: 24px 20px; gap: 20px; z-index: 99; overflow-y: auto; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.02); }
+        .sidebar.active { display: flex; }
         
-        /* 대분류 스타일 (첨부 이미지 디자인 적용) */
-        .main-category-tabs { display: flex; align-items: center; gap: 4px; }
-        .cat-btn { padding: 10px 18px; border: none; background: transparent; cursor: pointer; border-radius: 8px; font-weight: 600; font-size: 15px; color: #666; transition: all 0.2s; letter-spacing: -0.3px; }
-        .cat-btn:hover { color: #333; }
-        .cat-btn.active { background: #fdf0f3; color: #a50034; font-weight: 700; }
+        /* 대분류 스타일 (세로 배치) */
+        .main-category-tabs { display: flex; flex-direction: column; gap: 8px; }
+        .cat-btn { padding: 14px 18px; border: none; background: #f9f9fb; cursor: pointer; border-radius: 10px; font-weight: 600; font-size: 15px; color: #555; text-align: left; transition: all 0.2s; letter-spacing: -0.3px; border: 1px solid transparent; }
+        .cat-btn:hover { background: #f0f1f4; color: #333; }
+        .cat-btn.active { background: #fdf0f3; color: #a50034; font-weight: 700; border-color: #f7dadd; }
         
-        /* 대분류 - 소분류 사이 구분선 */
-        .divider { width: 1px; height: 20px; background-color: #ddd; display: none; }
+        /* 대분류 - 소분류 사이 구분선 (가로선으로 변경) */
+        .divider { width: 100%; height: 1px; background-color: #eaeaea; display: none; margin: 4px 0; }
         .divider.active { display: block; }
         
-        /* 소분류 탭 */
-        .sub-category-tabs { display: none; align-items: center; gap: 8px; }
+        /* 소분류 탭 (세로 배치) */
+        .sub-category-tabs { display: none; flex-direction: column; gap: 8px; padding: 0 10px; }
         .sub-category-tabs.active { display: flex; }
-        .sub-btn { padding: 8px 16px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 20px; font-size: 13px; font-weight: 600; color: #666; transition: 0.2s; }
+        .sub-btn { padding: 12px 16px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 8px; font-size: 14px; font-weight: 600; color: #666; text-align: left; transition: 0.2s; }
         .sub-btn:hover { background: #f9f9f9; }
         .sub-btn.active { border-color: #444; background: #444; color: #fff; }
         
-        /* 3. 메인 콘텐츠 (슬라이더 영역) */
+        /* 4. 메인 콘텐츠 (슬라이더 영역) */
         .part-container { display: none; flex: 1; flex-direction: column; height: 100%; position: relative; }
         .part-container.active { display: flex; }
         
@@ -47,19 +50,19 @@
         .slide-group { display: none; width: 100%; height: 100%; position: relative; }
         .slide-group.active { display: block; }
         
-        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease-in-out; display: flex; align-items: center; justify-content: center; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s ease-in-out; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .slide.active { opacity: 1; z-index: 10; }
         
-        .slide img { width: 100%; height: 100%; object-fit: contain; }
+        .slide img { width: 100%; height: 100%; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: #fff; border-radius: 8px; }
 
         /* 이동 버튼 */
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.15); color: #fff; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 20; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
+        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.25); color: #fff; border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 20; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
         .nav-btn:hover { background: #a50034; }
         .prev-btn { left: 24px; }
         .next-btn { right: 24px; }
         
         /* 카운터 */
-        .slide-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); color: #fff; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; z-index: 20; letter-spacing: 1px; }
+        .slide-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 20; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -68,59 +71,65 @@
     <header class="header">
         <div class="logo">LG 바스에어 시스템</div>
         <div class="mode-switch">
-            <button class="mode-btn active" onclick="switchMode('part1', this)">제품 설명 (1~7p)</button>
-            <button class="mode-btn" onclick="switchMode('part2', this)">맞춤 설치 사례 (8p~)</button>
+            <button class="mode-btn active" onclick="switchMode('part2', this)">맞춤 설치 사례</button>
+            <button class="mode-btn" onclick="switchMode('part1', this)">상담 바인더</button>
         </div>
     </header>
 
-    <!-- 2. 서브 헤더 (Part 2 선택 시 노출 / 대분류 + 소분류 나란히 배치) -->
-    <div class="sub-header-container" id="sub-header">
-        <!-- 대분류 -->
-        <div class="main-category-tabs">
-            <button class="cat-btn active" onclick="selectCategory('cat1', this)">욕실 중앙 外 설치</button>
-            <button class="cat-btn" onclick="selectCategory('cat2', this)">아치형 천장</button>
-            <button class="cat-btn" onclick="selectCategory('cat3', this)">기존 환풍기 위치</button>
-            <button class="cat-btn" onclick="selectCategory('cat4', this)">창문 있는 화장실</button>
-        </div>
+    <!-- 콘텐츠 래퍼 (사이드바 + 메인 슬라이드 좌우 배치) -->
+    <div class="content-wrapper">
+        
+        <!-- 2. 좌측 사이드바 (초기 노출되도록 active 추가) -->
+        <aside class="sidebar active" id="sidebar">
+            <!-- 대분류 -->
+            <div class="main-category-tabs">
+                <button class="cat-btn active" onclick="selectCategory('cat1', this)">욕실 중앙 外 설치</button>
+                
+                <!-- 구분선 (Cat 1 하위에 바로 붙도록 위치 조정됨) -->
+                <div class="divider active" id="cat-divider"></div>
+                
+                <!-- 소분류 (Cat 1 전용, Cat 1 버튼 바로 밑에 위치) -->
+                <div class="sub-category-tabs active" id="sub-cat1">
+                    <button class="sub-btn active" onclick="selectSubCategory('group-cat1-sub1', this)">일반</button>
+                    <button class="sub-btn" onclick="selectSubCategory('group-cat1-sub2', this)">욕조 위</button>
+                    <button class="sub-btn" onclick="selectSubCategory('group-cat1-sub3', this)">샤워부스 위</button>
+                </div>
+                
+                <button class="cat-btn" onclick="selectCategory('cat2', this)">아치형 천장</button>
+                <button class="cat-btn" onclick="selectCategory('cat3', this)">기존 환풍기 위치</button>
+                <button class="cat-btn" onclick="selectCategory('cat4', this)">창문 있는 화장실</button>
+            </div>
+        </aside>
 
-        <!-- 구분선 (Cat 1 선택 시 활성화) -->
-        <div class="divider active" id="cat-divider"></div>
+        <!-- 3. 메인 콘텐츠 (Part 1 - 초기에는 active 제거됨) -->
+        <main id="part1" class="part-container">
+            <div class="slider-wrapper">
+                <div id="group-part1" class="slide-group active"></div>
+                
+                <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
+                <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+                <div class="slide-counter" id="counter-part1"></div>
+            </div>
+        </main>
 
-        <!-- 소분류 (Cat 1 전용) -->
-        <div class="sub-category-tabs active" id="sub-cat1">
-            <button class="sub-btn active" onclick="selectSubCategory('group-cat1-sub1', this)">일반</button>
-            <button class="sub-btn" onclick="selectSubCategory('group-cat1-sub2', this)">욕조 위</button>
-            <button class="sub-btn" onclick="selectSubCategory('group-cat1-sub3', this)">샤워부스 위</button>
-        </div>
+        <!-- 3. 메인 콘텐츠 (Part 2 - 초기 노출되도록 active 추가됨) -->
+        <main id="part2" class="part-container active">
+            <div class="slider-wrapper">
+                <!-- 슬라이드 그룹들 -->
+                <div id="group-cat1-sub1" class="slide-group active"></div>
+                <div id="group-cat1-sub2" class="slide-group"></div>
+                <div id="group-cat1-sub3" class="slide-group"></div>
+                <div id="group-cat2" class="slide-group"></div>
+                <div id="group-cat3" class="slide-group"></div>
+                <div id="group-cat4" class="slide-group"></div>
+
+                <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
+                <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+                <div class="slide-counter" id="counter-part2"></div>
+            </div>
+        </main>
+
     </div>
-
-    <!-- 3. 메인 콘텐츠 (Part 1) -->
-    <main id="part1" class="part-container active">
-        <div class="slider-wrapper">
-            <div id="group-part1" class="slide-group active"></div>
-            
-            <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
-            <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
-            <div class="slide-counter" id="counter-part1"></div>
-        </div>
-    </main>
-
-    <!-- 3. 메인 콘텐츠 (Part 2) -->
-    <main id="part2" class="part-container">
-        <div class="slider-wrapper">
-            <!-- 슬라이드 그룹들 -->
-            <div id="group-cat1-sub1" class="slide-group active"></div>
-            <div id="group-cat1-sub2" class="slide-group"></div>
-            <div id="group-cat1-sub3" class="slide-group"></div>
-            <div id="group-cat2" class="slide-group"></div>
-            <div id="group-cat3" class="slide-group"></div>
-            <div id="group-cat4" class="slide-group"></div>
-
-            <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
-            <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
-            <div class="slide-counter" id="counter-part2"></div>
-        </div>
-    </main>
 
 <script>
     // 깃허브 호스팅용 동일 경로
@@ -154,8 +163,9 @@
         }
     }
 
-    let currentMode = 'part1';
-    let activeGroupId = 'group-part1';
+    // 초기 상태 ('part2' 및 그 하위 첫 번째 그룹으로 시작)
+    let currentMode = 'part2';
+    let activeGroupId = 'group-cat1-sub1';
 
     // 슬라이드 카운터 및 뷰 갱신
     function updateSlider() {
@@ -208,14 +218,14 @@
         document.querySelectorAll('.part-container').forEach(part => part.classList.remove('active'));
         document.getElementById(mode).classList.add('active');
         
-        const subHeader = document.getElementById('sub-header');
+        const sidebar = document.getElementById('sidebar');
 
         if(mode === 'part1') {
             activeGroupId = 'group-part1';
-            subHeader.classList.remove('active');
+            sidebar.classList.remove('active');
             updateSlider();
         } else {
-            subHeader.classList.add('active');
+            sidebar.classList.add('active');
             // Part2 진입 시 현재 활성화된 대분류 클릭 이벤트 강제 실행
             const activeCat = document.querySelector('.main-category-tabs .cat-btn.active');
             if(activeCat) activeCat.click();
@@ -290,8 +300,3 @@
 
 </body>
 </html>
-```<ElicitationsGroup message="다음으로 어떤 작업을 진행할까요?">
-  <Elicitation label="모바일 환경 스와이프 기능 추가" query="이 코드에 모바일에서 터치로 스와이프해서 슬라이드를 넘길 수 있는 기능을 추가해 줘."/>
-  <Elicitation label="슬라이드 애니메이션 효과 변경" query="슬라이드가 넘어갈 때 페이드 인/아웃 말고 좌우로 밀리는 슬라이드 애니메이션 효과로 변경해 줘."/>
-  <Elicitation label="자동 슬라이드(오토플레이) 기능" query="3초마다 자동으로 다음 슬라이드로 넘어가는 오토플레이 기능을 추가해 줘."/>
-</ElicitationsGroup>
