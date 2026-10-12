@@ -91,16 +91,66 @@
         .slide.active { opacity: 1; z-index: 10; }
         .slide img { width: 100%; height: 100%; object-fit: contain; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
+        /* 네비게이션 버튼 및 카운터 */
         .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.25); color: #fff; border: none; width: 48px; height: 48px; border-radius: 50%; font-size: 20px; cursor: pointer; z-index: 20; transition: background 0.2s; display: flex; align-items: center; justify-content: center; }
         .nav-btn:hover { background: #a50034; }
         .prev-btn { left: 24px; }
         .next-btn { right: 24px; }
         .slide-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 20; letter-spacing: 1px; }
 
+        /* ==================== 썸네일 네비게이션 바 ==================== */
+        .thumbnail-bar {
+            position: absolute;
+            bottom: 65px; /* 카운터 바로 위 위치 */
+            left: 50%;
+            transform: translateX(-50%);
+            /* 배경 투명도 대폭 증가 및 블러 처리 */
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            max-width: 80%;
+            overflow-x: auto;
+            z-index: 30;
+            opacity: 0; /* 기본 숨김 */
+            pointer-events: none;
+            /* 사라지는 속도를 조금 더 빠르게 */
+            transition: opacity 0.3s ease-in-out;
+            scroll-behavior: smooth;
+        }
+        
+        .thumbnail-bar.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .thumbnail-bar::-webkit-scrollbar { height: 6px; }
+        .thumbnail-bar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+
+        .thumb-img {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: rgba(240, 240, 240, 0.5);
+            opacity: 0.6; /* 썸네일 자체도 반투명하게 */
+        }
+        
+        .thumb-img:hover { border-color: #ff99b0; opacity: 1; }
+        .thumb-img.active { border-color: #a50034; transform: scale(1.05); opacity: 1; }
+
         /* ==================== 4. 인쇄(프린트)용 스타일 ==================== */
         @media print {
             body { background: #fff; overflow: visible; height: auto; display: block; }
-            .header, #home-view, .sidebar, .nav-btn, .slide-counter { display: none !important; }
+            .header, #home-view, .sidebar, .nav-btn, .slide-counter, .thumbnail-bar { display: none !important; }
             .view-section { display: block !important; overflow: visible; }
             .slider-area, .slide-group { display: block !important; overflow: visible; height: auto !important; background: transparent; }
             
@@ -110,7 +160,7 @@
                 display: block !important; 
                 width: 100%; 
                 height: 100vh !important; 
-                page-break-after: always; /* 각 이미지를 새로운 페이지에 출력 */
+                page-break-after: always; 
                 padding: 0; 
             }
             .slide img { box-shadow: none; border-radius: 0; object-fit: contain; }
@@ -163,6 +213,10 @@
                     <div class="card-icon">📏</div>
                     <div class="card-title">실측 가이드</div>
                 </div>
+                <div class="menu-card guide" onclick="openCategory('case')">
+                    <div class="card-icon">🖼️</div>
+                    <div class="card-title">설치 사례</div>
+                </div>
                 <div class="menu-card guide" onclick="openCategory('print')">
                     <div class="card-icon">🖨️</div>
                     <div class="card-title">종합본(고객 출력용)</div>
@@ -184,17 +238,24 @@
             <div class="sidebar-title" style="margin-top: 20px;">공간 컨설팅 가이드</div>
             <button class="cat-btn" id="sidebar-interior" onclick="openCategory('interior')">인테리어</button>
             <button class="cat-btn" id="sidebar-measure" onclick="openCategory('measure')">실측 가이드</button>
+            <button class="cat-btn" id="sidebar-case" onclick="openCategory('case')">설치 사례</button>
             <button class="cat-btn" id="sidebar-print" onclick="openCategory('print')">종합본(고객 출력용)</button>
         </aside>
 
         <!-- 우측 슬라이더 -->
-        <div class="slider-area">
+        <div class="slider-area" id="slider-area">
             <div id="slide-track" class="slide-group active">
-                <!-- 자바스크립트를 통해 이미지가 동적 생성됩니다. -->
+                <!-- 메인 이미지 동적 생성 -->
             </div>
             
             <button class="nav-btn prev-btn" onclick="moveSlide(-1)">&#10094;</button>
             <button class="nav-btn next-btn" onclick="moveSlide(1)">&#10095;</button>
+            
+            <!-- 썸네일 네비게이션 바 -->
+            <div id="thumbnail-bar" class="thumbnail-bar">
+                <!-- 썸네일 이미지 동적 생성 -->
+            </div>
+
             <div class="slide-counter" id="slide-counter">1 / 1</div>
         </div>
     </main>
@@ -208,20 +269,22 @@
         'refrigerator': { prefix: 'REF', count: 17 },
         'interior': { prefix: 'int', count: 13 },
         'measure': { prefix: 'ru', count: 4 },
+        'case': { prefix: 'case', count: 8, ext: '.png' },
         'print': { prefix: 'all', count: 5 }
     };
 
-    const folderPath = "./"; // 이미지가 있는 경로
+    const folderPath = "./";
     let currentSlideIndex = 0;
     let currentCategoryCount = 0;
+    
+    // 자동 숨김 타이머 변수
+    let hideThumbTimeout;
 
-    // 카테고리 열기 (메인 뷰 -> 디테일 뷰 전환 & 슬라이드 로드)
+    // 카테고리 열기
     function openCategory(categoryId) {
-        // 1. 화면 전환
         document.getElementById('home-view').classList.remove('active');
         document.getElementById('detail-view').classList.add('active');
         
-        // 2. 헤더 버튼 제어
         document.getElementById('btn-go-home').style.display = 'flex';
         if(categoryId === 'print') {
             document.getElementById('btn-print-action').style.display = 'flex';
@@ -229,11 +292,9 @@
             document.getElementById('btn-print-action').style.display = 'none';
         }
 
-        // 3. 사이드바 활성화 표시
         document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`sidebar-${categoryId}`).classList.add('active');
 
-        // 4. 슬라이드 동적 생성
         loadSlides(categoryId);
     }
 
@@ -246,60 +307,123 @@
         document.getElementById('btn-print-action').style.display = 'none';
     }
 
-    // 슬라이드 이미지 DOM 생성
+    // 메인 슬라이드 및 썸네일 렌더링
     function loadSlides(categoryId) {
         const track = document.getElementById('slide-track');
-        track.innerHTML = ''; // 기존 슬라이드 초기화
+        const thumbBar = document.getElementById('thumbnail-bar');
+        
+        track.innerHTML = '';
+        thumbBar.innerHTML = '';
         
         const data = categoryData[categoryId];
         currentCategoryCount = data.count;
         currentSlideIndex = 0;
+        
+        const fileExt = data.ext || '.JPG';
 
         for (let i = 1; i <= data.count; i++) {
-            // 프린트 카테고리의 경우 인쇄를 위해 lazy loading 제외
             const lazyAttr = categoryId === 'print' ? '' : 'loading="lazy"';
             const isActive = i === 1 ? 'active' : '';
-            
+            const imgSrc = `${folderPath}${data.prefix}${i}${fileExt}`;
+            const fallbackSrc = `https://via.placeholder.com/1200x675/e5e5e5/666666?text=Image+Not+Found+(${data.prefix}${i}${fileExt})`;
+
             const slideHTML = `
                 <div class="slide ${isActive}">
-                    <img src="${folderPath}${data.prefix}${i}.JPG" 
-                         alt="${categoryId} ${i}" 
-                         ${lazyAttr}
-                         onerror="this.onerror=null; this.src='https://via.placeholder.com/1200x675/e5e5e5/666666?text=Image+Not+Found+(${data.prefix}${i}.JPG)';">
+                    <img src="${imgSrc}" alt="${categoryId} ${i}" ${lazyAttr} onerror="this.onerror=null; this.src='${fallbackSrc}';">
                 </div>
             `;
             track.innerHTML += slideHTML;
+
+            const thumbHTML = `
+                <img src="${imgSrc}" alt="thumb ${i}" class="thumb-img ${isActive}" 
+                     onclick="jumpToSlide(${i - 1})"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/80x50/e5e5e5/666666?text=?';">
+            `;
+            thumbBar.innerHTML += thumbHTML;
         }
-        updateCounter();
+        
+        updateSliderState();
+        showThumbnails();
     }
 
-    // 슬라이드 이동
+    // 좌우 버튼 슬라이드 이동
     function moveSlide(direction) {
         if(currentCategoryCount <= 1) return;
-        
-        const slides = document.querySelectorAll('#slide-track .slide');
-        slides[currentSlideIndex].classList.remove('active');
-        
         currentSlideIndex += direction;
         
         if (currentSlideIndex >= currentCategoryCount) currentSlideIndex = 0;
         if (currentSlideIndex < 0) currentSlideIndex = currentCategoryCount - 1;
         
-        slides[currentSlideIndex].classList.add('active');
-        updateCounter();
+        updateSliderState();
+        showThumbnails();
     }
 
-    // 카운터 텍스트 업데이트
-    function updateCounter() {
+    // 썸네일 클릭 시 특정 슬라이드로 점프
+    function jumpToSlide(index) {
+        if (index === currentSlideIndex) return;
+        currentSlideIndex = index;
+        
+        updateSliderState();
+        showThumbnails();
+    }
+
+    // 슬라이드, 썸네일, 카운터 상태 동기화 업데이트
+    function updateSliderState() {
+        const slides = document.querySelectorAll('#slide-track .slide');
+        slides.forEach(slide => slide.classList.remove('active'));
+        if(slides[currentSlideIndex]) slides[currentSlideIndex].classList.add('active');
+        
+        const thumbs = document.querySelectorAll('#thumbnail-bar .thumb-img');
+        thumbs.forEach(thumb => thumb.classList.remove('active'));
+        if(thumbs[currentSlideIndex]) {
+            thumbs[currentSlideIndex].classList.add('active');
+            thumbs[currentSlideIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+        
         const counter = document.getElementById('slide-counter');
         counter.innerText = `${currentSlideIndex + 1} / ${currentCategoryCount}`;
     }
 
-    // 키보드 좌우 방향키 지원 (상세 뷰가 열려있을 때만 작동)
+    // 썸네일 바 표시 & 0.3초 뒤 자동 숨김 처리 함수
+    function showThumbnails() {
+        const thumbBar = document.getElementById('thumbnail-bar');
+        if(!thumbBar) return;
+        
+        thumbBar.classList.add('show');
+        clearTimeout(hideThumbTimeout);
+        
+        // 대기 시간을 1초(1000)에서 0.3초(300)로 대폭 단축
+        hideThumbTimeout = setTimeout(() => {
+            thumbBar.classList.remove('show');
+        }, 300); 
+    }
+
+    // 마우스 움직임이나 터치가 발생할 때 썸네일 표시
+    const sliderArea = document.getElementById('slider-area');
+    sliderArea.addEventListener('mousemove', showThumbnails);
+    sliderArea.addEventListener('touchstart', showThumbnails);
+    
+    // 마우스가 화면 밖으로 나가면 즉시 숨김 타이머 시작
+    sliderArea.addEventListener('mouseleave', () => {
+        clearTimeout(hideThumbTimeout);
+        const thumbBar = document.getElementById('thumbnail-bar');
+        if(thumbBar) thumbBar.classList.remove('show');
+    });
+
+    // 썸네일 바 영역에 마우스를 올리고 있을 때는 숨기지 않음
+    const thumbBarElement = document.getElementById('thumbnail-bar');
+    thumbBarElement.addEventListener('mouseenter', () => {
+        clearTimeout(hideThumbTimeout);
+    });
+    thumbBarElement.addEventListener('mouseleave', () => {
+        showThumbnails(); // 나가면 다시 0.3초 카운트다운 시작
+    });
+
+    // 키보드 좌우 방향키 지원
     document.addEventListener('keydown', (e) => {
         if (document.getElementById('detail-view').classList.contains('active')) {
-            if(e.key === 'ArrowRight') moveSlide(1);
-            if(e.key === 'ArrowLeft') moveSlide(-1);
+            if(e.key === 'ArrowRight') { moveSlide(1); showThumbnails(); }
+            if(e.key === 'ArrowLeft') { moveSlide(-1); showThumbnails(); }
         }
     });
 
