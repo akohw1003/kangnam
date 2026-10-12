@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         /* 전체 화면 스크롤 방지 및 라이트 테마 기본 색상 */
-        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f4f5f7; color: #333; width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif; background-color: #f4f5f7; color: #333; width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; position: relative; }
         
         /* 1. 최상단 헤더 (로고 및 모드 전환만 존재) */
         .header { display: flex; justify-content: space-between; align-items: center; padding: 10px 24px; border-bottom: 1px solid #e5e5e5; background: #ffffff; z-index: 100; min-height: 60px; flex-shrink: 0; }
@@ -18,23 +18,23 @@
         .mode-btn.active { background: #ffffff; color: #333; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
 
         /* 2. 하단 콘텐츠 영역 (사이드바 + 메인 슬라이드) */
-        .content-wrapper { display: flex; flex: 1; flex-direction: row; overflow: hidden; }
+        .content-wrapper { display: flex; flex: 1; flex-direction: row; overflow: hidden; position: relative; }
         
-        /* 3. 좌측 사이드바 (기존 서브 헤더 대체) */
+        /* 3. 좌측 사이드바 */
         .sidebar { display: none; flex-direction: column; width: 280px; background: #ffffff; border-right: 1px solid #eaeaea; padding: 24px 20px; gap: 20px; z-index: 99; overflow-y: auto; flex-shrink: 0; box-shadow: 2px 0 5px rgba(0,0,0,0.02); }
         .sidebar.active { display: flex; }
         
-        /* 대분류 스타일 (세로 배치) */
+        /* 대분류 스타일 */
         .main-category-tabs { display: flex; flex-direction: column; gap: 8px; }
         .cat-btn { padding: 14px 18px; border: none; background: #f9f9fb; cursor: pointer; border-radius: 10px; font-weight: 600; font-size: 15px; color: #555; text-align: left; transition: all 0.2s; letter-spacing: -0.3px; border: 1px solid transparent; }
         .cat-btn:hover { background: #f0f1f4; color: #333; }
         .cat-btn.active { background: #fdf0f3; color: #a50034; font-weight: 700; border-color: #f7dadd; }
         
-        /* 대분류 - 소분류 사이 구분선 (가로선으로 변경) */
+        /* 대분류 - 소분류 사이 구분선 */
         .divider { width: 100%; height: 1px; background-color: #eaeaea; display: none; margin: 4px 0; }
         .divider.active { display: block; }
         
-        /* 소분류 탭 (세로 배치) */
+        /* 소분류 탭 */
         .sub-category-tabs { display: none; flex-direction: column; gap: 8px; padding: 0 10px; }
         .sub-category-tabs.active { display: flex; }
         .sub-btn { padding: 12px 16px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 8px; font-size: 14px; font-weight: 600; color: #666; text-align: left; transition: 0.2s; }
@@ -63,6 +63,59 @@
         
         /* 카운터 */
         .slide-counter { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 20; letter-spacing: 1px; }
+
+        /* ==================== 썸네일 네비게이션 바 (공통 오버레이) ==================== */
+        .thumbnail-bar {
+            position: absolute;
+            bottom: 65px;
+            left: 50%; /* 기본값: 화면 중앙 */
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            max-width: 70%; 
+            overflow-x: auto;
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            /* opacity 0.3s, 위치 변화 시 부드럽게 이동하도록 left 속성 추가 */
+            transition: opacity 0.3s ease-in-out, left 0.3s ease-in-out;
+            scroll-behavior: smooth;
+        }
+        
+        /* 사이드바가 켜졌을 때 (with-sidebar 클래스 추가 시) 위치 우측으로 140px 보정 */
+        .content-wrapper.with-sidebar .thumbnail-bar {
+            left: calc(50% + 140px);
+        }
+        
+        .thumbnail-bar.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .thumbnail-bar::-webkit-scrollbar { height: 6px; }
+        .thumbnail-bar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
+
+        .thumb-img {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            background: rgba(240, 240, 240, 0.5);
+            opacity: 0.6;
+        }
+        
+        .thumb-img:hover { border-color: #ff99b0; opacity: 1; }
+        .thumb-img.active { border-color: #a50034; transform: scale(1.05); opacity: 1; }
     </style>
 </head>
 <body>
@@ -76,19 +129,14 @@
         </div>
     </header>
 
-    <!-- 콘텐츠 래퍼 (사이드바 + 메인 슬라이드 좌우 배치) -->
-    <div class="content-wrapper">
+    <!-- 콘텐츠 래퍼 (초기에는 맞춤설치 모드이므로 with-sidebar 클래스 포함) -->
+    <div class="content-wrapper with-sidebar">
         
-        <!-- 2. 좌측 사이드바 (초기 노출되도록 active 추가) -->
+        <!-- 2. 좌측 사이드바 -->
         <aside class="sidebar active" id="sidebar">
-            <!-- 대분류 -->
             <div class="main-category-tabs">
                 <button class="cat-btn active" onclick="selectCategory('cat1', this)">욕실 중앙 外 설치</button>
-                
-                <!-- 구분선 (Cat 1 하위에 바로 붙도록 위치 조정됨) -->
                 <div class="divider active" id="cat-divider"></div>
-                
-                <!-- 소분류 (Cat 1 전용, Cat 1 버튼 바로 밑에 위치) -->
                 <div class="sub-category-tabs active" id="sub-cat1">
                     <button class="sub-btn active" onclick="selectSubCategory('group-cat1-sub1', this)">일반</button>
                     <button class="sub-btn" onclick="selectSubCategory('group-cat1-sub2', this)">욕조 위</button>
@@ -101,7 +149,7 @@
             </div>
         </aside>
 
-        <!-- 3. 메인 콘텐츠 (Part 1 - 초기에는 active 제거됨) -->
+        <!-- 3. 메인 콘텐츠 (Part 1) -->
         <main id="part1" class="part-container">
             <div class="slider-wrapper">
                 <div id="group-part1" class="slide-group active"></div>
@@ -112,10 +160,9 @@
             </div>
         </main>
 
-        <!-- 3. 메인 콘텐츠 (Part 2 - 초기 노출되도록 active 추가됨) -->
+        <!-- 3. 메인 콘텐츠 (Part 2) -->
         <main id="part2" class="part-container active">
             <div class="slider-wrapper">
-                <!-- 슬라이드 그룹들 -->
                 <div id="group-cat1-sub1" class="slide-group active"></div>
                 <div id="group-cat1-sub2" class="slide-group"></div>
                 <div id="group-cat1-sub3" class="slide-group"></div>
@@ -128,6 +175,11 @@
                 <div class="slide-counter" id="counter-part2"></div>
             </div>
         </main>
+        
+        <!-- 썸네일 네비게이션 바 -->
+        <div id="thumbnail-bar" class="thumbnail-bar">
+            <!-- 자바스크립트를 통해 동적 생성 -->
+        </div>
 
     </div>
 
@@ -137,16 +189,16 @@
     
     // 슬라이드 번호 매핑
     const slideData = {
-        'group-part1': Array.from({length: 7}, (_, i) => i + 1),               // 1~7
-        'group-cat1-sub1': Array.from({length: 10}, (_, i) => i + 8),          // 8~17 (일반)
-        'group-cat1-sub2': Array.from({length: 4}, (_, i) => i + 18),          // 18~21 (욕조 위)
-        'group-cat1-sub3': Array.from({length: 3}, (_, i) => i + 22),          // 22~24 (샤워부스 위)
-        'group-cat2': Array.from({length: 11}, (_, i) => i + 25),              // 25~35 (아치형 천장)
-        'group-cat3': Array.from({length: 6}, (_, i) => i + 36),               // 36~41 (기존 환풍기)
-        'group-cat4': Array.from({length: 15}, (_, i) => i + 42)               // 42~56 (창문 있는 화장실)
+        'group-part1': Array.from({length: 7}, (_, i) => i + 1),               
+        'group-cat1-sub1': Array.from({length: 10}, (_, i) => i + 8),          
+        'group-cat1-sub2': Array.from({length: 4}, (_, i) => i + 18),          
+        'group-cat1-sub3': Array.from({length: 3}, (_, i) => i + 22),          
+        'group-cat2': Array.from({length: 11}, (_, i) => i + 25),              
+        'group-cat3': Array.from({length: 6}, (_, i) => i + 36),               
+        'group-cat4': Array.from({length: 15}, (_, i) => i + 42)               
     };
 
-    // DOM 동적 생성
+    // DOM 동적 생성 (메인 슬라이드 이미지들)
     for (const [groupId, slideNumbers] of Object.entries(slideData)) {
         const container = document.getElementById(groupId);
         if (container) {
@@ -163,11 +215,44 @@
         }
     }
 
-    // 초기 상태 ('part2' 및 그 하위 첫 번째 그룹으로 시작)
+    // 초기 상태 
     let currentMode = 'part2';
     let activeGroupId = 'group-cat1-sub1';
+    let hideThumbTimeout; 
 
-    // 슬라이드 카운터 및 뷰 갱신
+    // 썸네일 바 렌더링 (그룹이 바뀔 때마다 실행)
+    function renderThumbnails() {
+        const thumbBar = document.getElementById('thumbnail-bar');
+        thumbBar.innerHTML = '';
+        
+        const slideNumbers = slideData[activeGroupId];
+        if (!slideNumbers) return;
+
+        slideNumbers.forEach((num, index) => {
+            const isActive = index === 0 ? 'active' : '';
+            const imgSrc = `${folderPath}슬라이드${num}.JPG`;
+            
+            thumbBar.innerHTML += `
+                <img src="${imgSrc}" alt="thumb ${num}" class="thumb-img ${isActive}" 
+                     onclick="jumpToSlide(${index})"
+                     onerror="this.onerror=null; this.src='https://via.placeholder.com/80x50/e5e5e5/666666?text=?';">
+            `;
+        });
+    }
+
+    // 썸네일 클릭 시 슬라이드 점프
+    function jumpToSlide(index) {
+        const group = document.getElementById(activeGroupId);
+        const slides = group.querySelectorAll('.slide');
+        
+        slides.forEach(s => s.classList.remove('active'));
+        if(slides[index]) slides[index].classList.add('active');
+        
+        updateSlider();
+        showThumbnails();
+    }
+
+    // 슬라이드 카운터 및 썸네일 포커스 갱신
     function updateSlider() {
         const group = document.getElementById(activeGroupId);
         if(!group) return;
@@ -185,9 +270,17 @@
         
         const counterId = currentMode === 'part1' ? 'counter-part1' : 'counter-part2';
         document.getElementById(counterId).innerText = `${activeIndex + 1} / ${slides.length}`;
+        
+        // 썸네일 상태 업데이트
+        const thumbs = document.querySelectorAll('#thumbnail-bar .thumb-img');
+        thumbs.forEach(thumb => thumb.classList.remove('active'));
+        if(thumbs[activeIndex]) {
+            thumbs[activeIndex].classList.add('active');
+            thumbs[activeIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
     }
 
-    // 슬라이드 이동
+    // 슬라이드 이동 버튼
     function moveSlide(direction) {
         const group = document.getElementById(activeGroupId);
         const slides = group.querySelectorAll('.slide');
@@ -205,7 +298,9 @@
         if(activeIndex < 0) activeIndex = slides.length - 1;
         
         slides[activeIndex].classList.add('active');
+        
         updateSlider();
+        showThumbnails();
     }
 
     // 상단 모드 전환 (제품설명 vs 맞춤설치)
@@ -219,20 +314,24 @@
         document.getElementById(mode).classList.add('active');
         
         const sidebar = document.getElementById('sidebar');
+        const wrapper = document.querySelector('.content-wrapper');
 
         if(mode === 'part1') {
             activeGroupId = 'group-part1';
             sidebar.classList.remove('active');
+            wrapper.classList.remove('with-sidebar'); // 사이드바가 없으므로 클래스 제거 (중앙 정렬 복귀)
+            renderThumbnails(); 
             updateSlider();
         } else {
             sidebar.classList.add('active');
-            // Part2 진입 시 현재 활성화된 대분류 클릭 이벤트 강제 실행
+            wrapper.classList.add('with-sidebar'); // 사이드바가 있으므로 클래스 추가 (위치 보정)
             const activeCat = document.querySelector('.main-category-tabs .cat-btn.active');
             if(activeCat) activeCat.click();
         }
+        showThumbnails();
     }
 
-    // 대분류 선택 로직 (소분류 유무에 따른 노출 처리)
+    // 대분류 선택
     function selectCategory(catId, btnElement) {
         document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
         if(btnElement) btnElement.classList.add('active');
@@ -241,16 +340,12 @@
         const subCatContainer = document.getElementById('sub-cat1');
 
         if(catId === 'cat1') {
-            // 소분류 및 구분선 노출
             divider.classList.add('active');
             subCatContainer.classList.add('active');
-            
-            // 기존에 활성화된 소분류가 있으면 유지, 없으면 첫번째 소분류 클릭
             const activeSubBtn = subCatContainer.querySelector('.sub-btn.active');
             if(activeSubBtn) activeSubBtn.click();
             else subCatContainer.querySelector('.sub-btn').click();
         } else {
-            // 소분류 및 구분선 숨김
             divider.classList.remove('active');
             subCatContainer.classList.remove('active');
             
@@ -260,16 +355,17 @@
             
             activeGroupId = targetGroupId;
             
-            // 첫번째 슬라이드로 초기화
             const slides = document.getElementById(targetGroupId).querySelectorAll('.slide');
             slides.forEach(s => s.classList.remove('active'));
             if(slides.length > 0) slides[0].classList.add('active');
             
+            renderThumbnails(); 
             updateSlider();
+            showThumbnails();
         }
     }
 
-    // 소분류 선택 로직 (Cat1 전용)
+    // 소분류 선택 (Cat1 전용)
     function selectSubCategory(groupId, btnElement) {
         const parent = btnElement.parentElement;
         parent.querySelectorAll('.sub-btn').forEach(btn => btn.classList.remove('active'));
@@ -280,22 +376,56 @@
         
         activeGroupId = groupId;
         
-        // 첫번째 슬라이드로 초기화
         const slides = document.getElementById(groupId).querySelectorAll('.slide');
         slides.forEach(s => s.classList.remove('active'));
         if(slides.length > 0) slides[0].classList.add('active');
         
+        renderThumbnails(); 
         updateSlider();
+        showThumbnails();
     }
 
-    // 키보드 방향키 이동 지원
+    // 썸네일 바 표시 & 0.3초 뒤 자동 숨김 처리
+    function showThumbnails() {
+        const thumbBar = document.getElementById('thumbnail-bar');
+        if(!thumbBar) return;
+        
+        thumbBar.classList.add('show');
+        clearTimeout(hideThumbTimeout);
+        
+        hideThumbTimeout = setTimeout(() => {
+            thumbBar.classList.remove('show');
+        }, 300); 
+    }
+
+    // 화면 터치 및 마우스 움직임 이벤트
+    document.addEventListener('mousemove', showThumbnails);
+    document.addEventListener('touchstart', showThumbnails);
+    document.addEventListener('mouseleave', () => {
+        clearTimeout(hideThumbTimeout);
+        const thumbBar = document.getElementById('thumbnail-bar');
+        if(thumbBar) thumbBar.classList.remove('show');
+    });
+
+    // 썸네일 바 영역에 마우스를 올리고 있을 때는 숨기지 않음
+    const thumbBarElement = document.getElementById('thumbnail-bar');
+    thumbBarElement.addEventListener('mouseenter', () => {
+        clearTimeout(hideThumbTimeout);
+    });
+    thumbBarElement.addEventListener('mouseleave', () => {
+        showThumbnails(); 
+    });
+
+    // 키보드 방향키 이동
     document.addEventListener('keydown', (e) => {
-        if(e.key === 'ArrowRight') moveSlide(1);
-        if(e.key === 'ArrowLeft') moveSlide(-1);
+        if(e.key === 'ArrowRight') { moveSlide(1); }
+        if(e.key === 'ArrowLeft') { moveSlide(-1); }
     });
 
     // 초기 로딩
+    renderThumbnails();
     updateSlider();
+
 </script>
 
 </body>
